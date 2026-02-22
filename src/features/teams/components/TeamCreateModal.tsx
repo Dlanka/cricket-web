@@ -11,6 +11,7 @@ import type { CreateTeamRequest } from "../types/teams.types";
 import { RightSideModal } from "@/shared/components/modals/RightSideModal";
 import { FormGroup } from "@/components/ui/form/FormGroup";
 import { Button } from "@/components/ui/button/Button";
+import { InputField } from "@/components/ui/form/InputField";
 
 type Props = {
   tournamentId: string;
@@ -86,17 +87,26 @@ export const TeamCreateModal = ({ tournamentId, isOpen, onClose }: Props) => {
         className="space-y-5"
       >
         <FormGroup label="Team name" error={errors.name?.message}>
-          <input
-            className="w-full rounded-xl border border-neutral-90 bg-neutral-99 px-4 py-3 text-sm text-primary-10 shadow-sm focus:border-neutral-80 focus:outline-none"
-            placeholder="Colombo Kings"
-            {...register("name")}
-          />
+          <InputField placeholder="Colombo Kings" {...register("name")} />
         </FormGroup>
         <FormGroup label="Short name" error={errors.shortName?.message}>
-          <input
-            className="w-full rounded-xl border border-neutral-90 bg-neutral-99 px-4 py-3 text-sm text-primary-10 shadow-sm focus:border-neutral-80 focus:outline-none"
-            placeholder="CK"
-            {...register("shortName")}
+          <InputField placeholder="CK" {...register("shortName")} />
+        </FormGroup>
+        <FormGroup
+          label="Contact person"
+          error={errors.contactPerson?.message}
+          hint="Optional team contact person."
+        >
+          <InputField placeholder="Nimal Perera" {...register("contactPerson")} />
+        </FormGroup>
+        <FormGroup
+          label="Contact number"
+          error={errors.contactNumber?.message}
+          hint="Optional. Use +, digits, spaces, (), -, ."
+        >
+          <InputField
+            placeholder="+94 77 123 4567"
+            {...register("contactNumber")}
           />
         </FormGroup>
       </form>
