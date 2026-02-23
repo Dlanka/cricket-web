@@ -7,10 +7,17 @@ type Props = {
   teams: Team[];
   tournamentId: string;
   onEdit?: (team: Team) => void;
+  onAccessLinks?: (team: Team) => void;
   canEdit?: boolean;
 };
 
-export const TeamsList = ({ teams, tournamentId, onEdit, canEdit }: Props) => (
+export const TeamsList = ({
+  teams,
+  tournamentId,
+  onEdit,
+  onAccessLinks,
+  canEdit,
+}: Props) => (
   <div className="space-y-4">
     {teams.map((team) => (
       <div
@@ -31,6 +38,17 @@ export const TeamsList = ({ teams, tournamentId, onEdit, canEdit }: Props) => (
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-2">
+            {canEdit && onAccessLinks ? (
+              <Button
+                type="button"
+                appearance="outline"
+                color="neutral"
+                size="sm"
+                onClick={() => onAccessLinks(team)}
+              >
+                Access link
+              </Button>
+            ) : null}
             {canEdit && onEdit ? (
               <Button
                 type="button"

@@ -10,6 +10,7 @@ import { TeamEditModal } from "../../components/TeamEditModal";
 import type { Team } from "../../types/teams.types";
 import { PageHeader } from "@/shared/components/page/PageHeader";
 import { useAuthorization } from "@/features/authz/hooks/useAuthorization";
+import { TeamAccessLinksModal } from "@/features/teams/components/TeamAccessLinksModal";
 
 export const TeamsByTournamentPage = () => {
   const { tournamentId } = useParams({
@@ -26,6 +27,12 @@ export const TeamsByTournamentPage = () => {
     close: closeEdit,
   } = useDisclosure();
   const [editingTeam, setEditingTeam] = useState<Team | null>(null);
+  const {
+    isOpen: isLinksOpen,
+    open: openLinks,
+    close: closeLinks,
+  } = useDisclosure();
+  const [linksTeam, setLinksTeam] = useState<Team | null>(null);
 
   if (!tournamentId) {
     return (
@@ -74,6 +81,10 @@ export const TeamsByTournamentPage = () => {
               setEditingTeam(team);
               openEdit();
             }}
+            onAccessLinks={(team) => {
+              setLinksTeam(team);
+              openLinks();
+            }}
           />
         ) : (
           <div className="rounded-2xl border border-neutral-90 bg-neutral-99 p-6 text-sm text-neutral-40">
@@ -97,6 +108,15 @@ export const TeamsByTournamentPage = () => {
             closeEdit();
             setEditingTeam(null);
           }}
+        />
+      ) : null}
+      {linksTeam ? (
+        <TeamAccessLinksModal
+          teamId={linksTeam.id}
+          teamName={linksTeam.name}
+          teamContactNumber={linksTeam.contactNumber}
+          isOpen={isLinksOpen}
+          onClose={closeLinks}
         />
       ) : null}
     </div>

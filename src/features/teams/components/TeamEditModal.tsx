@@ -11,6 +11,7 @@ import { getApiErrorMessage } from "@/shared/utils/apiErrors";
 import {
   teamUpdateSchema,
   type TeamUpdateFormValues,
+  type TeamUpdateValues,
 } from "@/features/teams/schemas/teams.schemas";
 import { useUpdateTeamMutation } from "../hooks/useUpdateTeamMutation";
 import type { Team, UpdateTeamRequest } from "../types/teams.types";
@@ -31,7 +32,7 @@ export const TeamEditModal = ({ tournamentId, team, isOpen, onClose }: Props) =>
     handleSubmit,
     reset,
     formState: { errors, isSubmitting, dirtyFields, isDirty },
-  } = useForm<TeamUpdateFormValues>({
+  } = useForm<TeamUpdateFormValues, unknown, TeamUpdateValues>({
     resolver: zodResolver(teamUpdateSchema),
     defaultValues: {
       name: team.name ?? "",
@@ -55,7 +56,7 @@ export const TeamEditModal = ({ tournamentId, team, isOpen, onClose }: Props) =>
     }
   }, [isOpen, reset, team]);
 
-  const onSubmit = async (values: TeamUpdateFormValues) => {
+  const onSubmit = async (values: TeamUpdateValues) => {
     setFormError(null);
     const rawPatch = buildPatchPayload(values, dirtyFields) as UpdateTeamRequest;
     const patch: UpdateTeamRequest = {

@@ -26,13 +26,12 @@ export const TeamCreateModal = ({ tournamentId, isOpen, onClose }: Props) => {
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
-  } = useForm<TeamCreateFormValues>({
+  } = useForm<TeamCreateFormValues, unknown, TeamCreateValues>({
     resolver: zodResolver(teamCreateSchema),
   });
 
-  const onSubmit = async (values: TeamCreateFormValues) => {
-    const payload: TeamCreateValues = teamCreateSchema.parse(values);
-    const input: CreateTeamRequest = payload;
+  const onSubmit = async (values: TeamCreateValues) => {
+    const input: CreateTeamRequest = values;
 
     try {
       await mutation.mutateAsync(input);

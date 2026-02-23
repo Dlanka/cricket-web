@@ -23,6 +23,7 @@ import { Route as SettingsIndexRouteImport } from './routes/settings/index'
 import { Route as UserSettingsSecurityRouteImport } from './routes/user-settings/security'
 import { Route as UserSettingsProfileRouteImport } from './routes/user-settings/profile'
 import { Route as UserSettingsPreferencesRouteImport } from './routes/user-settings/preferences'
+import { Route as TeamAccessTokenRouteImport } from './routes/team-access/$token'
 import { Route as SettingsTenantMembersRouteImport } from './routes/settings/tenant-members'
 import { Route as SettingsPermissionsRouteImport } from './routes/settings/permissions'
 import { Route as SettingsOrganizationRouteImport } from './routes/settings/organization'
@@ -116,6 +117,11 @@ const UserSettingsPreferencesRoute = UserSettingsPreferencesRouteImport.update({
   id: '/preferences',
   path: '/preferences',
   getParentRoute: () => UserSettingsRouteRoute,
+} as any)
+const TeamAccessTokenRoute = TeamAccessTokenRouteImport.update({
+  id: '/team-access/$token',
+  path: '/team-access/$token',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const SettingsTenantMembersRoute = SettingsTenantMembersRouteImport.update({
   id: '/tenant-members',
@@ -261,6 +267,7 @@ export interface FileRoutesByFullPath {
   '/settings/organization': typeof SettingsOrganizationRoute
   '/settings/permissions': typeof SettingsPermissionsRoute
   '/settings/tenant-members': typeof SettingsTenantMembersRoute
+  '/team-access/$token': typeof TeamAccessTokenRoute
   '/user-settings/preferences': typeof UserSettingsPreferencesRoute
   '/user-settings/profile': typeof UserSettingsProfileRoute
   '/user-settings/security': typeof UserSettingsSecurityRoute
@@ -297,6 +304,7 @@ export interface FileRoutesByTo {
   '/settings/organization': typeof SettingsOrganizationRoute
   '/settings/permissions': typeof SettingsPermissionsRoute
   '/settings/tenant-members': typeof SettingsTenantMembersRoute
+  '/team-access/$token': typeof TeamAccessTokenRoute
   '/user-settings/preferences': typeof UserSettingsPreferencesRoute
   '/user-settings/profile': typeof UserSettingsProfileRoute
   '/user-settings/security': typeof UserSettingsSecurityRoute
@@ -336,6 +344,7 @@ export interface FileRoutesById {
   '/settings/organization': typeof SettingsOrganizationRoute
   '/settings/permissions': typeof SettingsPermissionsRoute
   '/settings/tenant-members': typeof SettingsTenantMembersRoute
+  '/team-access/$token': typeof TeamAccessTokenRoute
   '/user-settings/preferences': typeof UserSettingsPreferencesRoute
   '/user-settings/profile': typeof UserSettingsProfileRoute
   '/user-settings/security': typeof UserSettingsSecurityRoute
@@ -377,6 +386,7 @@ export interface FileRouteTypes {
     | '/settings/organization'
     | '/settings/permissions'
     | '/settings/tenant-members'
+    | '/team-access/$token'
     | '/user-settings/preferences'
     | '/user-settings/profile'
     | '/user-settings/security'
@@ -413,6 +423,7 @@ export interface FileRouteTypes {
     | '/settings/organization'
     | '/settings/permissions'
     | '/settings/tenant-members'
+    | '/team-access/$token'
     | '/user-settings/preferences'
     | '/user-settings/profile'
     | '/user-settings/security'
@@ -451,6 +462,7 @@ export interface FileRouteTypes {
     | '/settings/organization'
     | '/settings/permissions'
     | '/settings/tenant-members'
+    | '/team-access/$token'
     | '/user-settings/preferences'
     | '/user-settings/profile'
     | '/user-settings/security'
@@ -486,6 +498,7 @@ export interface RootRouteChildren {
   SelectTenantRoute: typeof SelectTenantRoute
   SignupRoute: typeof SignupRoute
   TournamentsTournamentIdRouteRoute: typeof TournamentsTournamentIdRouteRouteWithChildren
+  TeamAccessTokenRoute: typeof TeamAccessTokenRoute
   TournamentsIndexRoute: typeof TournamentsIndexRoute
   MatchesMatchIdRosterRoute: typeof MatchesMatchIdRosterRoute
   MatchesMatchIdScoreRoute: typeof MatchesMatchIdScoreRoute
@@ -593,6 +606,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/user-settings/preferences'
       preLoaderRoute: typeof UserSettingsPreferencesRouteImport
       parentRoute: typeof UserSettingsRouteRoute
+    }
+    '/team-access/$token': {
+      id: '/team-access/$token'
+      path: '/team-access/$token'
+      fullPath: '/team-access/$token'
+      preLoaderRoute: typeof TeamAccessTokenRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/settings/tenant-members': {
       id: '/settings/tenant-members'
@@ -865,6 +885,7 @@ const rootRouteChildren: RootRouteChildren = {
   SignupRoute: SignupRoute,
   TournamentsTournamentIdRouteRoute:
     TournamentsTournamentIdRouteRouteWithChildren,
+  TeamAccessTokenRoute: TeamAccessTokenRoute,
   TournamentsIndexRoute: TournamentsIndexRoute,
   MatchesMatchIdRosterRoute: MatchesMatchIdRosterRoute,
   MatchesMatchIdScoreRoute: MatchesMatchIdScoreRoute,

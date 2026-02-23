@@ -13,6 +13,7 @@ import type { Player } from "../../types/players.types";
 import { useTeamQuery } from "@/features/teams/hooks/useTeamQuery";
 import { PageHeader } from "@/shared/components/page/PageHeader";
 import { useAuthorization } from "@/features/authz/hooks/useAuthorization";
+import { TeamAccessLinksModal } from "@/features/teams/components/TeamAccessLinksModal";
 
 export const PlayersByTeamPage = () => {
   const { tournamentId, teamId } = useParams({
@@ -27,6 +28,11 @@ export const PlayersByTeamPage = () => {
     isOpen: isEditOpen,
     open: openEdit,
     close: closeEdit,
+  } = useDisclosure();
+  const {
+    isOpen: isLinksOpen,
+    open: openLinks,
+    close: closeLinks,
   } = useDisclosure();
   const [editingPlayer, setEditingPlayer] = useState<Player | null>(null);
   const { can } = useAuthorization();
@@ -71,15 +77,26 @@ export const PlayersByTeamPage = () => {
         }}
         actions={
           canEdit ? (
-            <Button
-              type="button"
-              appearance="filled"
-              color="primary"
-              size="sm"
-              onClick={open}
-            >
-              Add player
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                appearance="outline"
+                color="neutral"
+                size="sm"
+                onClick={openLinks}
+              >
+                Access links
+              </Button>
+              <Button
+                type="button"
+                appearance="filled"
+                color="primary"
+                size="sm"
+                onClick={open}
+              >
+                Add player
+              </Button>
+            </div>
           ) : null
         }
       />
@@ -118,6 +135,15 @@ export const PlayersByTeamPage = () => {
             closeEdit();
             setEditingPlayer(null);
           }}
+        />
+      ) : null}
+      {team ? (
+        <TeamAccessLinksModal
+          teamId={team.id}
+          teamName={team.name}
+          teamContactNumber={team.contactNumber}
+          isOpen={isLinksOpen}
+          onClose={closeLinks}
         />
       ) : null}
     </div>
