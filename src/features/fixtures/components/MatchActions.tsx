@@ -20,8 +20,51 @@ export const MatchActions = ({
   tournamentId,
   canEditRoster,
   canStartMatch,
-}: Props) => (
-  <>
+}: Props) => {
+  const isKnockoutStage = ["R1", "QF", "SF", "FINAL"].includes(match.stage);
+  const resultType =
+    match.result?.type ??
+    (match.result?.isNoResult ? "NO_RESULT" : null);
+  const canResolveTie =
+    canStartMatch &&
+    isKnockoutStage &&
+    match.status === "COMPLETED" &&
+    resultType === "TIE" &&
+    match.superOverStatus !== "PENDING" &&
+    match.superOverStatus !== "LIVE";
+  const canStartSuperOver =
+    canStartMatch &&
+    isKnockoutStage &&
+    match.status === "COMPLETED" &&
+    resultType === "TIE" &&
+    (!match.superOverStatus || match.superOverStatus === "PENDING");
+
+  return (
+    <>
+    {canStartSuperOver ? (
+      <Link
+        to="/tournaments/$tournamentId/matches/$matchId"
+        params={{
+          tournamentId,
+          matchId: match.id,
+        }}
+        className="inline-flex items-center justify-center gap-2 rounded-full border border-primary-80 bg-primary-95 px-4 py-2 text-sm font-semibold text-primary-30 transition hover:border-primary-70"
+      >
+        Start Super Over
+      </Link>
+    ) : null}
+    {canResolveTie ? (
+      <Link
+        to="/tournaments/$tournamentId/matches/$matchId"
+        params={{
+          tournamentId,
+          matchId: match.id,
+        }}
+        className="inline-flex items-center justify-center gap-2 rounded-full border border-warning-80 bg-warning-95 px-4 py-2 text-sm font-semibold text-warning-30 transition hover:border-warning-70"
+      >
+        Resolve tie
+      </Link>
+    ) : null}
     {match.status === "SCHEDULED" && canStartMatch ? (
       <Link
         to="/tournaments/$tournamentId/matches/$matchId"
@@ -74,7 +117,7 @@ export const MatchActions = ({
       </Link>
     ) : null}
 
-    {match.status === "COMPLETED" ? (
+    {match.status === "COMPLETED" || match.status === "LIVE" ? (
       <Link
         to="/tournaments/$tournamentId/matches/$matchId/summary"
         params={{
@@ -87,4 +130,5 @@ export const MatchActions = ({
       </Link>
     ) : null}
   </>
-);
+  );
+};

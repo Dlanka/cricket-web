@@ -43,6 +43,7 @@ type Props = {
   currentBalls: number;
   inningsCompleted?: boolean;
   isMatchCompleted?: boolean;
+  phase?: "REGULAR" | "SUPER_OVER";
   embedded?: boolean;
   showChangeBowlerButton?: boolean;
   onBowlerChangedAtBoundary?: (balls: number) => void;
@@ -63,6 +64,7 @@ export const ScoringPanel = ({
   currentBalls,
   inningsCompleted = false,
   isMatchCompleted = false,
+  phase = "REGULAR",
   embedded = false,
   showChangeBowlerButton = false,
   onBowlerChangedAtBoundary,
@@ -87,6 +89,7 @@ export const ScoringPanel = ({
   const [nextBowlerModalOpen, setNextBowlerModalOpen] = useState(false);
   const [startSecondInningsModalOpen, setStartSecondInningsModalOpen] = useState(false);
   const [startSecondInningsError, setStartSecondInningsError] = useState<string | null>(null);
+  const [undoUnavailableReason, setUndoUnavailableReason] = useState<string | null>(null);
   const [nextBowlerId, setNextBowlerId] = useState<string>("");
   const [requiresNextBowler, setRequiresNextBowler] = useState(false);
   const [oversCompletedByServer, setOversCompletedByServer] = useState(false);
@@ -130,6 +133,12 @@ export const ScoringPanel = ({
   const showStartSecondInningsButton = Boolean(
     inningsNumber === 1 && (isOversCompleted || inningsCompleted),
   );
+
+  useEffect(() => {
+    if (!isMatchCompleted && undoUnavailableReason) {
+      setUndoUnavailableReason(null);
+    }
+  }, [isMatchCompleted, undoUnavailableReason]);
 
   useEffect(() => {
     const completedOverBoundary =
@@ -219,6 +228,7 @@ export const ScoringPanel = ({
   ) => {
     try {
       const result = await mutation.mutateAsync(payload);
+      setUndoUnavailableReason(null);
       setOversCompletedByServer(false);
       const nextBalls = result.score?.balls;
       if (payload.type === "undo") {
@@ -241,6 +251,22 @@ export const ScoringPanel = ({
       return result;
     } catch (error) {
       const normalized = normalizeApiError(error);
+      if (normalized.code === "score.undo_window_elapsed") {
+        const message = "Undo window has expired for this completed match.";
+        if (payload.type === "undo") {
+          setUndoUnavailableReason(message);
+        }
+        toast.error(message);
+        throw error;
+      }
+      if (normalized.code === "score.undo_blocked") {
+        const message = "Undo is blocked because next knockout round has already started.";
+        if (payload.type === "undo") {
+          setUndoUnavailableReason(message);
+        }
+        toast.error(message);
+        throw error;
+      }
       if (
         normalized.code === "match.invalid_state" ||
         normalized.code === "match.already_completed" ||
@@ -344,6 +370,12 @@ export const ScoringPanel = ({
           </div>
         ) : null}
 
+        {phase === "SUPER_OVER" ? (
+          <div className="rounded-lg border border-primary-90 bg-primary-95 px-3 py-2 text-xs font-medium text-primary-30">
+            Innings ends at 2 wickets.
+          </div>
+        ) : null}
+
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex-1 space-y-2">
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-neutral-40">
@@ -373,7 +405,7 @@ export const ScoringPanel = ({
 
         <ActionButtons
           showCompletedButton={isMatchCompleted}
-          undoDisabled={mutation.isPending || isMatchCompleted || !canWriteScore}
+          undoDisabled={mutation.isPending || !canWriteScore || Boolean(undoUnavailableReason)}
           disabled={mutation.isPending || controlsLocked || !canWriteScore}
           showStartSecondInningsButton={showStartSecondInningsButton}
           startSecondInningsDisabled={
@@ -415,6 +447,9 @@ export const ScoringPanel = ({
             window.history.back();
           }}
         />
+        {undoUnavailableReason ? (
+          <p className="text-xs text-warning-30">{undoUnavailableReason}</p>
+        ) : null}
       </div>
 
       <WicketModal

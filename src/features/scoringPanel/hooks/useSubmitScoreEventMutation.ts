@@ -54,6 +54,7 @@ export const useSubmitScoreEventMutation = (
       );
 
       await queryClient.invalidateQueries({ queryKey: scoringQueryKeys.score(matchId) });
+      await queryClient.invalidateQueries({ queryKey: ["match", matchId] });
 
       const cachedScore = queryClient.getQueryData<MatchScoreResponse>(
         scoringQueryKeys.score(matchId),
@@ -96,6 +97,18 @@ export const useSubmitScoreEventMutation = (
               }),
               queryClient.invalidateQueries({
                 queryKey: tournamentQueryKeys.detail(tournamentId),
+              }),
+              queryClient.invalidateQueries({
+                queryKey: ["tournamentMatches", tournamentId],
+              }),
+              queryClient.invalidateQueries({
+                queryKey: ["fixturesView", tournamentId],
+              }),
+              queryClient.invalidateQueries({
+                queryKey: ["fixturesBracket", tournamentId],
+              }),
+              queryClient.invalidateQueries({
+                queryKey: tournamentQueryKeys.playerOfSeries(tournamentId),
               }),
             ]
           : []),

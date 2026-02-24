@@ -9,10 +9,11 @@ import { Button } from "@/components/ui/button/Button";
 import { InputField } from "@/components/ui/form/InputField";
 import { SelectField } from "@/components/ui/form/SelectField";
 import { buildPatchPayload, isEmptyPatch } from "@/shared/utils/patch";
-import { getApiErrorMessage } from "@/shared/utils/apiErrors";
+import { getApiErrorMessage, normalizeApiError } from "@/shared/utils/apiErrors";
 import {
   tournamentUpdateSchema,
   type TournamentUpdateFormValues,
+  type TournamentUpdateValues,
 } from "@/features/tournaments/schemas/tournamentUpdateSchema";
 import { useUpdateTournamentMutation } from "../hooks/useUpdateTournamentMutation";
 import type {
@@ -47,11 +48,17 @@ const normalizeTournamentPatch = (
 
 type Props = {
   tournament: TournamentDetails;
+  isTypeLocked?: boolean;
   isOpen: boolean;
   onClose: () => void;
 };
 
-export const TournamentEditModal = ({ tournament, isOpen, onClose }: Props) => {
+export const TournamentEditModal = ({
+  tournament,
+  isTypeLocked = false,
+  isOpen,
+  onClose,
+}: Props) => {
   const navigate = useNavigate();
   const mutation = useUpdateTournamentMutation(tournament.id);
   const [formError, setFormError] = useState<string | null>(null);
@@ -77,7 +84,7 @@ export const TournamentEditModal = ({ tournament, isOpen, onClose }: Props) => {
     control,
     reset,
     formState: { errors, isSubmitting, dirtyFields, isDirty },
-  } = useForm<TournamentUpdateFormValues>({
+  } = useForm<TournamentUpdateFormValues, unknown, TournamentUpdateValues>({
     resolver: zodResolver(tournamentUpdateSchema),
     defaultValues,
   });
@@ -113,7 +120,7 @@ export const TournamentEditModal = ({ tournament, isOpen, onClose }: Props) => {
     }
   }, [defaultValues, isOpen, reset]);
 
-  const onSubmit = async (values: TournamentUpdateFormValues) => {
+  const onSubmit = async (values: TournamentUpdateValues) => {
     setFormError(null);
     const patch = buildPatchPayload(values, dirtyFields);
     const normalized = normalizeTournamentPatch(
@@ -131,8 +138,18 @@ export const TournamentEditModal = ({ tournament, isOpen, onClose }: Props) => {
       onClose();
       await navigate({ to: `/tournaments/${tournament.id}` });
     } catch (err) {
-      const message = getApiErrorMessage(err, "Unable to update tournament.");
-      setFormError(message);
+      const normalizedError = normalizeApiError(err);
+      if (normalizedError.code === "tournament.type_locked") {
+        setFormError("Tournament type can't be changed after a match has started.");
+        return;
+      }
+      if (normalizedError.code === "tournament.config_locked") {
+        setFormError(
+          "Tournament format and over configuration are locked after scoring data exists.",
+        );
+        return;
+      }
+      setFormError(getApiErrorMessage(err, "Unable to update tournament."));
     }
   };
 
@@ -220,8 +237,17 @@ export const TournamentEditModal = ({ tournament, isOpen, onClose }: Props) => {
           hint={tournamentTypeHints[selectedType || "LEAGUE"]}
           error={errors.type?.message}
         >
-          <SelectField options={tournamentTypeOptions} {...register("type")} />
+          <SelectField
+            options={tournamentTypeOptions}
+            disabled={isTypeLocked}
+            {...register("type")}
+          />
         </FormGroup>
+        {isTypeLocked ? (
+          <p className="-mt-2 text-xs text-warning-30">
+            Tournament type can't be changed after a match has started.
+          </p>
+        ) : null}
 
         {selectedType === "LEAGUE_KNOCKOUT" ? (
           <FormGroup

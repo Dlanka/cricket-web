@@ -1,5 +1,48 @@
 export type TournamentType = "LEAGUE" | "KNOCKOUT" | "LEAGUE_KNOCKOUT";
 export type TournamentStatus = "DRAFT" | "ACTIVE" | "COMPLETED";
+export type TournamentStageStatus = "PENDING" | "ACTIVE" | "COMPLETED";
+export type TournamentTiePolicy =
+  | "LEAGUE_TIE_SHARED"
+  | "KNOCKOUT_SUPER_OVER_THEN_TIE_BREAK";
+
+export type TournamentOverview = {
+  type: TournamentType;
+  status: TournamentStatus;
+  settings: {
+    oversPerInnings: number;
+    ballsPerOver: number;
+  };
+  progress: {
+    totalMatches: number;
+    completedMatches: number;
+    liveMatches: number;
+    scheduledMatches: number;
+  };
+  stages: {
+    league: {
+      status: TournamentStageStatus;
+      totalMatches: number;
+      completedMatches: number;
+    };
+    knockout: {
+      status: TournamentStageStatus;
+      totalMatches: number;
+      completedMatches: number;
+      qualificationCount: number | null;
+    };
+  };
+  rules: {
+    points:
+      | {
+          win: number;
+          tie: number;
+          noResult: number;
+          loss: number;
+        }
+      | null;
+  };
+  tiePolicy: TournamentTiePolicy;
+};
 
 export type TournamentCreateInput = {
   name: string;
@@ -52,6 +95,8 @@ export type TournamentDetails = TournamentSummary & {
   rules?: {
     qualificationCount?: number;
   };
+  overviewDescription?: string;
+  overview?: TournamentOverview;
 };
 
 export type ListResponse = {

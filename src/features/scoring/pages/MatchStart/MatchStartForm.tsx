@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, type ReactNode } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button/Button";
@@ -29,6 +29,8 @@ type Props = {
   onSubmit: (payload: StartMatchRequest) => Promise<void>;
   errorMessage?: string | null;
   alignSubmitRight?: boolean;
+  preferredBattingTeamId?: string;
+  secondaryAction?: ReactNode;
 };
 
 export const MatchStartForm = ({
@@ -39,6 +41,8 @@ export const MatchStartForm = ({
   onSubmit,
   errorMessage,
   alignSubmitRight = false,
+  preferredBattingTeamId,
+  secondaryAction,
 }: Props) => {
   const form = useForm<StartMatchValues>({
     resolver: zodResolver(startMatchSchema),
@@ -54,6 +58,15 @@ export const MatchStartForm = ({
     control: form.control,
     name: "battingTeamId",
   });
+
+  useEffect(() => {
+    if (!preferredBattingTeamId) return;
+    if (battingTeamId === preferredBattingTeamId) return;
+    form.setValue("battingTeamId", preferredBattingTeamId);
+    form.setValue("strikerId", "");
+    form.setValue("nonStrikerId", "");
+    form.setValue("bowlerId", "");
+  }, [preferredBattingTeamId, battingTeamId, form]);
 
   const battingTeamPlayers = useMemo(
     () =>
@@ -75,12 +88,6 @@ export const MatchStartForm = ({
     battingTeamId === match.teams.teamA.id
       ? match.teams.teamB?.id
       : match.teams.teamA.id;
-  const battingTeamOptions = [
-    { value: match.teams.teamA.id, label: match.teams.teamA.name },
-    ...(match.teams.teamB
-      ? [{ value: match.teams.teamB.id, label: match.teams.teamB.name }]
-      : []),
-  ];
   const battingPlayerOptions = [
     { value: "", label: "Select player" },
     ...battingTeamPlayers.map((player) => ({ value: player.id, label: player.name })),
@@ -105,13 +112,7 @@ export const MatchStartForm = ({
 
   return (
     <form className="space-y-5" onSubmit={submitHandler}>
-      <FormGroup label="Batting team" error={form.formState.errors.battingTeamId?.message}>
-        <SelectField
-          options={battingTeamOptions}
-          disabled={!canStart || isSubmitting}
-          {...form.register("battingTeamId")}
-        />
-      </FormGroup>
+      <input type="hidden" {...form.register("battingTeamId")} />
 
       <div className="grid gap-4 md:grid-cols-2">
         <FormGroup label="Opening striker" error={form.formState.errors.strikerId?.message}>
@@ -154,7 +155,8 @@ export const MatchStartForm = ({
         </p>
       ) : null}
 
-      <div className={alignSubmitRight ? "flex justify-end" : ""}>
+      <div className={alignSubmitRight ? "flex justify-end gap-2" : "flex gap-2"}>
+        {secondaryAction}
         <Button type="submit" disabled={!canStart || isSubmitting}>
           {isSubmitting ? "Starting..." : "Start match"}
         </Button>

@@ -63,8 +63,10 @@ const metricWidthClass = (columnKey: string) => {
   if (columnKey === "innings") return "w-14";
   if (columnKey === "matches") return "w-16";
   if (columnKey === "runs") return "w-16";
+  if (columnKey === "w") return "w-16";
   if (columnKey === "wickets") return "w-16";
   if (columnKey === "average") return "w-16";
+  if (columnKey === "avg") return "w-16";
   if (columnKey === "strikeRate") return "w-16";
   if (columnKey === "highestScore") return "w-16";
   if (columnKey === "figures") return "w-16";
@@ -410,6 +412,8 @@ const SectionCard = ({
   limit: number;
 }) => {
   const isBoundaries = config.key === "boundaries";
+  const isAverageSection =
+    config.key === "battingAverage" || config.key === "bowlingAverage";
 
   return (
     <Card className="space-y-3 p-4">
@@ -461,7 +465,13 @@ const SectionCard = ({
         rows={rows}
         rowKey={(row, index) => `${row.playerId ?? row.name}-${index}`}
         emptyState={<p className="text-sm text-neutral-40">No data yet</p>}
-        tableClassName={isBoundaries ? "min-w-[560px]" : "min-w-[420px]"}
+        tableClassName={
+          isAverageSection
+            ? "min-w-0"
+            : isBoundaries
+              ? "min-w-[560px]"
+              : "min-w-[420px]"
+        }
       />
     </Card>
   );

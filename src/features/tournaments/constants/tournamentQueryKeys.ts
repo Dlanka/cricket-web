@@ -7,4 +7,6 @@ export const tournamentQueryKeys = {
   tournamentMatches: (tournamentId: string) =>
     ["tournament", tournamentId, "matches"] as const,
   stats: (tournamentId: string) => ["tournament", tournamentId, "stats"] as const,
+  playerOfSeries: (tournamentId: string) =>
+    ["tournament", tournamentId, "awards", "player-of-series"] as const,
 };

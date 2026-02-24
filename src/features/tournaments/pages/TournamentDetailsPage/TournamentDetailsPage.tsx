@@ -112,6 +112,7 @@ export const TournamentDetailsPage = () => {
         <>
           <TournamentEditModal
             tournament={data}
+            isTypeLocked={false}
             isOpen={isEditOpen}
             onClose={closeEdit}
           />

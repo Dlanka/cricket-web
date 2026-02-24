@@ -33,7 +33,7 @@ export const TournamentCreateModal = ({ isOpen, onClose }: Props) => {
     watch,
     formState: { errors, isSubmitting },
     reset,
-  } = useForm<TournamentCreateFormValues>({
+  } = useForm<TournamentCreateFormValues, unknown, TournamentCreateValues>({
     resolver: zodResolver(tournamentCreateSchema),
     defaultValues: {
       type: "LEAGUE",
@@ -61,8 +61,7 @@ export const TournamentCreateModal = ({ isOpen, onClose }: Props) => {
     { value: "4", label: "Top 4 teams" },
   ];
 
-  const onSubmit = async (values: TournamentCreateFormValues) => {
-    const parsed: TournamentCreateValues = tournamentCreateSchema.parse(values);
+  const onSubmit = async (parsed: TournamentCreateValues) => {
     const payload: TournamentCreateInput = {
       name: parsed.name,
       type: parsed.type,

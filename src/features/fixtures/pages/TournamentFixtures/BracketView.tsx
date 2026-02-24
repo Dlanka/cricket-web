@@ -101,6 +101,17 @@ export const BracketView = ({ bracket, tournamentId }: Props) => {
                       </p>
                     ) : null}
 
+                    {!fixture.isBye && fixture.resultType === "TIE" ? (
+                      <p className="mt-2 text-xs font-semibold uppercase tracking-[0.1em] text-primary-40">
+                        Tied
+                      </p>
+                    ) : null}
+                    {!fixture.isBye && fixture.resultType === "NO_RESULT" ? (
+                      <p className="mt-2 text-xs font-semibold uppercase tracking-[0.1em] text-neutral-40">
+                        No Result
+                      </p>
+                    ) : null}
+
                     {!isPlaceholder && fixture.matchId ? (
                       <div className="mt-3">
                         <Link

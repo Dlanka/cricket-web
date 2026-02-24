@@ -29,8 +29,14 @@ const formatWinner = (match: MatchItem) => {
   if (match.teamB === null) {
     return `${match.teamA?.name ?? "TBD"} won (BYE)`;
   }
-  if (match.result?.isNoResult) {
-    return "No result";
+  const resultType =
+    match.result?.type ??
+    (match.result?.isNoResult ? "NO_RESULT" : null);
+  if (resultType === "TIE") {
+    return "Tied";
+  }
+  if (resultType === "NO_RESULT") {
+    return "No Result";
   }
   if (match.result?.winnerTeamId) {
     const winner =
@@ -122,6 +128,15 @@ export const MatchList = ({
                         BYE
                       </span>
                     ) : null}
+                    {(match.phase === "SUPER_OVER" ||
+                    match.hasSuperOver ||
+                    Boolean(match.superOverStatus)) ? (
+                      <span className="inline-flex rounded-full border border-primary-80 bg-primary-95 px-2 py-0.5 text-[11px] font-semibold text-primary-30">
+                        {match.superOverStatus
+                          ? `Super Over ${match.superOverStatus}`
+                          : "Super Over"}
+                      </span>
+                    ) : null}
                   </div>
                   {/* <p className="text-xs text-neutral-40">
                     {formatDateTime(match.scheduledAt)}
@@ -182,6 +197,10 @@ export const MatchList = ({
                               : fixture.teamB?.name) ?? "Winner decided"}{" "}
                             won
                           </p>
+                        ) : fixture.resultType === "TIE" ? (
+                          <p className="mt-2 text-sm font-medium text-primary-50">Tied</p>
+                        ) : fixture.resultType === "NO_RESULT" ? (
+                          <p className="mt-2 text-sm font-medium text-neutral-50">No Result</p>
                         ) : null}
                       </div>
                       <div className="flex items-center gap-2">

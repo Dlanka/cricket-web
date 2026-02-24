@@ -1,4 +1,4 @@
-export type MatchStage = "LEAGUE" | "R1" | "SF" | "FINAL";
+export type MatchStage = "LEAGUE" | "R1" | "QF" | "SF" | "FINAL";
 export type MatchStatus = "SCHEDULED" | "LIVE" | "COMPLETED";
 
 export type MatchTeam = {
@@ -29,6 +29,23 @@ export type MatchDetail = {
   stage: MatchStage;
   scheduledAt?: string | null;
   currentInningsId?: string | null;
+  phase?: "REGULAR" | "SUPER_OVER";
+  hasSuperOver?: boolean;
+  superOverStatus?: "PENDING" | "LIVE" | "COMPLETED" | null;
+  superOver?: {
+    teamARuns: number;
+    teamBRuns: number;
+    winnerTeamId: string | null;
+    isTie: boolean;
+  } | null;
+  toss?: {
+    wonByTeamId: string;
+    decision: "BAT" | "BOWL";
+  } | null;
+  result?: {
+    type?: "WIN" | "TIE" | "NO_RESULT" | null;
+    winnerTeamId?: string | null;
+  } | null;
 };
 
 export type StartMatchRequest = {
@@ -55,6 +72,56 @@ export type UpdateMatchConfigResponse = {
   oversPerInnings: number;
   ballsPerOver: number;
   status: MatchStatus;
+};
+
+export type SetMatchTossRequest = {
+  wonByTeamId: string;
+  decision: "BAT" | "BOWL";
+};
+
+export type SetMatchTossResponse = {
+  matchId: string;
+  status: MatchStatus;
+  toss: {
+    wonByTeamId: string;
+    decision: "BAT" | "BOWL";
+  };
+};
+
+export type ResolveMatchTieResponse = {
+  matchId: string;
+  tournamentId: string;
+  result: {
+    type: "WIN";
+    winnerTeamId: string;
+  };
+  progression: {
+    created: number;
+    stage: "R1" | "QF" | "SF" | "FINAL" | null;
+    roundNumber: number;
+  };
+};
+
+export type StartSuperOverRequest = {
+  teamA: {
+    battingFirst: boolean;
+    strikerId: string;
+    nonStrikerId: string;
+    bowlerId: string;
+  };
+  teamB: {
+    strikerId: string;
+    nonStrikerId: string;
+    bowlerId: string;
+  };
+};
+
+export type StartSuperOverResponse = {
+  matchId: string;
+  inningsId: string;
+  inningsNumber: number;
+  phase: "SUPER_OVER";
+  superOverStatus: "LIVE";
 };
 
 export type MatchesListResponse = {

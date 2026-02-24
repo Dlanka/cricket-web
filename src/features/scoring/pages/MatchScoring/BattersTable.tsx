@@ -67,6 +67,13 @@ export const BattersTable = ({
     name: playerNameById?.[id] ?? id,
     isStriker: id === normalizedStrikerId,
   }));
+  const formatOutKind = (outKind?: string | null) => {
+    if (!outKind) return "Out";
+    if (outKind === "runOutStriker" || outKind === "runOutNonStriker") {
+      return "run out";
+    }
+    return outKind;
+  };
   const columns: TableColumn<BatterRow>[] = [
     {
       key: "batter",
@@ -87,7 +94,7 @@ export const BattersTable = ({
             </span>
             {row.isOut ? (
               <span className="ml-2 text-xs text-neutral-40">
-                ({row.outKind ?? "Out"})
+                ({formatOutKind(row.outKind)})
               </span>
             ) : null}
           </>

@@ -6,7 +6,8 @@ export const useGenerateFixturesMutation = (tournamentId: string) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: () => generate(tournamentId),
+    mutationFn: (payload?: { regenerate?: boolean }) =>
+      generate(tournamentId, payload),
     onSuccess: async () => {
       await Promise.all([
         queryClient.invalidateQueries({

@@ -175,37 +175,39 @@ export const TournamentDefaultsSettingsSection = () => {
             disabled={!section.isAdmin}
           />
         </FormGroup>
-        <FormGroup label="Points - Win" error={formState.errors.pointsWin?.message}>
-          <InputField
-            type="number"
-            {...register("pointsWin", { valueAsNumber: true })}
-            disabled={!section.isAdmin}
-          />
-        </FormGroup>
-        <FormGroup label="Points - Tie" error={formState.errors.pointsTie?.message}>
-          <InputField
-            type="number"
-            {...register("pointsTie", { valueAsNumber: true })}
-            disabled={!section.isAdmin}
-          />
-        </FormGroup>
-        <FormGroup
-          label="Points - No result"
-          error={formState.errors.pointsNoResult?.message}
-        >
-          <InputField
-            type="number"
-            {...register("pointsNoResult", { valueAsNumber: true })}
-            disabled={!section.isAdmin}
-          />
-        </FormGroup>
-        <FormGroup label="Points - Loss" error={formState.errors.pointsLoss?.message}>
-          <InputField
-            type="number"
-            {...register("pointsLoss", { valueAsNumber: true })}
-            disabled={!section.isAdmin}
-          />
-        </FormGroup>
+        <div className="grid grid-cols-1 gap-4 md:col-span-3 lg:grid-cols-4">
+          <FormGroup label="Points - Win" error={formState.errors.pointsWin?.message}>
+            <InputField
+              type="number"
+              {...register("pointsWin", { valueAsNumber: true })}
+              disabled={!section.isAdmin}
+            />
+          </FormGroup>
+          <FormGroup label="Points - Tie" error={formState.errors.pointsTie?.message}>
+            <InputField
+              type="number"
+              {...register("pointsTie", { valueAsNumber: true })}
+              disabled={!section.isAdmin}
+            />
+          </FormGroup>
+          <FormGroup
+            label="Points - No result"
+            error={formState.errors.pointsNoResult?.message}
+          >
+            <InputField
+              type="number"
+              {...register("pointsNoResult", { valueAsNumber: true })}
+              disabled={!section.isAdmin}
+            />
+          </FormGroup>
+          <FormGroup label="Points - Loss" error={formState.errors.pointsLoss?.message}>
+            <InputField
+              type="number"
+              {...register("pointsLoss", { valueAsNumber: true })}
+              disabled={!section.isAdmin}
+            />
+          </FormGroup>
+        </div>
       </div>
     </SettingsSectionCard>
   );

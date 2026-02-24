@@ -11,13 +11,28 @@ import { useMatchScoreQuery } from "@/features/scoring/hooks/useMatchScoreQuery"
 import { useMatchQuery } from "@/features/matches/hooks/useMatchQuery";
 import { useStartMatchMutation } from "@/features/matches/hooks/useStartMatchMutation";
 import { useUpdateMatchConfigMutation } from "@/features/matches/hooks/useUpdateMatchConfigMutation";
-import type { StartMatchRequest } from "@/features/matches/types/matches.types";
+import { useSetMatchTossMutation } from "@/features/matches/hooks/useSetMatchTossMutation";
+import { useResolveMatchTieMutation } from "@/features/matches/hooks/useResolveMatchTieMutation";
+import { useStartSuperOverMutation } from "@/features/matches/hooks/useStartSuperOverMutation";
+import type {
+  SetMatchTossRequest,
+  StartMatchRequest,
+  StartSuperOverRequest,
+} from "@/features/matches/types/matches.types";
 import { getStartMatchErrorMessage } from "@/features/matches/utils/matchErrors";
 
 type UseMatchCenterPageParams = {
   matchId: string;
   tournamentIdParam?: string;
 };
+
+type StartSuperOverFieldKey =
+  | "teamA.strikerId"
+  | "teamA.nonStrikerId"
+  | "teamA.bowlerId"
+  | "teamB.strikerId"
+  | "teamB.nonStrikerId"
+  | "teamB.bowlerId";
 
 export type PlayerOption = {
   id: string;
@@ -59,6 +74,12 @@ export const useMatchCenterPage = ({
 
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [configError, setConfigError] = useState<string | null>(null);
+  const [tossError, setTossError] = useState<string | null>(null);
+  const [resolveTieError, setResolveTieError] = useState<string | null>(null);
+  const [startSuperOverError, setStartSuperOverError] = useState<string | null>(null);
+  const [startSuperOverFieldErrors, setStartSuperOverFieldErrors] = useState<
+    Partial<Record<StartSuperOverFieldKey, string>>
+  >({});
   const [configLocked, setConfigLocked] = useState(false);
   const [oversPerInningsDraft, setOversPerInningsDraft] = useState<
     string | null
@@ -78,6 +99,9 @@ export const useMatchCenterPage = ({
   const tournamentId = tournamentIdParam ?? match?.tournamentId ?? "";
 
   const updateConfigMutation = useUpdateMatchConfigMutation(matchId, tournamentId);
+  const setTossMutation = useSetMatchTossMutation(matchId, tournamentId);
+  const resolveTieMutation = useResolveMatchTieMutation(matchId, tournamentId);
+  const startSuperOverMutation = useStartSuperOverMutation(matchId, tournamentId);
   const teamAPlayersQuery = usePlayersByTeamQuery(teamAId);
   const teamBPlayersQuery = usePlayersByTeamQuery(teamBId);
 
@@ -110,6 +134,7 @@ export const useMatchCenterPage = ({
     configLocked ||
     updateConfigMutation.isPending ||
     startMutation.isPending;
+  const isTossEditable = canStart && isScheduled && !startMutation.isPending;
 
   const isLoading =
     matchQuery.isLoading ||
@@ -183,6 +208,191 @@ export const useMatchCenterPage = ({
     }
   };
 
+  const handleSaveToss = async (payload: SetMatchTossRequest): Promise<boolean> => {
+    setTossError(null);
+    try {
+      await setTossMutation.mutateAsync(payload);
+      await matchQuery.refetch();
+      toast.success("Toss saved.");
+      return true;
+    } catch (error) {
+      const normalized = normalizeApiError(error);
+      if (normalized.code === "match.invalid_state") {
+        setTossError("Toss can be changed only before match starts.");
+        return false;
+      }
+      if (normalized.code === "match.team_invalid" || normalized.code === "match.invalid_teams") {
+        setTossError("Selected toss winner is not part of this match.");
+        return false;
+      }
+      if (normalized.code === "auth.forbidden" || normalized.status === 403) {
+        setTossError(getForbiddenMessage(error));
+        return false;
+      }
+      if (normalized.code === "validation.failed") {
+        setTossError("Please choose a valid toss winner and decision.");
+        return false;
+      }
+      setTossError(normalized.message || "Unable to save toss.");
+      return false;
+    }
+  };
+
+  const handleResolveTie = async (winnerTeamId: string): Promise<boolean> => {
+    setResolveTieError(null);
+    try {
+      const result = await resolveTieMutation.mutateAsync({ winnerTeamId });
+      toast.success("Tie resolved.");
+      if (result.progression?.created > 0) {
+        toast.success(
+          `Progression updated: ${result.progression.created} match(es) created for ${result.progression.stage ?? "next stage"}.`,
+        );
+      }
+      await matchQuery.refetch();
+      return true;
+    } catch (error) {
+      const normalized = normalizeApiError(error);
+      if (normalized.code === "match.tie_break_not_applicable") {
+        setResolveTieError("Tie-break allowed only for knockout matches.");
+        return false;
+      }
+      if (normalized.code === "match.tie_break_not_allowed") {
+        setResolveTieError("This match is not in tied state.");
+        return false;
+      }
+      if (normalized.code === "match.super_over_pending") {
+        setResolveTieError("Tie-break is available after Super Over completes.");
+        return false;
+      }
+      if (normalized.code === "match.invalid_state") {
+        setResolveTieError("Match must be completed first.");
+        return false;
+      }
+      if (normalized.code === "match.team_invalid") {
+        setResolveTieError("Selected winner is invalid for this match.");
+        return false;
+      }
+      if (normalized.code === "auth.forbidden" || normalized.status === 403) {
+        setResolveTieError(getForbiddenMessage(error));
+        return false;
+      }
+      setResolveTieError(normalized.message || "Unable to resolve tie.");
+      return false;
+    }
+  };
+
+  const handleStartSuperOver = async (
+    payload: StartSuperOverRequest,
+  ): Promise<boolean> => {
+    setStartSuperOverError(null);
+    setStartSuperOverFieldErrors({});
+    try {
+      await startSuperOverMutation.mutateAsync(payload);
+      toast.success("Super Over started.");
+      await Promise.all([matchQuery.refetch(), scoreQuery.refetch()]);
+      if (tournamentId) {
+        navigate({
+          to: "/tournaments/$tournamentId/matches/$matchId/score",
+          params: { tournamentId, matchId },
+        });
+      }
+      return true;
+    } catch (error) {
+      const normalized = normalizeApiError(error);
+      if (normalized.code === "match.super_over_not_applicable") {
+        setStartSuperOverError("Super Over is available only for tied knockout matches.");
+        return false;
+      }
+      if (normalized.code === "match.super_over_already_started") {
+        setStartSuperOverError("Super Over already started. Redirecting to scoring...");
+        if (tournamentId) {
+          navigate({
+            to: "/tournaments/$tournamentId/matches/$matchId/score",
+            params: { tournamentId, matchId },
+          });
+        }
+        return false;
+      }
+      if (normalized.code === "match.super_over_pending") {
+        setStartSuperOverError("Super Over is pending or already live.");
+        return false;
+      }
+      if (normalized.code === "match.super_over_invalid_state") {
+        setStartSuperOverError("Invalid super over setup. Refresh and try again.");
+        await matchQuery.refetch();
+        return false;
+      }
+      if (normalized.code === "match.super_over_player_invalid") {
+        const details = normalized.details as
+          | { issues?: Array<{ path?: string | string[]; message?: string }> }
+          | undefined;
+        const nextFieldErrors: Partial<Record<StartSuperOverFieldKey, string>> = {};
+        for (const issue of details?.issues ?? []) {
+          const pathValue = issue.path;
+          const normalizedPath = Array.isArray(pathValue)
+            ? pathValue.join(".")
+            : pathValue;
+          if (
+            normalizedPath === "teamA.strikerId" ||
+            normalizedPath === "teamA.nonStrikerId" ||
+            normalizedPath === "teamA.bowlerId" ||
+            normalizedPath === "teamB.strikerId" ||
+            normalizedPath === "teamB.nonStrikerId" ||
+            normalizedPath === "teamB.bowlerId"
+          ) {
+            const fallbackMessage =
+              normalizedPath === "teamA.bowlerId" || normalizedPath === "teamB.bowlerId"
+                ? "Selected bowler must belong to opposition Playing XI."
+                : "Player not in Playing XI for this team.";
+            nextFieldErrors[normalizedPath] = issue.message || fallbackMessage;
+          }
+        }
+        if (Object.keys(nextFieldErrors).length > 0) {
+          setStartSuperOverFieldErrors(nextFieldErrors);
+        } else {
+          setStartSuperOverError(
+            "One or more selected players are invalid for Super Over. Re-select from Playing XI.",
+          );
+        }
+        return false;
+      }
+      if (normalized.code === "match.bowler_invalid") {
+        setStartSuperOverError(
+          "Selected bowler must belong to opposition Playing XI for that batting side.",
+        );
+        return false;
+      }
+      if (normalized.code === "validation.failed") {
+        const details = normalized.details as
+          | { issues?: Array<{ message?: string }> }
+          | undefined;
+        const firstIssue = details?.issues?.[0]?.message;
+        if (firstIssue) {
+          setStartSuperOverError(firstIssue);
+          return false;
+        }
+      }
+      if (normalized.code === "match.invalid_state") {
+        setStartSuperOverError("Super Over can be started only after a completed tied match.");
+        return false;
+      }
+      if (normalized.code === "auth.forbidden" || normalized.status === 403) {
+        setStartSuperOverError(getForbiddenMessage(error));
+        return false;
+      }
+      setStartSuperOverError(normalized.message || "Unable to start Super Over.");
+      return false;
+    }
+  };
+
+  const refreshRosterData = async () => {
+    await Promise.all([
+      rosterQuery.refetch(),
+      teamAPlayersQuery.refetch(),
+      teamBPlayersQuery.refetch(),
+    ]);
+  };
+
   return {
     match,
     tournamentId,
@@ -197,12 +407,27 @@ export const useMatchCenterPage = ({
     teamBPlaying,
     submitError,
     configError,
+    tossError,
+    resolveTieError,
+    startSuperOverError,
+    startSuperOverFieldErrors,
+    isTossEditable,
     isConfigInputDisabled,
     oversPerInningsInput,
     ballsPerOverInput,
     setOversPerInningsInput,
     setBallsPerOverInput,
+    handleSaveToss,
+    handleResolveTie,
+    handleStartSuperOver,
+    refreshRosterData,
     handleStart,
-    isStartSubmitting: startMutation.isPending || updateConfigMutation.isPending,
+    isStartSubmitting:
+      startMutation.isPending || updateConfigMutation.isPending || setTossMutation.isPending,
+    isTossSubmitting: setTossMutation.isPending,
+    isResolveTieSubmitting: resolveTieMutation.isPending,
+    isStartSuperOverSubmitting: startSuperOverMutation.isPending,
+    isRefreshingRoster:
+      rosterQuery.isFetching || teamAPlayersQuery.isFetching || teamBPlayersQuery.isFetching,
   };
 };

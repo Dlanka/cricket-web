@@ -17,17 +17,24 @@ export const ScoreboardHeader = ({ score, onBack }: Props) => {
     score.settings.ballsPerOver,
   );
 
-  const isSecondInnings = score.inningsNumber === 2;
-  const chase = score.chase ?? null;
-  const targetRuns = chase?.targetRuns ?? chase?.target;
-  const runsRemaining = chase?.runsRemaining ?? chase?.runsNeeded;
-  const ballsRemaining = chase?.ballsRemaining;
+  const isSecondInnings = score.isChase ?? score.inningsNumber === 2;
+  const activeChase = score.superOverChase ?? score.chase ?? null;
+  const targetRuns =
+    score.superOverChase?.targetRuns ??
+    score.chase?.targetRuns ??
+    score.chase?.target;
+  const runsRemaining =
+    score.superOverChase?.runsRemaining ??
+    score.chase?.runsRemaining ??
+    score.chase?.runsNeeded;
+  const ballsRemaining = activeChase?.ballsRemaining;
   const computedRrr =
     isSecondInnings && runsRemaining != null && ballsRemaining != null
       ? calculateRRR(runsRemaining, ballsRemaining, score.settings.ballsPerOver)
       : null;
   const rrrValue = isSecondInnings
-    ? (chase?.requiredRunRate ?? (computedRrr != null ? computedRrr.toFixed(2) : "-"))
+    ? (activeChase?.requiredRunRate ??
+      (computedRrr != null ? computedRrr.toFixed(2) : "-"))
     : null;
 
   const winnerName =
@@ -74,6 +81,11 @@ export const ScoreboardHeader = ({ score, onBack }: Props) => {
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-40">
               Live score
             </p>
+            {score.phase === "SUPER_OVER" ? (
+              <span className="inline-flex rounded-full border border-warning-80 bg-warning-95 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-warning-30">
+                Super Over
+              </span>
+            ) : null}
           </div>
           <h2 className="mt-1 text-base font-semibold text-primary-10">
             {score.battingTeam.name} <span className="opacity-30">vs</span>{" "}
@@ -87,7 +99,10 @@ export const ScoreboardHeader = ({ score, onBack }: Props) => {
               ({score.score.overs})
             </span>
           </p>
-          {isSecondInnings && chase && runsRemaining != null && ballsRemaining != null ? (
+          {isSecondInnings &&
+          activeChase &&
+          runsRemaining != null &&
+          ballsRemaining != null ? (
             <p className="mt-3 text-base font-semibold text-primary-30">
               {score.battingTeam.name} need {runsRemaining} off {ballsRemaining}
             </p>
@@ -98,7 +113,7 @@ export const ScoreboardHeader = ({ score, onBack }: Props) => {
           ) : null}
         </div>
         <div className="text-right">
-          {isSecondInnings && chase && targetRuns != null ? (
+          {isSecondInnings && activeChase && targetRuns != null ? (
             <>
               <p className="mb-3 inline-flex items-center text-lg font-bold text-primary-20">
                 Target: {targetRuns}

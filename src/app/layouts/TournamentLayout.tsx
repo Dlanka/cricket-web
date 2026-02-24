@@ -14,7 +14,8 @@ type TabLinkProps = {
     | "/tournaments/$tournamentId/teams"
     | "/tournaments/$tournamentId/fixtures"
     | "/tournaments/$tournamentId/standings"
-    | "/tournaments/$tournamentId/stats";
+    | "/tournaments/$tournamentId/stats"
+    | "/tournaments/$tournamentId/awards";
   label: string;
   tournamentId: string;
   exact?: boolean;
@@ -101,6 +102,13 @@ export const TournamentLayout = () => {
                 label="Stats"
                 tournamentId={tournamentId}
               />
+              {tournament?.status === "COMPLETED" ? (
+                <TabLink
+                  to="/tournaments/$tournamentId/awards"
+                  label="Awards"
+                  tournamentId={tournamentId}
+                />
+              ) : null}
             </div>
           </div>
           {tournament?.status ? (

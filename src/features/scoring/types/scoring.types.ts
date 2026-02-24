@@ -22,6 +22,14 @@ export type ChaseInfo = {
   firstInningsRuns?: number;
 };
 
+export type SuperOverChaseInfo = {
+  targetRuns: number;
+  firstInningsRuns: number;
+  runsRemaining: number;
+  ballsRemaining: number;
+  requiredRunRate: number | null;
+};
+
 export type MatchResult = {
   type: "WIN" | "TIE" | "NO_RESULT" | null;
   winnerTeamId: string | null;
@@ -34,6 +42,15 @@ export type MatchScoreResponse = {
   matchId: string;
   inningsId: string;
   inningsNumber: number;
+  phase?: "REGULAR" | "SUPER_OVER";
+  hasSuperOver?: boolean;
+  superOverStatus?: "PENDING" | "LIVE" | "COMPLETED" | null;
+  superOver?: {
+    teamARuns: number;
+    teamBRuns: number;
+    winnerTeamId: string | null;
+    isTie: boolean;
+  } | null;
   isChase?: boolean;
   isMatchCompleted?: boolean;
   inningsCompleted?: boolean;
@@ -51,6 +68,7 @@ export type MatchScoreResponse = {
     legByes?: number;
   };
   chase?: ChaseInfo | null;
+  superOverChase?: SuperOverChaseInfo | null;
   result?: MatchResult | null;
   targetRuns?: number | null;
   firstInningsRuns?: number | null;

@@ -275,6 +275,7 @@ export const MatchScoringPage = ({
                     currentBalls={score.score.balls}
                     inningsCompleted={score.inningsCompleted}
                     isMatchCompleted={score.isMatchCompleted}
+                    phase={score.phase}
                     embedded
                     showChangeBowlerButton={showChangeBowlerButton}
                     onBowlerChangedAtBoundary={setResolvedOverBoundaryBalls}

@@ -31,9 +31,77 @@ export const ScoringActionBar = ({
   onStartSecondInnings,
   onCompleted,
 }: Props) => {
+  const renderUndoButton = () => (
+    <Button
+      type="button"
+      appearance="outline"
+      color="neutral"
+      size="md"
+      disabled={undoDisabled}
+      onClick={onUndo}
+    >
+      Undo
+    </Button>
+  );
+
+  const renderRightActions = () => {
+    if (showStartSecondInningsButton) {
+      return (
+        <Button
+          type="button"
+          size="md"
+          disabled={startSecondInningsDisabled}
+          onClick={onStartSecondInnings}
+        >
+          Start second innings
+        </Button>
+      );
+    }
+
+    if (showChangeBowlerButton) {
+      return (
+        <Button
+          type="button"
+          size="md"
+          disabled={changeBowlerDisabled}
+          onClick={onChangeBowler}
+        >
+          Change bowler
+        </Button>
+      );
+    }
+
+    return (
+      <>
+        <Button
+          type="button"
+          appearance="outline"
+          color="neutral"
+          size="md"
+          disabled={disabled}
+          onClick={onSwap}
+        >
+          Swap
+        </Button>
+        <Button
+          type="button"
+          appearance="outline"
+          color="secondary"
+          size="md"
+          disabled={disabled}
+          onClick={onRetire}
+        >
+          Retire
+        </Button>
+      </>
+    );
+  };
+
   if (showCompletedButton) {
     return (
-      <div className="pt-4">
+      <div className="pt-4 flex justify-end gap-4">
+        {renderUndoButton()}
+
         <Button
           type="button"
           appearance="filled"
@@ -50,60 +118,10 @@ export const ScoringActionBar = ({
 
   return (
     <div className="flex flex-wrap justify-between gap-2 pt-4">
-      <Button
-        type="button"
-        appearance="outline"
-        color="neutral"
-        size="md"
-        disabled={undoDisabled}
-        onClick={onUndo}
-      >
-        Undo
-      </Button>
+      {renderUndoButton()}
 
       <div className="flex items-center gap-2">
-        {showStartSecondInningsButton ? (
-          <Button
-            type="button"
-            size="md"
-            disabled={startSecondInningsDisabled}
-            onClick={onStartSecondInnings}
-          >
-            Start second innings
-          </Button>
-        ) : showChangeBowlerButton ? (
-          <Button
-            type="button"
-            size="md"
-            disabled={changeBowlerDisabled}
-            onClick={onChangeBowler}
-          >
-            Change bowler
-          </Button>
-        ) : (
-          <>
-            <Button
-              type="button"
-              appearance="outline"
-              color="neutral"
-              size="md"
-              disabled={disabled}
-              onClick={onSwap}
-            >
-              Swap
-            </Button>
-            <Button
-              type="button"
-              appearance="outline"
-              color="secondary"
-              size="md"
-              disabled={disabled}
-              onClick={onRetire}
-            >
-              Retire
-            </Button>
-          </>
-        )}
+        {renderRightActions()}
       </div>
     </div>
   );

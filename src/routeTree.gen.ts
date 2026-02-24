@@ -35,6 +35,7 @@ import { Route as MatchesMatchIdIndexRouteImport } from './routes/matches/$match
 import { Route as TournamentsTournamentIdStatsRouteImport } from './routes/tournaments/$tournamentId/stats'
 import { Route as TournamentsTournamentIdStandingsRouteImport } from './routes/tournaments/$tournamentId/standings'
 import { Route as TournamentsTournamentIdFixturesRouteImport } from './routes/tournaments/$tournamentId/fixtures'
+import { Route as TournamentsTournamentIdAwardsRouteImport } from './routes/tournaments/$tournamentId/awards'
 import { Route as TeamsTeamIdPlayersRouteImport } from './routes/teams/$teamId/players'
 import { Route as MatchesMatchIdStartRouteImport } from './routes/matches/$matchId/start'
 import { Route as MatchesMatchIdScoreRouteImport } from './routes/matches/$matchId/score'
@@ -183,6 +184,12 @@ const TournamentsTournamentIdFixturesRoute =
     path: '/fixtures',
     getParentRoute: () => TournamentsTournamentIdRouteRoute,
   } as any)
+const TournamentsTournamentIdAwardsRoute =
+  TournamentsTournamentIdAwardsRouteImport.update({
+    id: '/awards',
+    path: '/awards',
+    getParentRoute: () => TournamentsTournamentIdRouteRoute,
+  } as any)
 const TeamsTeamIdPlayersRoute = TeamsTeamIdPlayersRouteImport.update({
   id: '/teams/$teamId/players',
   path: '/teams/$teamId/players',
@@ -279,6 +286,7 @@ export interface FileRoutesByFullPath {
   '/matches/$matchId/score': typeof MatchesMatchIdScoreRoute
   '/matches/$matchId/start': typeof MatchesMatchIdStartRoute
   '/teams/$teamId/players': typeof TeamsTeamIdPlayersRoute
+  '/tournaments/$tournamentId/awards': typeof TournamentsTournamentIdAwardsRoute
   '/tournaments/$tournamentId/fixtures': typeof TournamentsTournamentIdFixturesRoute
   '/tournaments/$tournamentId/standings': typeof TournamentsTournamentIdStandingsRoute
   '/tournaments/$tournamentId/stats': typeof TournamentsTournamentIdStatsRoute
@@ -315,6 +323,7 @@ export interface FileRoutesByTo {
   '/matches/$matchId/score': typeof MatchesMatchIdScoreRoute
   '/matches/$matchId/start': typeof MatchesMatchIdStartRoute
   '/teams/$teamId/players': typeof TeamsTeamIdPlayersRoute
+  '/tournaments/$tournamentId/awards': typeof TournamentsTournamentIdAwardsRoute
   '/tournaments/$tournamentId/fixtures': typeof TournamentsTournamentIdFixturesRoute
   '/tournaments/$tournamentId/standings': typeof TournamentsTournamentIdStandingsRoute
   '/tournaments/$tournamentId/stats': typeof TournamentsTournamentIdStatsRoute
@@ -356,6 +365,7 @@ export interface FileRoutesById {
   '/matches/$matchId/score': typeof MatchesMatchIdScoreRoute
   '/matches/$matchId/start': typeof MatchesMatchIdStartRoute
   '/teams/$teamId/players': typeof TeamsTeamIdPlayersRoute
+  '/tournaments/$tournamentId/awards': typeof TournamentsTournamentIdAwardsRoute
   '/tournaments/$tournamentId/fixtures': typeof TournamentsTournamentIdFixturesRoute
   '/tournaments/$tournamentId/standings': typeof TournamentsTournamentIdStandingsRoute
   '/tournaments/$tournamentId/stats': typeof TournamentsTournamentIdStatsRoute
@@ -398,6 +408,7 @@ export interface FileRouteTypes {
     | '/matches/$matchId/score'
     | '/matches/$matchId/start'
     | '/teams/$teamId/players'
+    | '/tournaments/$tournamentId/awards'
     | '/tournaments/$tournamentId/fixtures'
     | '/tournaments/$tournamentId/standings'
     | '/tournaments/$tournamentId/stats'
@@ -434,6 +445,7 @@ export interface FileRouteTypes {
     | '/matches/$matchId/score'
     | '/matches/$matchId/start'
     | '/teams/$teamId/players'
+    | '/tournaments/$tournamentId/awards'
     | '/tournaments/$tournamentId/fixtures'
     | '/tournaments/$tournamentId/standings'
     | '/tournaments/$tournamentId/stats'
@@ -474,6 +486,7 @@ export interface FileRouteTypes {
     | '/matches/$matchId/score'
     | '/matches/$matchId/start'
     | '/teams/$teamId/players'
+    | '/tournaments/$tournamentId/awards'
     | '/tournaments/$tournamentId/fixtures'
     | '/tournaments/$tournamentId/standings'
     | '/tournaments/$tournamentId/stats'
@@ -691,6 +704,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TournamentsTournamentIdFixturesRouteImport
       parentRoute: typeof TournamentsTournamentIdRouteRoute
     }
+    '/tournaments/$tournamentId/awards': {
+      id: '/tournaments/$tournamentId/awards'
+      path: '/awards'
+      fullPath: '/tournaments/$tournamentId/awards'
+      preLoaderRoute: typeof TournamentsTournamentIdAwardsRouteImport
+      parentRoute: typeof TournamentsTournamentIdRouteRoute
+    }
     '/teams/$teamId/players': {
       id: '/teams/$teamId/players'
       path: '/teams/$teamId/players'
@@ -837,6 +857,7 @@ const TournamentsTournamentIdTeamsRouteRouteWithChildren =
 
 interface TournamentsTournamentIdRouteRouteChildren {
   TournamentsTournamentIdTeamsRouteRoute: typeof TournamentsTournamentIdTeamsRouteRouteWithChildren
+  TournamentsTournamentIdAwardsRoute: typeof TournamentsTournamentIdAwardsRoute
   TournamentsTournamentIdFixturesRoute: typeof TournamentsTournamentIdFixturesRoute
   TournamentsTournamentIdStandingsRoute: typeof TournamentsTournamentIdStandingsRoute
   TournamentsTournamentIdStatsRoute: typeof TournamentsTournamentIdStatsRoute
@@ -852,6 +873,7 @@ const TournamentsTournamentIdRouteRouteChildren: TournamentsTournamentIdRouteRou
   {
     TournamentsTournamentIdTeamsRouteRoute:
       TournamentsTournamentIdTeamsRouteRouteWithChildren,
+    TournamentsTournamentIdAwardsRoute: TournamentsTournamentIdAwardsRoute,
     TournamentsTournamentIdFixturesRoute: TournamentsTournamentIdFixturesRoute,
     TournamentsTournamentIdStandingsRoute:
       TournamentsTournamentIdStandingsRoute,

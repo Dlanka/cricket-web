@@ -14,6 +14,7 @@ import { normalizeApiError } from "@/shared/utils/apiErrors";
 type Props = {
   isOpen: boolean;
   isLocked: boolean;
+  isTypeLocked?: boolean;
   isSubmitting: boolean;
   teamsCount?: number;
   initialValues: {
@@ -65,6 +66,7 @@ type FormOutput = z.output<typeof schema>;
 export const GenerateFixturesConfigModal = ({
   isOpen,
   isLocked,
+  isTypeLocked = false,
   isSubmitting,
   teamsCount,
   initialValues,
@@ -245,6 +247,14 @@ export const GenerateFixturesConfigModal = ({
         });
         return;
       }
+      if (normalized.code === "tournament.type_locked") {
+        form.setError("root.serverError", {
+          type: "server",
+          message:
+            "Tournament type can't be changed after a match has started.",
+        });
+        return;
+      }
       if (normalized.code === "match.already_exists") {
         form.setError("root.serverError", {
           type: "server",
@@ -314,10 +324,15 @@ export const GenerateFixturesConfigModal = ({
         >
           <SelectField
             options={tournamentTypeOptions}
-            disabled={isSubmitting || isLocked}
+            disabled={isSubmitting || isLocked || isTypeLocked}
             {...form.register("type")}
           />
         </FormGroup>
+        {isTypeLocked ? (
+          <p className="-mt-2 text-xs text-warning-30">
+            Tournament type can't be changed after a match has started.
+          </p>
+        ) : null}
 
         {hasQualificationField ? (
           <FormGroup

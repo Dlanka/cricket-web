@@ -1,6 +1,7 @@
 import { tv, type VariantProps } from "tailwind-variants";
-import type { ComponentPropsWithoutRef } from "react";
+import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
+import * as LucideIcons from "lucide-react";
 
 const buttonStyles = tv({
   base: "inline-flex cursor-pointer items-center justify-center gap-2  text-sm font-semibold transition duration-200 disabled:cursor-not-allowed disabled:opacity-70",
@@ -26,6 +27,10 @@ const buttonStyles = tv({
       md: "px-5 py-2.5",
       lg: "px-6 py-3",
       full: "w-full px-6 py-3",
+    },
+    iconOnly: {
+      true: "",
+      false: "",
     },
   },
   compoundVariants: [
@@ -117,18 +122,46 @@ const buttonStyles = tv({
       color: "error",
       className: "text-error-40 hover:text-error-30",
     },
+    {
+      iconOnly: true,
+      size: "sm",
+      className: "h-9 w-9 p-0",
+    },
+    {
+      iconOnly: true,
+      size: "md",
+      className: "h-10 w-10 p-0",
+    },
+    {
+      iconOnly: true,
+      size: "lg",
+      className: "h-12 w-12 p-0",
+    },
   ],
   defaultVariants: {
     appearance: "filled",
     color: "primary",
     size: "md",
     shape: "rounded",
+    iconOnly: false,
   },
 });
 
 type ButtonVariants = VariantProps<typeof buttonStyles>;
 
-type ButtonProps = ComponentPropsWithoutRef<"button"> & ButtonVariants;
+type IconName = keyof typeof LucideIcons;
+type IconComponent = (props: { className?: string }) => ReactNode;
+
+type ButtonIconProps = {
+  icon?: ReactNode;
+  iconName?: IconName;
+  iconPosition?: "start" | "end";
+  iconClassName?: string;
+};
+
+type ButtonProps = ComponentPropsWithoutRef<"button"> &
+  ButtonVariants &
+  ButtonIconProps;
 
 export const Button = ({
   color,
@@ -136,15 +169,42 @@ export const Button = ({
   size,
   shape,
   className,
+  children,
+  icon,
+  iconName,
+  iconPosition = "start",
+  iconClassName,
   ...props
-}: ButtonProps) => (
-  <button
-    className={buttonStyles({ color, appearance, size, shape, className })}
-    {...props}
-  />
-);
+}: ButtonProps) => {
+  const hasOnlyIcon = !children && Boolean(icon || iconName);
+  const NamedIcon = iconName
+    ? (LucideIcons as unknown as Record<string, IconComponent>)[iconName]
+    : null;
+  const resolvedIcon = icon ??
+    (NamedIcon ? <NamedIcon className={iconClassName ?? "h-4 w-4"} /> : null);
 
-type ButtonLinkProps = ComponentPropsWithoutRef<typeof Link> & ButtonVariants;
+  return (
+    <button
+      className={buttonStyles({
+        color,
+        appearance,
+        size,
+        shape,
+        iconOnly: hasOnlyIcon && size !== "full",
+        className,
+      })}
+      {...props}
+    >
+      {iconPosition === "start" ? resolvedIcon : null}
+      {children}
+      {iconPosition === "end" ? resolvedIcon : null}
+    </button>
+  );
+};
+
+type ButtonLinkProps = ComponentPropsWithoutRef<typeof Link> &
+  ButtonVariants &
+  ButtonIconProps;
 
 export const ButtonLink = ({
   color,
@@ -152,10 +212,42 @@ export const ButtonLink = ({
   size,
   shape,
   className,
+  children,
+  icon,
+  iconName,
+  iconPosition = "start",
+  iconClassName,
   ...props
-}: ButtonLinkProps) => (
-  <Link
-    className={buttonStyles({ color, appearance, size, shape, className })}
-    {...props}
-  />
-);
+}: ButtonLinkProps) => {
+  const hasOnlyIcon = !children && Boolean(icon || iconName);
+  const NamedIcon = iconName
+    ? (LucideIcons as unknown as Record<string, IconComponent>)[iconName]
+    : null;
+  const resolvedIcon = icon ??
+    (NamedIcon ? <NamedIcon className={iconClassName ?? "h-4 w-4"} /> : null);
+  const hasFunctionChildren = typeof children === "function";
+
+  return (
+    <Link
+      className={buttonStyles({
+        color,
+        appearance,
+        size,
+        shape,
+        iconOnly: hasOnlyIcon && size !== "full",
+        className,
+      })}
+      {...props}
+    >
+      {hasFunctionChildren ? (
+        children
+      ) : (
+        <>
+          {iconPosition === "start" ? resolvedIcon : null}
+          {children}
+          {iconPosition === "end" ? resolvedIcon : null}
+        </>
+      )}
+    </Link>
+  );
+};

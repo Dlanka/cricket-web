@@ -5,6 +5,7 @@ export type TeamBrief = {
 };
 
 export type MatchResult = {
+  type?: "WIN" | "TIE" | "NO_RESULT" | null;
   winnerTeamId?: string | null;
   winByRuns?: number | null;
   winByWkts?: number | null;
@@ -23,6 +24,9 @@ export type MatchItem = {
   scheduledAt?: string | null;
   createdAt?: string | null;
   status: "SCHEDULED" | "LIVE" | "COMPLETED";
+  phase?: "REGULAR" | "SUPER_OVER";
+  hasSuperOver?: boolean;
+  superOverStatus?: "PENDING" | "LIVE" | "COMPLETED" | null;
   result?: MatchResult | null;
 };
 
@@ -44,6 +48,7 @@ export type BracketFixture = {
   teamA: TeamBrief | null;
   teamB: TeamBrief | null;
   winnerTeamId: string | null;
+  resultType?: "WIN" | "TIE" | "NO_RESULT" | null;
   isBye: boolean;
 };
 

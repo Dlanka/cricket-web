@@ -1,21 +1,48 @@
+import { useState } from "react";
+import { toast } from "sonner";
 import { useTournamentsList } from "../../hooks/useTournamentsList";
 import { TournamentsList } from "./TournamentsList";
 import { TournamentsListPageSkeleton } from "./TournamentsListPage.skeleton";
 import { Button } from "@/components/ui/button/Button";
 import { useDisclosure } from "@/shared/hooks/useDisclosure";
 import { TournamentCreateModal } from "../../components/TournamentCreateModal";
+import { TournamentDeleteModal } from "../../components/TournamentDeleteModal";
 import { BackgroundDecor } from "@/shared/components/layout/BackgroundDecor";
 import { useAuthorization } from "@/features/authz/hooks/useAuthorization";
+import { useDeleteTournamentMutation } from "../../hooks/useDeleteTournamentMutation";
+import type { TournamentSummary } from "../../types/tournamentTypes";
+import { normalizeApiError } from "@/shared/utils/apiErrors";
 
 export const TournamentsListPage = () => {
   const { data, isLoading, isError, error } = useTournamentsList();
   const { isOpen, open, close } = useDisclosure();
+  const {
+    isOpen: isDeleteOpen,
+    open: openDelete,
+    close: closeDelete,
+  } = useDisclosure();
+  const [deletingTournament, setDeletingTournament] = useState<TournamentSummary | null>(null);
+  const deleteMutation = useDeleteTournamentMutation(deletingTournament?.id ?? "");
   const { can } = useAuthorization();
   const canManageTournament = can("tournament.manage");
 
   if (isLoading) {
     return <TournamentsListPageSkeleton />;
   }
+
+  const handleDelete = async () => {
+    if (!deletingTournament) return;
+
+    try {
+      await deleteMutation.mutateAsync();
+      toast.success("Tournament deleted.");
+      closeDelete();
+      setDeletingTournament(null);
+    } catch (err) {
+      const message = normalizeApiError(err).message || "Unable to delete tournament.";
+      toast.error(message);
+    }
+  };
 
   return (
     <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 mt-5">
@@ -66,9 +93,33 @@ export const TournamentsListPage = () => {
           No tournaments yet. Create one to get started.
         </div>
       ) : null}
-      {data && data.length > 0 ? <TournamentsList tournaments={data} /> : null}
+      {data && data.length > 0 ? (
+        <TournamentsList
+          tournaments={data}
+          canManage={canManageTournament}
+          onDelete={(tournament) => {
+            setDeletingTournament(tournament);
+            openDelete();
+          }}
+        />
+      ) : null}
       {canManageTournament ? (
         <TournamentCreateModal isOpen={isOpen} onClose={close} />
+      ) : null}
+      {deletingTournament ? (
+        <TournamentDeleteModal
+          tournamentName={deletingTournament.name}
+          isOpen={isDeleteOpen}
+          isPending={deleteMutation.isPending}
+          errorMessage={
+            deleteMutation.isError ? normalizeApiError(deleteMutation.error).message : null
+          }
+          onClose={() => {
+            closeDelete();
+            setDeletingTournament(null);
+          }}
+          onConfirm={() => void handleDelete()}
+        />
       ) : null}
     </div>
   );

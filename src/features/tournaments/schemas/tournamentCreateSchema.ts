@@ -1,11 +1,36 @@
 import { z } from "zod";
 import type { TournamentType, TournamentStatus } from "../types/tournamentTypes";
 
+const optionalLocation = z.preprocess(
+  (value) => {
+    if (typeof value !== "string") return value;
+    const trimmed = value.trim();
+    return trimmed === "" ? undefined : trimmed;
+  },
+  z
+    .string()
+    .min(2, "Location must be at least 2 characters.")
+    .max(120, "Location must be 120 characters or less.")
+    .optional(),
+);
+
+const optionalDate = z.preprocess(
+  (value) => {
+    if (typeof value !== "string") return value;
+    const trimmed = value.trim();
+    return trimmed === "" ? undefined : trimmed;
+  },
+  z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Enter a valid date.")
+    .optional(),
+);
+
 export const tournamentCreateSchema = z.object({
   name: z.string().min(2, "Enter a tournament name"),
-  location: z.string().optional(),
-  startDate: z.string().optional(),
-  endDate: z.string().optional(),
+  location: optionalLocation,
+  startDate: optionalDate,
+  endDate: optionalDate,
   type: z.enum(["LEAGUE", "KNOCKOUT", "LEAGUE_KNOCKOUT"]) as z.ZodType<
     TournamentType
   >,
@@ -13,14 +38,12 @@ export const tournamentCreateSchema = z.object({
     .coerce
     .number()
     .int()
-    .positive()
-    .refine((value) => !Number.isNaN(value), "Enter overs per innings"),
+    .min(1, "Overs per innings must be at least 1."),
   ballsPerOver: z
     .coerce
     .number()
     .int()
-    .positive()
-    .optional(),
+    .min(1, "Balls per over must be at least 1."),
   qualificationCount: z.preprocess(
     (value) =>
       value === "" || value == null || (typeof value === "number" && Number.isNaN(value))
@@ -31,6 +54,14 @@ export const tournamentCreateSchema = z.object({
   status: z.enum(["DRAFT", "ACTIVE", "COMPLETED"]).optional() as z.ZodType<
     TournamentStatus | undefined
   >,
+}).superRefine((values, ctx) => {
+  if (values.startDate && values.endDate && values.endDate < values.startDate) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["endDate"],
+      message: "End date must be on or after start date.",
+    });
+  }
 });
 
 export type TournamentCreateFormValues = z.input<typeof tournamentCreateSchema>;

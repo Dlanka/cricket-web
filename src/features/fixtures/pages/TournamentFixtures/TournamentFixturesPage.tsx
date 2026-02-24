@@ -32,6 +32,7 @@ export const TournamentFixturesPage = () => {
   const { permissions } = useAuthorization();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isConfigModalOpen, setIsConfigModalOpen] = useState(false);
+  const [blockedReason, setBlockedReason] = useState<string | null>(null);
   const tournamentQuery = useTournament(tournamentId);
   const matchesQuery = useTournamentMatchesQuery(tournamentId, {
     enabled: !useFixturesViewV1,
@@ -60,9 +61,14 @@ export const TournamentFixturesPage = () => {
   const isError = useFixturesViewV1 ? fixturesViewQuery.isError : matchesQuery.isError;
   const error = useFixturesViewV1 ? fixturesViewQuery.error : matchesQuery.error;
   const mappedMatches = mapMatchTeams(matches, teamsQuery.data ?? []);
-  const hasFixtures = mappedMatches.length > 0;
   const teamsCount = teamsQuery.data?.length ?? 0;
   const isSubmitting = updateConfigMutation.isPending || generateMutation.isPending;
+  const hasStartedMatch = mappedMatches.some(
+    (match) =>
+      match.status === "LIVE" ||
+      (match.status === "COMPLETED" && Boolean(match.teamBId)),
+  );
+  const isActionsLocked = hasStartedMatch || Boolean(blockedReason);
 
   if (!tournamentId) {
     return (
@@ -74,11 +80,24 @@ export const TournamentFixturesPage = () => {
     return <TournamentFixturesPageSkeleton />;
   }
 
+  const regenerateFixtures = async () => {
+    const response = await generateMutation.mutateAsync({ regenerate: true });
+    if (useFixturesViewV1) {
+      await fixturesViewQuery.refetch();
+    } else {
+      await Promise.all([matchesQuery.refetch(), bracketQuery.refetch()]);
+    }
+    await tournamentQuery.refetch();
+    toast.success(`Fixtures regenerated (${response.createdCount}).`);
+    setIsConfigModalOpen(false);
+  };
+
   const handleGenerateWithConfig = async (payload: TournamentConfigInput) => {
     setErrorMessage(null);
+    setBlockedReason(null);
     try {
       await updateConfigMutation.mutateAsync(payload);
-      const response = await generateMutation.mutateAsync();
+      const response = await generateMutation.mutateAsync(undefined);
       if (useFixturesViewV1) {
         await fixturesViewQuery.refetch();
       } else {
@@ -94,11 +113,48 @@ export const TournamentFixturesPage = () => {
         return;
       }
       if (
+        normalized.code === "match.already_exists" &&
+        Boolean(
+          normalized.details &&
+            typeof normalized.details === "object" &&
+            "canRegenerate" in normalized.details &&
+            (normalized.details as { canRegenerate?: boolean }).canRegenerate,
+        )
+      ) {
+        await regenerateFixtures();
+        return;
+      }
+      if (normalized.code === "match.regenerate_blocked") {
+        const message =
+          "Cannot regenerate fixtures after a match has started or score data exists.";
+        setBlockedReason(message);
+        setErrorMessage(message);
+        toast.error(message);
+        return;
+      }
+      if (normalized.code === "tournament.type_locked") {
+        const message = "Tournament type can't be changed after a match has started.";
+        setBlockedReason(message);
+        setErrorMessage(message);
+        toast.error(message);
+        return;
+      }
+      if (normalized.code === "tournament.config_locked") {
+        const message =
+          "Tournament format and over configuration are locked after scoring data exists.";
+        setBlockedReason(message);
+        setErrorMessage(message);
+        toast.error(message);
+        return;
+      }
+      if (
         ![
           "validation.failed",
           "tournament.invalid_rules",
           "tournament.config_locked",
+          "tournament.type_locked",
           "match.already_exists",
+          "match.regenerate_blocked",
         ].includes(normalized.code ?? "")
       ) {
         const message = normalized.message || "Unable to generate fixtures.";
@@ -113,9 +169,9 @@ export const TournamentFixturesPage = () => {
     <div className="mx-auto w-full max-w-5xl space-y-8 px-6">
       <FixturesHeader
         canGenerate={canGenerateFixtures(permissions)}
-        isGenerateDisabled={hasFixtures}
+        isGenerateDisabled={isActionsLocked}
         isGenerating={isSubmitting}
-        errorMessage={errorMessage}
+        errorMessage={errorMessage ?? blockedReason}
         onGenerate={() => setIsConfigModalOpen(true)}
       />
       {isError ? (
@@ -143,7 +199,8 @@ export const TournamentFixturesPage = () => {
       {isConfigModalOpen ? (
         <GenerateFixturesConfigModal
           isOpen
-          isLocked={hasFixtures}
+          isLocked={isActionsLocked}
+          isTypeLocked={false}
           isSubmitting={isSubmitting}
           teamsCount={teamsCount}
           initialValues={{

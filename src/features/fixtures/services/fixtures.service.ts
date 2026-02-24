@@ -40,6 +40,16 @@ type RawMatch = Partial<MatchItem> & {
   awayTeam?: RawTeam | null;
   homeTeamName?: string;
   awayTeamName?: string;
+  phase?: "REGULAR" | "SUPER_OVER";
+  hasSuperOver?: boolean;
+  superOverStatus?: "PENDING" | "LIVE" | "COMPLETED" | null;
+  result?: {
+    type?: "WIN" | "TIE" | "NO_RESULT" | null;
+    winnerTeamId?: string | null;
+    winByRuns?: number | null;
+    winByWkts?: number | null;
+    isNoResult?: boolean | null;
+  } | null;
 };
 
 const normalizeTeam = (team?: RawTeam | null, fallbackName?: string) =>
@@ -70,6 +80,10 @@ const normalizeMatch = (match: RawMatch): MatchItem => {
   };
   const teamB = normalizeTeam(match.teamB ?? match.awayTeam, match.awayTeamName);
 
+  const resultType =
+    match.result?.type ??
+    (match.result?.isNoResult ? "NO_RESULT" : null);
+
   return {
     id: match.id ?? match._id ?? "",
     tournamentId: match.tournamentId ?? "",
@@ -82,7 +96,16 @@ const normalizeMatch = (match: RawMatch): MatchItem => {
     scheduledAt: match.scheduledAt ?? null,
     createdAt: match.createdAt ?? null,
     status: (match.status as MatchItem["status"]) ?? "SCHEDULED",
-    result: match.result ?? null,
+    phase: match.phase ?? "REGULAR",
+    hasSuperOver: Boolean(match.hasSuperOver),
+    superOverStatus: match.superOverStatus ?? null,
+    result: match.result
+      ? {
+          ...match.result,
+          type: resultType,
+          isNoResult: match.result.isNoResult ?? resultType === "NO_RESULT",
+        }
+      : null,
   };
 };
 
@@ -106,10 +129,11 @@ export const listByTournament = async (
 
 export const generate = async (
   tournamentId: string,
+  payload?: { regenerate?: boolean },
 ): Promise<GenerateFixturesResponse> => {
   const response = await api.post<ApiWrapped<GenerateFixturesResponse>>(
     `/tournaments/${tournamentId}/generate-fixtures`,
-    {},
+    payload ?? {},
   );
   return response.data.data;
 };
@@ -138,6 +162,11 @@ type RawBracketFixture = {
   teamA?: RawTeam | null;
   teamB?: RawTeam | null;
   winnerTeamId?: string | null;
+  resultType?: "WIN" | "TIE" | "NO_RESULT" | null;
+  result?: {
+    type?: "WIN" | "TIE" | "NO_RESULT" | null;
+    isNoResult?: boolean | null;
+  } | null;
   isBye?: boolean;
 };
 
@@ -176,16 +205,23 @@ const toTeamBrief = (team?: RawTeam | null): TeamBrief | null => {
   };
 };
 
-const normalizeBracketFixture = (fixture: RawBracketFixture): BracketFixture => ({
-  slot: fixture.slot ?? 0,
-  isPlaceholder: Boolean(fixture.isPlaceholder),
-  matchId: fixture.matchId ?? null,
-  status: fixture.status ?? "TBD",
-  teamA: toTeamBrief(fixture.teamA),
-  teamB: toTeamBrief(fixture.teamB),
-  winnerTeamId: fixture.winnerTeamId ?? null,
-  isBye: Boolean(fixture.isBye),
-});
+const normalizeBracketFixture = (fixture: RawBracketFixture): BracketFixture => {
+  const resultType =
+    fixture.resultType ??
+    fixture.result?.type ??
+    (fixture.result?.isNoResult ? "NO_RESULT" : null);
+  return {
+    slot: fixture.slot ?? 0,
+    isPlaceholder: Boolean(fixture.isPlaceholder),
+    matchId: fixture.matchId ?? null,
+    status: fixture.status ?? "TBD",
+    teamA: toTeamBrief(fixture.teamA),
+    teamB: toTeamBrief(fixture.teamB),
+    winnerTeamId: fixture.winnerTeamId ?? null,
+    resultType,
+    isBye: Boolean(fixture.isBye),
+  };
+};
 
 const normalizeBracketRound = (round: RawBracketRound): BracketRound => ({
   stage: round.stage ?? "R1",

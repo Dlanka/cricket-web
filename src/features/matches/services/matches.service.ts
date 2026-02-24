@@ -7,8 +7,13 @@ import type {
   MatchesListResponse,
   MatchTeam,
   MatchSummary,
+  ResolveMatchTieResponse,
+  StartSuperOverRequest,
+  StartSuperOverResponse,
   StartMatchRequest,
   StartMatchResponse,
+  SetMatchTossRequest,
+  SetMatchTossResponse,
   UpdateMatchConfigRequest,
   UpdateMatchConfigResponse,
 } from "@/features/matches/types/matches.types";
@@ -90,8 +95,26 @@ type RawMatchDetail = {
   stage?: MatchDetail["stage"] | string;
   scheduledAt?: string | null;
   currentInningsId?: string | null;
+  phase?: "REGULAR" | "SUPER_OVER";
+  hasSuperOver?: boolean;
+  superOverStatus?: "PENDING" | "LIVE" | "COMPLETED" | null;
+  superOver?: {
+    teamARuns?: number;
+    teamBRuns?: number;
+    winnerTeamId?: string | null;
+    isTie?: boolean;
+  } | null;
   oversPerInnings?: number;
   ballsPerOver?: number;
+  toss?: {
+    wonByTeamId?: string;
+    decision?: "BAT" | "BOWL";
+  } | null;
+  result?: {
+    type?: "WIN" | "TIE" | "NO_RESULT" | null;
+    outcome?: "WIN" | "TIE" | "NO_RESULT" | null;
+    winnerTeamId?: string | null;
+  } | null;
 };
 
 const unwrapEnvelope = <T>(payload: ApiEnvelope<T> | T): T => {
@@ -238,6 +261,31 @@ const normalizeMatchDetail = (match: RawMatchDetail): MatchDetail => ({
   stage: (match.stage as MatchDetail["stage"]) ?? "LEAGUE",
   scheduledAt: match.scheduledAt ?? null,
   currentInningsId: match.currentInningsId ?? null,
+  toss:
+    match.toss?.wonByTeamId && match.toss?.decision
+      ? {
+          wonByTeamId: match.toss.wonByTeamId,
+          decision: match.toss.decision,
+        }
+      : null,
+  phase: match.phase ?? "REGULAR",
+  hasSuperOver: Boolean(match.hasSuperOver),
+  superOverStatus: match.superOverStatus ?? null,
+  superOver: match.superOver
+    ? {
+        teamARuns: match.superOver.teamARuns ?? 0,
+        teamBRuns: match.superOver.teamBRuns ?? 0,
+        winnerTeamId: match.superOver.winnerTeamId ?? null,
+        isTie: Boolean(match.superOver.isTie),
+      }
+    : null,
+  result:
+    match.result && typeof match.result === "object"
+      ? {
+          type: match.result.type ?? match.result.outcome ?? null,
+          winnerTeamId: match.result.winnerTeamId ?? null,
+        }
+      : null,
 });
 
 export const getMatch = async (matchId: string): Promise<MatchDetail> => {
@@ -265,6 +313,36 @@ export const updateMatchConfig = async (
   const response = await api.patch<
     ApiEnvelope<UpdateMatchConfigResponse> | UpdateMatchConfigResponse
   >(`/matches/${matchId}/config`, payload);
+  return unwrapEnvelope(response.data);
+};
+
+export const setMatchToss = async (
+  matchId: string,
+  payload: SetMatchTossRequest,
+): Promise<SetMatchTossResponse> => {
+  const response = await api.patch<
+    ApiEnvelope<SetMatchTossResponse> | SetMatchTossResponse
+  >(`/matches/${matchId}/toss`, payload);
+  return unwrapEnvelope(response.data);
+};
+
+export const resolveMatchTie = async (
+  matchId: string,
+  winnerTeamId: string,
+): Promise<ResolveMatchTieResponse> => {
+  const response = await api.patch<
+    ApiEnvelope<ResolveMatchTieResponse> | ResolveMatchTieResponse
+  >(`/matches/${matchId}/tie-breaker`, { winnerTeamId });
+  return unwrapEnvelope(response.data);
+};
+
+export const startSuperOver = async (
+  matchId: string,
+  payload: StartSuperOverRequest,
+): Promise<StartSuperOverResponse> => {
+  const response = await api.post<
+    ApiEnvelope<StartSuperOverResponse> | StartSuperOverResponse
+  >(`/matches/${matchId}/start-super-over`, payload);
   return unwrapEnvelope(response.data);
 };
 
