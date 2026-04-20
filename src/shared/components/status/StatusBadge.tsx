@@ -1,5 +1,8 @@
-import { STATUS_BADGE_LABELS, STATUS_BADGE_STYLES } from "../../constants/statusColors";
-import { classNames } from "../../utils/classNames";
+import { STATUS_BADGE_LABELS } from "../../constants/statusColors";
+import {
+  StatusPill,
+  type StatusPillVariant,
+} from "@/shared/components/badge/StatusPill";
 
 type StatusBadgeProps = {
   status: string;
@@ -7,14 +10,24 @@ type StatusBadgeProps = {
   className?: string;
 };
 
+const statusVariantMap: Record<string, StatusPillVariant> = {
+  SCHEDULED: "warning",
+  LIVE: "info",
+  COMPLETED: "success",
+  TBD: "neutral",
+  ACTIVE: "info",
+  DISABLED: "warning",
+  BLOCKED: "danger",
+  DRAFT: "warning",
+  PENDING: "neutral",
+};
+
 export const StatusBadge = ({ status, label, className }: StatusBadgeProps) => (
-  <span
-    className={classNames(
-      "inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold",
-      STATUS_BADGE_STYLES[status] ?? STATUS_BADGE_STYLES.SCHEDULED,
-      className,
-    )}
+  <StatusPill
+    variant={statusVariantMap[status] ?? "neutral"}
+    size="xs"
+    className={className}
   >
     {label ?? STATUS_BADGE_LABELS[status] ?? status}
-  </span>
+  </StatusPill>
 );

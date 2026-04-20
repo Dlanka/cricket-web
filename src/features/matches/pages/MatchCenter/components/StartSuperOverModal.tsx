@@ -228,10 +228,10 @@ export const StartSuperOverModal = ({
         <FormGroup
           label="Batting first (auto)"
         >
-          <div className="rounded-xl border border-neutral-90 bg-neutral-99 px-3 py-2 text-sm font-semibold text-primary-10">
+          <div className="rounded-xl border border-outline bg-surface-container px-3 py-2 text-sm font-semibold text-on-surface">
             {teamABattingFirst ? teamA.name : teamB.name}
           </div>
-          <p className="mt-1 text-xs text-neutral-40">
+          <p className="mt-1 text-xs text-on-surface-muted">
             Team that batted second in regular match bats first in Super Over.
           </p>
         </FormGroup>
@@ -267,13 +267,13 @@ export const StartSuperOverModal = ({
         </div>
 
         {!canDetermineBattingOrder ? (
-          <div className="rounded-xl border border-warning-80 bg-warning-95 px-3 py-2 text-xs text-warning-30">
+          <div className="rounded-xl border border-warning/35 bg-warning-container px-3 py-2 text-xs text-on-warning-container">
             Unable to determine regular batting order. Refresh match details and try again.
           </div>
         ) : null}
 
         {errorMessage ? (
-          <div className="rounded-xl border border-error-80 bg-error-95 px-3 py-2 text-xs text-error-40">
+          <div className="rounded-xl border border-error/40 bg-error-container px-3 py-2 text-xs text-on-error-container">
             {errorMessage}
           </div>
         ) : null}
@@ -295,3 +295,4 @@ export const StartSuperOverModal = ({
     </RightSideModal>
   );
 };
+

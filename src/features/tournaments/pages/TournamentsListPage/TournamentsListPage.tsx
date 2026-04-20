@@ -21,8 +21,11 @@ export const TournamentsListPage = () => {
     open: openDelete,
     close: closeDelete,
   } = useDisclosure();
-  const [deletingTournament, setDeletingTournament] = useState<TournamentSummary | null>(null);
-  const deleteMutation = useDeleteTournamentMutation(deletingTournament?.id ?? "");
+  const [deletingTournament, setDeletingTournament] =
+    useState<TournamentSummary | null>(null);
+  const deleteMutation = useDeleteTournamentMutation(
+    deletingTournament?.id ?? "",
+  );
   const { can } = useAuthorization();
   const canManageTournament = can("tournament.manage");
 
@@ -39,14 +42,15 @@ export const TournamentsListPage = () => {
       closeDelete();
       setDeletingTournament(null);
     } catch (err) {
-      const message = normalizeApiError(err).message || "Unable to delete tournament.";
+      const message =
+        normalizeApiError(err).message || "Unable to delete tournament.";
       toast.error(message);
     }
   };
 
   return (
-    <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 mt-5">
-      <section className="relative overflow-hidden rounded-3xl border border-info-80 bg-linear-to-r from-info-50 via-secondary-50 to-primary-99 p-8 shadow-[0_30px_80px_-60px_rgba(15,23,42,0.45)] backdrop-blur">
+    <div className="mx-auto max-w-7xl mt-5 w-full space-y-12">
+      <section className="relative overflow-hidden rounded-3xl border border-secondary/35 bg-linear-to-r from-secondary-container via-secondary-container to-primary-container p-8 shadow-surface-lg backdrop-blur">
         <BackgroundDecor
           imageType="Ball"
           className="absolute -right-10 -bottom-1 w-60 rotate-12 opacity-15"
@@ -57,10 +61,10 @@ export const TournamentsListPage = () => {
         />
         <div className="relative z-10 flex flex-wrap items-center justify-between gap-4">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary-20">
+            <p className="text-xs font-semibold uppercase tracking-widest text-on-primary-container">
               Tournaments
             </p>
-            <h1 className="mt-2 font-display text-3xl font-semibold text-primary-10">
+            <h1 className="mt-2 font-display text-3xl font-semibold text-on-surface">
               Manage your tenant tournaments.
             </h1>
           </div>
@@ -76,20 +80,20 @@ export const TournamentsListPage = () => {
             </Button>
           ) : null}
         </div>
-        <p className="relative z-10 mt-3 text-sm text-primary-20">
+        <p className="relative z-10 mt-3 text-sm text-on-primary-container">
           Create and monitor tournaments across your organization.
         </p>
       </section>
 
       {isError ? (
-        <div className="rounded-2xl border border-error-80 bg-error-95 p-6 text-sm text-error-40 shadow-[0_20px_60px_-50px_rgba(15,23,42,0.35)] backdrop-blur">
+        <div className="rounded-2xl border border-error/40 bg-error-container p-6 text-sm text-on-error-container shadow-surface-lg backdrop-blur">
           {error instanceof Error
             ? error.message
             : "Unable to load tournaments."}
         </div>
       ) : null}
       {data && data.length === 0 ? (
-        <div className="rounded-2xl border border-neutral-90 bg-neutral-98 p-6 text-sm text-neutral-40 shadow-[0_20px_60px_-50px_rgba(15,23,42,0.35)] backdrop-blur">
+        <div className="rounded-2xl border border-outline bg-surface-container p-6 text-sm text-on-surface-muted shadow-surface-lg backdrop-blur">
           No tournaments yet. Create one to get started.
         </div>
       ) : null}
@@ -112,7 +116,9 @@ export const TournamentsListPage = () => {
           isOpen={isDeleteOpen}
           isPending={deleteMutation.isPending}
           errorMessage={
-            deleteMutation.isError ? normalizeApiError(deleteMutation.error).message : null
+            deleteMutation.isError
+              ? normalizeApiError(deleteMutation.error).message
+              : null
           }
           onClose={() => {
             closeDelete();

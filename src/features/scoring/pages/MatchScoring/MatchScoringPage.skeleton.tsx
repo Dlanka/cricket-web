@@ -5,7 +5,7 @@ export const MatchScoringPageSkeleton = () => (
     <SkeletonBlock className="h-6 w-28" />
     <SkeletonBlock className="h-10 w-80" />
     <SkeletonBlock className="h-32 w-full rounded-3xl" />
-    <div className="grid gap-6 xl:grid-cols-[1.6fr_1fr]">
+    <div className="grid gap-6 xl:grid-scoring-layout">
       <div className="space-y-6">
         <SkeletonBlock className="h-60 w-full rounded-3xl" />
         <SkeletonBlock className="h-60 w-full rounded-3xl" />
@@ -17,3 +17,4 @@ export const MatchScoringPageSkeleton = () => (
     </div>
   </div>
 );
+

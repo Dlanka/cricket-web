@@ -56,12 +56,12 @@ const formatTeamScoreLine = (innings: InningsSummary | undefined) =>
     : "-/- (-)";
 
 const resultBadgeClassName = (badge: string) => {
-  if (badge === "WIN") return "border-success-80 bg-success-95 text-success-30";
+  if (badge === "WIN") return "border-success/25 bg-success-container text-on-success-container";
   if (badge === "TIE")
-    return "border-secondary-80 bg-secondary-95 text-secondary-30";
+    return "border-secondary/35 bg-secondary-container text-on-secondary-container";
   if (badge === "NO RESULT")
-    return "border-neutral-80 bg-neutral-95 text-neutral-40";
-  return "border-warning-80 bg-warning-95 text-warning-30";
+    return "border-outline-strong bg-surface-container-high text-on-surface-muted";
+  return "border-warning/35 bg-warning-container text-on-warning-container";
 };
 
 const battingColumns: TableColumn<BattingRowSummary>[] = [
@@ -71,8 +71,8 @@ const battingColumns: TableColumn<BattingRowSummary>[] = [
     className: "w-[52%]",
     render: (row) => (
       <div>
-        <p className="font-medium text-primary-10">{fallback(row.name)}</p>
-        <p className="text-xs text-neutral-40">{formatDismissal(row)}</p>
+        <p className="font-medium text-on-surface">{fallback(row.name)}</p>
+        <p className="text-xs text-on-surface-muted">{formatDismissal(row)}</p>
       </div>
     ),
   },
@@ -161,7 +161,7 @@ const InningsCard = ({ innings }: { innings: InningsSummary }) => (
   <div className="space-y-4">
     <div className="flex flex-wrap items-start justify-between gap-3">
       <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-40">
+        <p className="text-xs font-semibold uppercase tracking-widest text-on-surface-muted">
           Innings {innings.inningsNumber}
         </p>
       </div>
@@ -173,15 +173,15 @@ const InningsCard = ({ innings }: { innings: InningsSummary }) => (
         columns={battingColumns}
         rows={innings.batting}
         rowKey={(row, index) => `${row.playerId ?? row.name}-${index}`}
-        emptyState={<p className="text-sm text-neutral-40">No batting data.</p>}
+        emptyState={<p className="text-sm text-on-surface-muted">No batting data.</p>}
       />
     </div>
 
-    <div className="border-t border-neutral-90 pt-4 text-sm text-neutral-40">
+    <div className="border-t border-outline pt-4 text-sm text-on-surface-muted">
       <div className="flex items-center justify-between gap-3">
-        <p className="font-semibold text-primary-10">Extras</p>
+        <p className="font-semibold text-on-surface">Extras</p>
         <div className="text-right">
-          <p className="mt-1 whitespace-nowrap  text-primary-10">
+          <p className="mt-1 whitespace-nowrap  text-on-surface">
             <span className="font-semibold">
               {fallback(innings.extras.total, "0")}
             </span>{" "}
@@ -194,24 +194,24 @@ const InningsCard = ({ innings }: { innings: InningsSummary }) => (
       </div>
     </div>
 
-    <div className="border-t border-neutral-90 pt-4 text-neutral-40 text-sm">
+    <div className="border-t border-outline pt-4 text-on-surface-muted text-sm">
       <div className="flex items-center justify-between gap-3">
-        <p className="font-semibold text-primary-10">Total</p>
-        <p className="text-right font-semibold text-primary-10">
+        <p className="font-semibold text-on-surface">Total</p>
+        <p className="text-right font-semibold text-on-surface">
           {fallback(innings.runs, "0")}/{fallback(innings.wickets, "0")} (
           {fallback(innings.overs, "0.0")} ov)
         </p>
       </div>
     </div>
 
-    <div className="border-t border-neutral-90 pt-4">
-      <p className="font-semibold text-primary-10 mb-2 text-sm">
+    <div className="border-t border-outline pt-4">
+      <p className="font-semibold text-on-surface mb-2 text-sm">
         Fall of wickets
       </p>
       {innings.fallOfWickets.length === 0 ? (
-        <p className="text-sm text-neutral-40">No wickets yet.</p>
+        <p className="text-sm text-on-surface-muted">No wickets yet.</p>
       ) : (
-        <ul className="space-y-1 text-sm text-primary-10">
+        <ul className="space-y-1 text-sm text-on-surface">
           {innings.fallOfWickets.map((item, index) => (
             <li key={`${item.wicket ?? index}-${item.over ?? index}`}>
               {formatFow(item)}
@@ -221,12 +221,12 @@ const InningsCard = ({ innings }: { innings: InningsSummary }) => (
       )}
     </div>
 
-    <div className="pt-3 border-t border-neutral-90">
+    <div className="pt-3 border-t border-outline">
       <Table
         columns={bowlingColumns}
         rows={innings.bowling}
         rowKey={(row, index) => `${row.playerId ?? row.name}-${index}`}
-        emptyState={<p className="text-sm text-neutral-40">No bowling data.</p>}
+        emptyState={<p className="text-sm text-on-surface-muted">No bowling data.</p>}
       />
     </div>
   </div>
@@ -249,7 +249,7 @@ export const MatchSummarySection = ({ matchId }: Props) => {
   if (summaryQuery.isError) {
     return (
       <Card className="space-y-4">
-        <div className="rounded-xl border border-error-80 bg-error-95 p-4 text-sm text-error-40">
+        <div className="rounded-xl border border-error/40 bg-error-container p-4 text-sm text-on-error-container">
           {summaryQuery.error instanceof Error
             ? summaryQuery.error.message
             : "Unable to load match summary."}
@@ -293,7 +293,7 @@ export const MatchSummarySection = ({ matchId }: Props) => {
     <div className="space-y-4">
       <Card className="space-y-4">
         <div className="">
-          <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-neutral-40">
+          <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-on-surface-muted">
             <p>{fallback(summary.match.stage, "Match")}</p>
             <p>
               {fallback(summary.match.oversPerInnings, "0")} overs /{" "}
@@ -302,29 +302,29 @@ export const MatchSummarySection = ({ matchId }: Props) => {
           </div>
           <div className="mt-4 grid grid-cols-3 items-center gap-2 text-center justify-between w-full">
             <div>
-              <p className="text-lg font-bold text-primary-10">
+              <p className="text-lg font-bold text-on-surface">
                 {formatTeamScoreLine(teamAInnings)}
               </p>
-              <p className="mt-1 text-sm font-semibold text-neutral-40">
+              <p className="mt-1 text-sm font-semibold text-on-surface-muted">
                 {fallback(summary.match.teamA?.name)}
               </p>
             </div>
 
             <div>
-              <p className="text-xs uppercase tracking-[0.2em] text-neutral-40">
+              <p className="text-xs uppercase tracking-widest text-on-surface-muted">
                 {fallback(summary.match.status)}
               </p>
               <StatusBadge
                 status={resultOutcome.badge}
                 label={resultOutcome.badge}
-                className={`mt-1 text-[10px] uppercase tracking-[0.12em] ${resultBadgeClassName(resultOutcome.badge)}`}
+                className={`mt-1 text-xs uppercase tracking-wider ${resultBadgeClassName(resultOutcome.badge)}`}
               />
             </div>
             <div>
-              <p className="text-lg font-bold text-primary-10">
+              <p className="text-lg font-bold text-on-surface">
                 {formatTeamScoreLine(teamBInnings)}
               </p>
-              <p className="mt-1 text-sm font-semibold text-neutral-40">
+              <p className="mt-1 text-sm font-semibold text-on-surface-muted">
                 {fallback(summary.match.teamB?.name)}
               </p>
             </div>
@@ -332,7 +332,7 @@ export const MatchSummarySection = ({ matchId }: Props) => {
 
           <div className="text-center mt-4">
             <div>
-              <p className="mt-2 text-sm font-semibold text-primary-30">
+              <p className="mt-2 text-sm font-semibold text-on-primary-container">
                 {resultOutcome.text}
               </p>
             </div>
@@ -373,3 +373,7 @@ export const MatchSummarySection = ({ matchId }: Props) => {
     </div>
   );
 };
+
+
+
+

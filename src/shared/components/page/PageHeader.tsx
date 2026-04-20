@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button/Button";
+import { classNames } from "@/shared/utils/classNames";
 
 type PageHeaderProps = {
   eyebrow: string;
@@ -11,6 +12,12 @@ type PageHeaderProps = {
     onClick: () => void;
     ariaLabel?: string;
   };
+  className?: string;
+  contentClassName?: string;
+  eyebrowClassName?: string;
+  titleClassName?: string;
+  descriptionClassName?: string;
+  actionsClassName?: string;
 };
 
 export const PageHeader = ({
@@ -19,9 +26,20 @@ export const PageHeader = ({
   description,
   actions,
   backButton,
+  className,
+  contentClassName,
+  eyebrowClassName,
+  titleClassName,
+  descriptionClassName,
+  actionsClassName,
 }: PageHeaderProps) => (
-  <header className="flex justify-between items-center">
-    <div className="block pr-4">
+  <header
+    className={classNames(
+      "flex flex-wrap items-start justify-between gap-3",
+      className,
+    )}
+  >
+    <div className={classNames("block pr-0", contentClassName)}>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           {backButton ? (
@@ -37,17 +55,40 @@ export const PageHeader = ({
               <ArrowLeft className="h-4 w-4" />
             </Button>
           ) : null}
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-40">
+          <p
+            className={classNames(
+              "font-display text-xs font-bold tracking-widest uppercase text-on-surface-muted",
+              eyebrowClassName,
+            )}
+          >
             {eyebrow}
           </p>
         </div>
       </div>
-      <h1 className="mt-2 text-3xl font-semibold text-primary-10">{title}</h1>
+      <h1
+        className={classNames(
+          "mt-2 font-display text-3xl leading-tight font-bold text-on-surface",
+          titleClassName,
+        )}
+      >
+        {title}
+      </h1>
       {description ? (
-        <p className="mt-2 text-sm text-neutral-40">{description}</p>
+        <p
+          className={classNames(
+            "mt-2 text-xs text-on-surface-muted",
+            descriptionClassName,
+          )}
+        >
+          {description}
+        </p>
       ) : null}
     </div>
 
-    <div className="flex items-center gap-3">{actions}</div>
+    {actions ? (
+      <div className={classNames("flex items-center gap-2", actionsClassName)}>
+        {actions}
+      </div>
+    ) : null}
   </header>
 );

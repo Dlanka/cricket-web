@@ -13,27 +13,27 @@ export const TopNav = () => {
 
   return (
     <header className="px-6 pt-8 sm:px-10 lg:px-16">
-      <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-neutral-90 bg-neutral-98 px-5 py-4 shadow-[0_20px_60px_-40px_rgba(15,23,42,0.45)] backdrop-blur">
+      <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-outline bg-surface px-5 py-4 shadow-surface-lg backdrop-blur">
         <Link
           to="/"
-          className="flex items-center gap-3 font-display text-xl font-semibold tracking-tight text-primary-10"
+          className="flex items-center gap-3 font-display text-xl font-semibold tracking-tight text-on-surface"
         >
-          <span className="grid h-10 w-10 place-items-center rounded-xl bg-primary-40 text-sm font-bold uppercase text-neutral-98">
+          <span className="grid h-10 w-10 place-items-center rounded-xl bg-primary text-sm font-bold uppercase text-on-primary">
             CM
           </span>
           CrickManager
         </Link>
-        <nav className="flex flex-wrap items-center gap-4 text-sm font-medium text-neutral-40">
-          <Link to="/" className="transition hover:text-primary-20">
+        <nav className="flex flex-wrap items-center gap-4 text-sm font-medium text-on-surface-variant">
+          <Link to="/" className="transition hover:text-on-primary-container">
             Overview
           </Link>
-          <Link to="/dashboard" className="transition hover:text-primary-20">
+          <Link to="/dashboard" className="transition hover:text-on-primary-container">
             Command Center
           </Link>
-          <Link to="/tournaments" className="transition hover:text-primary-20">
+          <Link to="/tournaments" className="transition hover:text-on-primary-container">
             Tournaments
           </Link>
-          <span className="hidden h-4 w-px bg-neutral-90 sm:inline-block" />
+          <span className="hidden h-4 w-px bg-surface-container-high sm:inline-block" />
           {status === "authed" ? (
             <Button
               type="button"
@@ -54,3 +54,5 @@ export const TopNav = () => {
     </header>
   );
 };
+
+

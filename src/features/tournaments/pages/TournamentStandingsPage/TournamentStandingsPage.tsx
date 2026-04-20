@@ -85,7 +85,7 @@ export const TournamentStandingsPage = () => {
   }
 
   return (
-    <div className="mx-auto w-full max-w-4xl">
+    <div className="mx-auto w-full space-y-12">
       <TournamentStandingsSection
         standings={standingsQuery.data}
         isLoading={standingsQuery.isLoading}
@@ -107,9 +107,11 @@ export const TournamentStandingsPage = () => {
         }
         isRecomputing={recomputeMutation.isPending}
         isGenerating={generateKnockoutMutation.isPending}
+        qualificationSlots={tournamentQuery.data?.rules?.qualificationCount ?? 2}
         onRecompute={handleRecompute}
         onGenerate={handleGenerateKnockout}
       />
     </div>
   );
 };
+

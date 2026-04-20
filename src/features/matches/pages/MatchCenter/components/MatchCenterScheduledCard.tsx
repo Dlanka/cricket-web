@@ -58,10 +58,10 @@ export const MatchCenterScheduledCard = ({
       <div className="pt-5">
         {hasRosterConfigured ? (
           <>
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-40">
+            <p className="text-xs font-semibold uppercase tracking-widest text-on-surface-muted">
               Match config
             </p>
-            <div className="mt-4 grid gap-4 text-sm text-neutral-40 md:grid-cols-2">
+            <div className="mt-4 grid gap-4 text-sm text-on-surface-muted md:grid-cols-2">
               <div>
                 {canEditConfig ? (
                   <FormGroup label="Overs per innings">
@@ -74,13 +74,13 @@ export const MatchCenterScheduledCard = ({
                         onChange={(event) => setOversPerInningsInput(event.target.value)}
                         className="mt-0 w-24"
                       />
-                      <span className="text-base font-semibold text-primary-10">overs</span>
+                      <span className="text-base font-semibold text-on-surface">overs</span>
                     </div>
                   </FormGroup>
                 ) : (
                   <>
-                    <p className="text-xs uppercase tracking-[0.2em]">Overs</p>
-                    <p className="mt-1 text-base font-semibold text-primary-10">
+                    <p className="text-xs uppercase tracking-widest">Overs</p>
+                    <p className="mt-1 text-base font-semibold text-on-surface">
                       {match.oversPerInnings} overs
                     </p>
                   </>
@@ -102,8 +102,8 @@ export const MatchCenterScheduledCard = ({
                   </FormGroup>
                 ) : (
                   <>
-                    <p className="text-xs uppercase tracking-[0.2em]">Balls per over</p>
-                    <p className="mt-1 text-base font-semibold text-primary-10">
+                    <p className="text-xs uppercase tracking-widest">Balls per over</p>
+                    <p className="mt-1 text-base font-semibold text-on-surface">
                       {match.ballsPerOver}
                     </p>
                   </>
@@ -111,24 +111,24 @@ export const MatchCenterScheduledCard = ({
               </div>
             </div>
             {canEditConfig ? (
-              <p className="mt-4 text-xs text-neutral-40">
+              <p className="mt-4 text-xs text-on-surface-muted">
                 Match config is saved automatically when you click Start match.
               </p>
             ) : null}
             {configError ? (
-              <div className="mt-3 rounded-xl border border-error-80 bg-error-95 px-3 py-2 text-xs text-error-40">
+              <div className="mt-3 rounded-xl border border-error/40 bg-error-container px-3 py-2 text-xs text-on-error-container">
                 {configError}
               </div>
             ) : null}
           </>
         ) : null}
 
-        <div className={hasRosterConfigured ? "mt-6 border-t border-neutral-90 pt-5" : ""}>
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-40">
+        <div className={hasRosterConfigured ? "mt-6 border-t border-outline pt-5" : ""}>
+          <p className="text-xs font-semibold uppercase tracking-widest text-on-surface-muted">
             Start match
           </p>
           {match.toss ? (
-            <p className="mt-2 text-sm text-neutral-40">
+            <p className="mt-2 text-sm text-on-surface-muted">
               {(match.toss.wonByTeamId === match.teams.teamA.id
                 ? match.teams.teamA.name
                 : match.teams.teamB?.name ?? "Team")} {" "}
@@ -165,3 +165,5 @@ export const MatchCenterScheduledCard = ({
     </Card>
   );
 };
+
+

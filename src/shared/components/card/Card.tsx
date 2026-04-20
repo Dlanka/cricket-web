@@ -7,8 +7,9 @@ type CardProps = {
 
 export const Card = ({ children, className }: CardProps) => (
   <section
-    className={`rounded-2xl border border-neutral-90 bg-neutral-99 p-6 shadow-[0_20px_60px_-50px_rgba(15,23,42,0.4)] ${className ?? ""}`}
+    className={`rounded-2xl border border-outline bg-surface-container p-6 shadow-surface-lg ${className ?? ""}`}
   >
     {children}
   </section>
 );
+

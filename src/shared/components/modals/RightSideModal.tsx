@@ -62,14 +62,14 @@ export const RightSideModal = ({
         {isOpen ? (
           <div className="fixed inset-0 z-50">
             <motion.div
-              className="absolute inset-0 bg-neutral-40/30 backdrop-blur-sm"
+              className="absolute inset-0 bg-background/50 backdrop-blur-sm"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={closeOnOverlayClick ? onClose : undefined}
             />
             <motion.div
-              className={`absolute right-0 top-0 h-full bg-neutral-99 shadow-[0_40px_120px_-60px_rgba(15,23,42,0.6)] ${widthClassName}`}
+              className={`absolute right-0 top-0 h-full bg-surface-container shadow-surface-lg ${widthClassName}`}
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
@@ -81,15 +81,15 @@ export const RightSideModal = ({
             >
               <div className="flex h-full flex-col">
                 {(title || showCloseButton) && (
-                  <div className="flex items-start justify-between gap-4 border-b border-neutral-90 px-6 py-5">
+                  <div className="flex items-start justify-between gap-4 border-b border-outline px-6 py-5">
                     <div>
                       {title && (
-                        <h2 className="text-lg font-semibold text-primary-10">
+                        <h2 className="text-lg font-semibold text-on-surface">
                           {title}
                         </h2>
                       )}
                       {description && (
-                        <p className="mt-1 text-sm text-neutral-40">
+                        <p className="mt-1 text-sm text-on-surface-variant">
                           {description}
                         </p>
                       )}
@@ -97,7 +97,7 @@ export const RightSideModal = ({
                     {showCloseButton ? (
                       <button
                         type="button"
-                        className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-neutral-90 text-neutral-40 transition hover:border-neutral-80 hover:text-neutral-30"
+                        className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-outline text-on-surface-variant transition hover:border-outline-strong hover:text-on-surface"
                         onClick={onClose}
                         aria-label="Close"
                         title="Close"
@@ -111,7 +111,7 @@ export const RightSideModal = ({
                   {children}
                 </div>
                 {footer ? (
-                  <div className="border-t border-neutral-90 px-6 py-4">
+                  <div className="border-t border-outline px-6 py-4">
                     {footer}
                   </div>
                 ) : null}
@@ -123,3 +123,5 @@ export const RightSideModal = ({
     </Portal>
   );
 };
+
+

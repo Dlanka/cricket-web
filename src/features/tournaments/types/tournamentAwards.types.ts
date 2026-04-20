@@ -17,6 +17,8 @@ export type PlayerOfSeriesRow = {
   fifties: number;
   hundreds: number;
   fiveWicketHauls: number;
+  catches: number;
+  runOuts: number;
   strikeRate: number;
   economy: number;
   points: number;
@@ -30,6 +32,8 @@ export type PlayerOfSeriesScoring = {
   fiftyBonus: number;
   hundredBonus: number;
   fiveWicketBonus: number;
+  catch: number;
+  runOut: number;
 };
 
 export type TournamentPlayerOfSeriesResponse = {

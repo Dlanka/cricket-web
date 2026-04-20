@@ -24,7 +24,7 @@ export const BallFeedPanel = ({ inningsId }: Props) => {
   return (
     <Card className="flex h-full min-h-0 flex-col">
       <div className="flex items-center justify-between gap-3">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-40">
+        <p className="text-xs font-semibold uppercase tracking-widest text-on-surface-variant">
           Ball feed
         </p>
         <Button
@@ -38,27 +38,27 @@ export const BallFeedPanel = ({ inningsId }: Props) => {
         </Button>
       </div>
       {!isExpanded ? (
-        <p className="mt-3 text-sm text-neutral-40">
+        <p className="mt-3 text-sm text-on-surface-variant">
           Hidden by default for focused scoring.
         </p>
       ) : null}
       {!isExpanded ? null : (
         <>
-      {isLoading ? <p className="mt-3 text-sm text-neutral-40">Loading events...</p> : null}
+      {isLoading ? <p className="mt-3 text-sm text-on-surface-variant">Loading events...</p> : null}
       {isError ? (
-        <p className="mt-3 text-sm text-error-40">
+        <p className="mt-3 text-sm text-on-error-container">
           {error instanceof Error ? error.message : "Unable to load events."}
         </p>
       ) : null}
       {items.length ? (
         <div className="mt-3 min-h-0 flex-1 space-y-2 overflow-auto pr-1">
           {items.map((event) => (
-            <div key={event.id} className="rounded-xl border border-neutral-90 p-3">
-              <div className="flex items-center justify-between text-xs text-neutral-40">
+            <div key={event.id} className="rounded-xl border border-outline p-3">
+              <div className="flex items-center justify-between text-xs text-on-surface-variant">
                 <span>#{event.seq}</span>
                 <span>{event.type}</span>
               </div>
-              <p className="mt-1 text-sm text-primary-10">{event.summary}</p>
+              <p className="mt-1 text-sm text-on-surface">{event.summary}</p>
             </div>
           ))}
           {hasNextPage ? (
@@ -75,10 +75,12 @@ export const BallFeedPanel = ({ inningsId }: Props) => {
           ) : null}
         </div>
       ) : !isLoading && !isError ? (
-        <p className="mt-3 text-sm text-neutral-40">No events yet.</p>
+        <p className="mt-3 text-sm text-on-surface-variant">No events yet.</p>
       ) : null}
         </>
       )}
     </Card>
   );
 };
+
+

@@ -51,14 +51,15 @@ export const TournamentDeleteModal = ({
     }
   >
     <div className="space-y-4">
-      <div className="rounded-2xl border border-error-80 bg-error-95 p-4 text-sm text-error-40">
+      <div className="rounded-2xl border border-error/40 bg-error-container p-4 text-sm text-on-error-container">
         You are about to delete <span className="font-semibold">{tournamentName}</span>.
       </div>
       {errorMessage ? (
-        <div className="rounded-2xl border border-error-80 bg-error-95 p-3 text-xs text-error-40">
+        <div className="rounded-2xl border border-error/40 bg-error-container p-3 text-xs text-on-error-container">
           {errorMessage}
         </div>
       ) : null}
     </div>
   </RightSideModal>
 );
+

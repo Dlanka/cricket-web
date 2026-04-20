@@ -223,7 +223,7 @@ export const TenantMembersSettingsSection = () => {
 
   if (!canManageMembers) {
     return (
-      <Card className="p-6 text-sm text-warning-30">
+      <Card className="p-6 text-sm text-on-warning-container">
         You do not have permission to manage tenant members.
       </Card>
     );
@@ -231,13 +231,13 @@ export const TenantMembersSettingsSection = () => {
 
   if (membersQuery.isLoading) {
     return (
-      <Card className="p-6 text-sm text-neutral-40">Loading members...</Card>
+      <Card className="p-6 text-sm text-on-surface-variant">Loading members...</Card>
     );
   }
 
   if (membersQuery.isError) {
     return (
-      <Card className="p-6 text-sm text-error-40">
+      <Card className="p-6 text-sm text-on-error-container">
         {getMemberMutationMessage(membersQuery.error)}
       </Card>
     );
@@ -248,14 +248,14 @@ export const TenantMembersSettingsSection = () => {
       <Card className="space-y-4 p-4">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <h2 className="text-sm font-semibold uppercase tracking-[0.16em] text-primary-20">
+            <h2 className="text-sm font-semibold uppercase tracking-wider text-on-primary-container">
               Tenant Members
             </h2>
-            <p className="mt-1 text-sm text-neutral-40">
+            <p className="mt-1 text-sm text-on-surface-variant">
               Manage member roles and access status for this tenant.
             </p>
             {isCurrentUserOwner ? (
-              <p className="mt-1 text-xs font-semibold text-primary-30">
+              <p className="mt-1 text-xs font-semibold text-on-primary-container">
                 You are the tenant owner.
               </p>
             ) : null}
@@ -265,10 +265,10 @@ export const TenantMembersSettingsSection = () => {
           </Button>
         </div>
 
-        <div className="overflow-x-auto rounded-xl border border-neutral-90">
+        <div className="overflow-x-auto rounded-xl border border-outline">
           <table className="w-full min-w-155 text-sm">
             <thead>
-              <tr className="bg-neutral-98 text-xs uppercase tracking-[0.12em] text-neutral-40">
+              <tr className="bg-surface text-xs uppercase tracking-wider text-on-surface-variant">
                 <th className="w-64 px-3 py-2 text-left">Member</th>
                 <th className="w-24 px-3 py-2 text-left">Role</th>
                 <th className="w-24 px-3 py-2 text-left">Membership</th>
@@ -279,8 +279,8 @@ export const TenantMembersSettingsSection = () => {
             </thead>
             <tbody>
               {sortedMembers.length === 0 ? (
-                <tr className="border-t border-neutral-90">
-                  <td colSpan={6} className="px-3 py-4 text-sm text-neutral-40">
+                <tr className="border-t border-outline">
+                  <td colSpan={6} className="px-3 py-4 text-sm text-on-surface-variant">
                     No tenant members found.
                   </td>
                 </tr>
@@ -288,10 +288,10 @@ export const TenantMembersSettingsSection = () => {
                 sortedMembers.map((row) => (
                   <tr
                     key={row.membershipId}
-                    className="border-t border-neutral-90 transition-colors hover:bg-neutral-98"
+                    className="border-t border-outline transition-colors hover:bg-surface"
                   >
                     <td className="px-3 py-2">
-                      <p className="font-semibold text-primary-10 flex">
+                      <p className="font-semibold text-on-surface flex">
                         {row.user.fullName}
                         {row.isOwner ? (
                           <BadgePill
@@ -304,7 +304,7 @@ export const TenantMembersSettingsSection = () => {
                           />
                         ) : null}
                       </p>
-                      <p className="text-xs text-neutral-40">
+                      <p className="text-xs text-on-surface-variant">
                         {row.user.email}
                       </p>
                     </td>
@@ -328,11 +328,10 @@ export const TenantMembersSettingsSection = () => {
                         <div className="flex items-center justify-end gap-2">
                           <Button
                             type="button"
-                            size="sm"
+                            size="xs"
                             appearance="outline"
                             color="neutral"
                             shape="square"
-                            className="h-8 w-8 p-0"
                             aria-label={`Edit ${row.user.fullName}`}
                             title="Edit member"
                             disabled={!canManageMembers}
@@ -345,11 +344,10 @@ export const TenantMembersSettingsSection = () => {
                           </Button>
                           <Button
                             type="button"
-                            size="sm"
+                            size="xs"
                             appearance="outline"
                             color="error"
                             shape="square"
-                            className="h-8 w-8 p-0"
                             aria-label={`Remove ${row.user.fullName}`}
                             title="Remove member"
                             disabled={!canManageMembers}
@@ -437,7 +435,7 @@ export const TenantMembersSettingsSection = () => {
             />
           </FormGroup>
           {assignError ? (
-            <p className="text-xs font-semibold text-error-40">{assignError}</p>
+            <p className="text-xs font-semibold text-on-error-container">{assignError}</p>
           ) : null}
         </div>
       </RightSideModal>
@@ -477,7 +475,7 @@ export const TenantMembersSettingsSection = () => {
       >
         <div className="space-y-3">
           {editingMember?.isOwner ? (
-            <p className="text-xs font-semibold text-warning-30">
+            <p className="text-xs font-semibold text-on-warning-container">
               Tenant owner membership cannot be edited.
             </p>
           ) : null}
@@ -502,7 +500,7 @@ export const TenantMembersSettingsSection = () => {
             />
           </FormGroup>
           {editError ? (
-            <p className="text-xs font-semibold text-error-40">{editError}</p>
+            <p className="text-xs font-semibold text-on-error-container">{editError}</p>
           ) : null}
         </div>
       </RightSideModal>
@@ -544,11 +542,11 @@ export const TenantMembersSettingsSection = () => {
       >
         <div className="space-y-3">
           {deletingMember?.isOwner ? (
-            <p className="text-xs font-semibold text-warning-30">
+            <p className="text-xs font-semibold text-on-warning-container">
               Tenant owner membership cannot be removed.
             </p>
           ) : null}
-          <p className="text-sm text-primary-20">
+          <p className="text-sm text-on-primary-container">
             Remove{" "}
             <span className="font-semibold">
               {deletingMember?.user.fullName}
@@ -556,10 +554,12 @@ export const TenantMembersSettingsSection = () => {
             from this tenant?
           </p>
           {deleteError ? (
-            <p className="text-xs font-semibold text-error-40">{deleteError}</p>
+            <p className="text-xs font-semibold text-on-error-container">{deleteError}</p>
           ) : null}
         </div>
       </RightSideModal>
     </>
   );
 };
+
+

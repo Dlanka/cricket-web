@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -125,7 +125,7 @@ export const TeamEditModal = ({ tournamentId, team, isOpen, onClose }: Props) =>
         className="space-y-5"
       >
         {formError ? (
-          <div className="rounded-2xl border border-error-80 bg-error-95 p-3 text-xs text-error-40">
+          <div className="rounded-2xl border border-error/25 bg-error-container p-3 text-xs text-on-error-container">
             {formError}
           </div>
         ) : null}
@@ -156,3 +156,4 @@ export const TeamEditModal = ({ tournamentId, team, isOpen, onClose }: Props) =>
     </RightSideModal>
   );
 };
+

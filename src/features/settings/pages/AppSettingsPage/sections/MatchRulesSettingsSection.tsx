@@ -84,12 +84,12 @@ export const MatchRulesSettingsSection = () => {
   const { register, formState } = section.form;
 
   if (section.settingsQuery.isLoading) {
-    return <Card className="p-6 text-sm text-neutral-40">Loading settings...</Card>;
+    return <Card className="p-6 text-sm text-on-surface-variant">Loading settings...</Card>;
   }
 
   if (section.settingsQuery.isError) {
     return (
-      <Card className="p-6 text-sm text-error-40">
+      <Card className="p-6 text-sm text-on-error-container">
         {section.settingsQuery.error instanceof Error
           ? section.settingsQuery.error.message
           : "Unable to load settings."}
@@ -106,11 +106,11 @@ export const MatchRulesSettingsSection = () => {
       onSave={() => void section.save()}
     >
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-        <label className="flex items-center gap-2 text-sm text-primary-20">
+        <label className="flex items-center gap-2 text-sm text-on-primary-container">
           <input type="checkbox" {...register("allowUndo")} disabled={!section.isAdmin} />
           Allow undo
         </label>
-        <label className="flex items-center gap-2 text-sm text-primary-20">
+        <label className="flex items-center gap-2 text-sm text-on-primary-container">
           <input
             type="checkbox"
             {...register("lockRosterAfterStart")}
@@ -118,7 +118,7 @@ export const MatchRulesSettingsSection = () => {
           />
           Lock roster after start
         </label>
-        <label className="flex items-center gap-2 text-sm text-primary-20">
+        <label className="flex items-center gap-2 text-sm text-on-primary-container">
           <input
             type="checkbox"
             {...register("lockMatchConfigAfterStart")}
@@ -126,7 +126,7 @@ export const MatchRulesSettingsSection = () => {
           />
           Lock match config after start
         </label>
-        <label className="flex items-center gap-2 text-sm text-primary-20">
+        <label className="flex items-center gap-2 text-sm text-on-primary-container">
           <input
             type="checkbox"
             {...register("requireBothRostersBeforeStart")}
@@ -148,3 +148,4 @@ export const MatchRulesSettingsSection = () => {
     </SettingsSectionCard>
   );
 };
+

@@ -177,13 +177,13 @@ export const DashboardSummary = ({ user, tenant, role }: Props) => {
   if (tournamentsQuery.isLoading) {
     return (
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 mt-5">
-        <Card className="h-40 animate-pulse bg-neutral-95">
+        <Card className="h-40 animate-pulse bg-surface-container-high">
           <div />
         </Card>
-        <Card className="h-28 animate-pulse bg-neutral-95">
+        <Card className="h-28 animate-pulse bg-surface-container-high">
           <div />
         </Card>
-        <Card className="h-28 animate-pulse bg-neutral-95">
+        <Card className="h-28 animate-pulse bg-surface-container-high">
           <div />
         </Card>
       </div>
@@ -212,13 +212,13 @@ export const DashboardSummary = ({ user, tenant, role }: Props) => {
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 rounded-3xl p-4 mt-5 pb-8">
       <Card className="rounded-3xl">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-40">
+        <p className="text-xs font-semibold uppercase tracking-widest text-on-surface-variant">
           Dashboard
         </p>
-        <h1 className="mt-3 font-display text-3xl font-semibold text-primary-10">
+        <h1 className="mt-3 font-display text-3xl font-semibold text-on-surface">
           Welcome back{user?.name ? `, ${user.name}` : ""}.
         </h1>
-        <p className="mt-2 text-sm text-neutral-40">
+        <p className="mt-2 text-sm text-on-surface-variant">
           {tenant?.name ?? "Tenant"} • {role ?? "Unknown role"}
         </p>
       </Card>
@@ -226,10 +226,10 @@ export const DashboardSummary = ({ user, tenant, role }: Props) => {
       <Card>
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-40">
+            <p className="text-xs font-semibold uppercase tracking-widest text-on-surface-variant">
               Tournament Snapshot
             </p>
-            <h2 className="mt-2 text-xl font-semibold text-primary-10">
+            <h2 className="mt-2 text-xl font-semibold text-on-surface">
               {activeTournament.name}
             </h2>
             <div className="mt-2 flex flex-wrap items-center gap-2">
@@ -256,38 +256,38 @@ export const DashboardSummary = ({ user, tenant, role }: Props) => {
         </div>
         <div className="mt-4 grid gap-3 sm:grid-cols-3 lg:grid-cols-6">
           <div>
-            <p className="text-xs text-neutral-40">League stage</p>
-            <p className="text-sm font-semibold text-primary-10">
+            <p className="text-xs text-on-surface-variant">League stage</p>
+            <p className="text-sm font-semibold text-on-surface">
               {getStageStatusLabel(stageStatus?.league)}
             </p>
           </div>
           <div>
-            <p className="text-xs text-neutral-40">Knockout stage</p>
-            <p className="text-sm font-semibold text-primary-10">
+            <p className="text-xs text-on-surface-variant">Knockout stage</p>
+            <p className="text-sm font-semibold text-on-surface">
               {getStageStatusLabel(stageStatus?.knockout)}
             </p>
           </div>
           <div>
-            <p className="text-xs text-neutral-40">Teams</p>
-            <p className="text-sm font-semibold text-primary-10">
+            <p className="text-xs text-on-surface-variant">Teams</p>
+            <p className="text-sm font-semibold text-on-surface">
               {teamsQuery.data?.length ?? 0}
             </p>
           </div>
           <div>
-            <p className="text-xs text-neutral-40">Total matches</p>
-            <p className="text-sm font-semibold text-primary-10">
+            <p className="text-xs text-on-surface-variant">Total matches</p>
+            <p className="text-sm font-semibold text-on-surface">
               {matches.length}
             </p>
           </div>
           <div>
-            <p className="text-xs text-neutral-40">Completed</p>
-            <p className="text-sm font-semibold text-primary-10">
+            <p className="text-xs text-on-surface-variant">Completed</p>
+            <p className="text-sm font-semibold text-on-surface">
               {completedMatches.length}
             </p>
           </div>
           <div>
-            <p className="text-xs text-neutral-40">Pending</p>
-            <p className="text-sm font-semibold text-primary-10">
+            <p className="text-xs text-on-surface-variant">Pending</p>
+            <p className="text-sm font-semibold text-on-surface">
               {pendingMatches.length}
             </p>
           </div>
@@ -295,11 +295,11 @@ export const DashboardSummary = ({ user, tenant, role }: Props) => {
       </Card>
 
       <Card>
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-40">
+        <p className="text-xs font-semibold uppercase tracking-widest text-on-surface-variant">
           Live Matches
         </p>
         {liveMatches.length === 0 ? (
-          <p className="mt-3 text-sm text-neutral-40">
+          <p className="mt-3 text-sm text-on-surface-variant">
             No live matches at the moment.
           </p>
         ) : (
@@ -307,15 +307,15 @@ export const DashboardSummary = ({ user, tenant, role }: Props) => {
             {liveMatches.map((match) => (
               <div
                 key={match.id}
-                className="rounded-xl border border-neutral-90 px-4 py-3"
+                className="rounded-xl border border-outline px-4 py-3"
               >
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>
-                    <p className="text-sm font-semibold text-primary-10">
+                    <p className="text-sm font-semibold text-on-surface">
                       {match.teamA.shortName ?? match.teamA.name} vs{" "}
                       {match.teamB?.shortName ?? match.teamB?.name ?? "TBD"}
                     </p>
-                    <p className="text-xs text-neutral-40">{match.stage}</p>
+                    <p className="text-xs text-on-surface-variant">{match.stage}</p>
                   </div>
                   <ButtonLink
                     to={`/matches/${match.id}/score`}
@@ -333,24 +333,24 @@ export const DashboardSummary = ({ user, tenant, role }: Props) => {
       </Card>
 
       <Card>
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-40">
+        <p className="text-xs font-semibold uppercase tracking-widest text-on-surface-variant">
           Today / Upcoming Matches
         </p>
         {upcomingMatches.length === 0 ? (
-          <p className="mt-3 text-sm text-neutral-40">No scheduled matches.</p>
+          <p className="mt-3 text-sm text-on-surface-variant">No scheduled matches.</p>
         ) : (
           <div className="mt-3 grid gap-2">
             {upcomingMatches.map((match) => (
               <div
                 key={match.id}
-                className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-neutral-90 px-3 py-2"
+                className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-outline px-3 py-2"
               >
                 <div>
-                  <p className="text-sm font-semibold text-primary-10">
+                  <p className="text-sm font-semibold text-on-surface">
                     {match.teamA.shortName ?? match.teamA.name} vs{" "}
                     {match.teamB?.shortName ?? match.teamB?.name ?? "TBD"}
                   </p>
-                  <p className="text-xs text-neutral-40">
+                  <p className="text-xs text-on-surface-variant">
                     {match.scheduledAt
                       ? new Date(match.scheduledAt).toLocaleString()
                       : "Schedule pending"}{" "}
@@ -367,7 +367,7 @@ export const DashboardSummary = ({ user, tenant, role }: Props) => {
       {showStandings ? (
         <Card>
           <div className="flex items-center justify-between gap-3">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-40">
+            <p className="text-xs font-semibold uppercase tracking-widest text-on-surface-variant">
               Standings
             </p>
             <Button
@@ -386,31 +386,31 @@ export const DashboardSummary = ({ user, tenant, role }: Props) => {
             </Button>
           </div>
           {standingsQuery.isLoading ? (
-            <p className="mt-3 text-sm text-neutral-40">Loading standings...</p>
+            <p className="mt-3 text-sm text-on-surface-variant">Loading standings...</p>
           ) : standingsQuery.data?.items?.length ? (
             <div className="mt-3 space-y-2">
               {standingsQuery.data.items.slice(0, 5).map((row) => (
                 <div
                   key={row.team.id}
-                  className="grid grid-cols-[40px_1fr_80px_80px] items-center gap-2 rounded-lg border border-neutral-90 px-3 py-2 text-sm"
+                  className="grid table-cols-standing items-center gap-2 rounded-lg border border-outline px-3 py-2 text-sm"
                 >
-                  <span className="font-semibold text-primary-10">
+                  <span className="font-semibold text-on-surface">
                     #{row.rank}
                   </span>
-                  <span className="font-medium text-primary-10">
+                  <span className="font-medium text-on-surface">
                     {row.team.shortName ?? row.team.name}
                   </span>
-                  <span className="text-right font-semibold text-primary-10">
+                  <span className="text-right font-semibold text-on-surface">
                     {row.points} pts
                   </span>
-                  <span className="text-right text-neutral-40">
+                  <span className="text-right text-on-surface-variant">
                     NRR {row.netRunRate.toFixed(3)}
                   </span>
                 </div>
               ))}
             </div>
           ) : (
-            <p className="mt-3 text-sm text-neutral-40">
+            <p className="mt-3 text-sm text-on-surface-variant">
               No standings data yet.
             </p>
           )}
@@ -419,7 +419,7 @@ export const DashboardSummary = ({ user, tenant, role }: Props) => {
 
       {showBracket ? (
         <Card>
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-40">
+          <p className="text-xs font-semibold uppercase tracking-widest text-on-surface-variant">
             Knockout Bracket Preview
           </p>
           {bracketQuery.data?.rounds?.length ? (
@@ -432,25 +432,25 @@ export const DashboardSummary = ({ user, tenant, role }: Props) => {
                 .map((round) => (
                   <div
                     key={`${round.stage}-${round.roundNumber}`}
-                    className="space-y-2 rounded-xl border border-neutral-90 p-3"
+                    className="space-y-2 rounded-xl border border-outline p-3"
                   >
-                    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-neutral-40">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">
                       {round.stage}
                     </p>
                     {round.fixtures.map((fixture) => (
                       <div
                         key={`${round.stage}-${fixture.slot}`}
-                        className="rounded-lg border border-neutral-90 p-2 text-xs"
+                        className="rounded-lg border border-outline p-2 text-xs"
                       >
                         {fixture.isPlaceholder ? (
-                          <p className="text-neutral-40">TBD vs TBD</p>
+                          <p className="text-on-surface-variant">TBD vs TBD</p>
                         ) : (
                           <>
                             <p
                               className={
                                 fixture.winnerTeamId === fixture.teamA?.id
-                                  ? "font-semibold text-success-20"
-                                  : "text-primary-10"
+                                  ? "font-semibold text-on-success-container"
+                                  : "text-on-surface"
                               }
                             >
                               {fixture.teamA?.shortName ??
@@ -460,8 +460,8 @@ export const DashboardSummary = ({ user, tenant, role }: Props) => {
                             <p
                               className={
                                 fixture.winnerTeamId === fixture.teamB?.id
-                                  ? "font-semibold text-success-20"
-                                  : "text-primary-10"
+                                  ? "font-semibold text-on-success-container"
+                                  : "text-on-surface"
                               }
                             >
                               {fixture.teamB?.shortName ??
@@ -471,10 +471,10 @@ export const DashboardSummary = ({ user, tenant, role }: Props) => {
                             <div className="mt-1 flex items-center gap-2">
                               <StatusBadge
                                 status={fixture.status}
-                                className="px-2 py-0.5 text-[10px]"
+                                className="px-2 py-0.5 text-xs"
                               />
                               {fixture.isBye ? (
-                                <span className="rounded-full border border-warning-80 bg-warning-95 px-2 py-0.5 text-[10px] font-semibold text-warning-30">
+                                <span className="rounded-full border border-warning/25 bg-warning-container px-2 py-0.5 text-xs font-semibold text-on-warning-container">
                                   BYE
                                 </span>
                               ) : null}
@@ -487,7 +487,7 @@ export const DashboardSummary = ({ user, tenant, role }: Props) => {
                 ))}
             </div>
           ) : (
-            <p className="mt-3 text-sm text-neutral-40">
+            <p className="mt-3 text-sm text-on-surface-variant">
               No bracket fixtures yet.
             </p>
           )}
@@ -495,14 +495,14 @@ export const DashboardSummary = ({ user, tenant, role }: Props) => {
       ) : null}
 
       <Card>
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-40">
+        <p className="text-xs font-semibold uppercase tracking-widest text-on-surface-variant">
           Alerts / Attention Needed
         </p>
         <div className="mt-3 space-y-2">
           {missingRosterMatches.slice(0, 3).map((match) => (
             <div
               key={`roster-${match.id}`}
-              className="rounded-lg border border-warning-80 bg-warning-95 px-3 py-2 text-sm text-warning-30"
+              className="rounded-lg border border-warning/25 bg-warning-container px-3 py-2 text-sm text-on-warning-container"
             >
               Roster missing for {match.teamA.shortName ?? match.teamA.name} vs{" "}
               {match.teamB?.shortName ?? match.teamB?.name ?? "TBD"}.
@@ -525,7 +525,7 @@ export const DashboardSummary = ({ user, tenant, role }: Props) => {
           {type === "LEAGUE_KNOCKOUT" &&
           standingsQuery.data?.leagueCompleted &&
           !hasKnockoutRoundsStarted ? (
-            <div className="rounded-lg border border-warning-80 bg-warning-95 px-3 py-2 text-sm text-warning-30">
+            <div className="rounded-lg border border-warning/25 bg-warning-container px-3 py-2 text-sm text-on-warning-container">
               League stage is complete. Knockout fixtures are pending.
             </div>
           ) : null}
@@ -533,7 +533,7 @@ export const DashboardSummary = ({ user, tenant, role }: Props) => {
           {liveStuckMatches.slice(0, 1).map((match) => (
             <div
               key={`stuck-${match.id}`}
-              className="rounded-lg border border-error-80 bg-error-95 px-3 py-2 text-sm text-error-30"
+              className="rounded-lg border border-error/25 bg-error-container px-3 py-2 text-sm text-on-error-container"
             >
               Live match may require attention:{" "}
               {match.teamA.shortName ?? match.teamA.name} vs{" "}
@@ -555,7 +555,7 @@ export const DashboardSummary = ({ user, tenant, role }: Props) => {
             !hasKnockoutRoundsStarted
           ) &&
           liveStuckMatches.length === 0 ? (
-            <p className="text-sm text-neutral-40">
+            <p className="text-sm text-on-surface-variant">
               No immediate issues detected.
             </p>
           ) : null}
@@ -563,7 +563,7 @@ export const DashboardSummary = ({ user, tenant, role }: Props) => {
       </Card>
 
       {matchesQuery.isError ? (
-        <p className="text-sm text-error-40">
+        <p className="text-sm text-on-error-container">
           {normalizeApiError(matchesQuery.error).message ||
             "Unable to load matches."}
         </p>
@@ -571,3 +571,6 @@ export const DashboardSummary = ({ user, tenant, role }: Props) => {
     </div>
   );
 };
+
+
+

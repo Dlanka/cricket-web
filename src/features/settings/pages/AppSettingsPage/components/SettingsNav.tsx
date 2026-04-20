@@ -33,8 +33,8 @@ export const SettingsNav = () => {
                 ? "cursor-not-allowed opacity-50"
                 : "",
               active
-                ? "border-primary-50 font-semibold text-primary-20"
-                : "border-transparent text-neutral-40 hover:text-primary-20",
+                ? "border-primary/35 font-semibold text-on-primary-container"
+                : "border-transparent text-on-surface-variant hover:text-on-primary-container",
             )}
             disabled={item.to === "/settings/tenant-members" && !canManageMembers}
           >
@@ -45,3 +45,4 @@ export const SettingsNav = () => {
     </div>
   );
 };
+

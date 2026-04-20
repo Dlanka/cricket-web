@@ -126,7 +126,7 @@ export const MatchStartPage = () => {
               <Link
                 to="/tournaments/$tournamentId/matches/$matchId/score"
                 params={{ tournamentId, matchId }}
-                className="rounded-full border border-neutral-90 px-4 py-2 text-sm font-semibold text-primary-20"
+                className="rounded-full border border-outline px-4 py-2 text-sm font-semibold text-on-primary-container"
               >
                 Open score
               </Link>
@@ -146,7 +146,7 @@ export const MatchStartPage = () => {
                   teamAName: match.teams.teamA.name,
                   teamBName: match.teams.teamB?.name ?? "Team B",
                 }}
-                className="rounded-full border border-neutral-90 px-4 py-2 text-sm font-semibold text-primary-20"
+                className="rounded-full border border-outline px-4 py-2 text-sm font-semibold text-on-primary-container"
               >
                 Set roster
               </Link>
@@ -186,3 +186,4 @@ export const MatchStartPage = () => {
     </PageStateGate>
   );
 };
+

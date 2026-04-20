@@ -14,8 +14,7 @@ export type WicketType =
   | "lbw"
   | "stumping"
   | "hitWicket"
-  | "runOutStriker"
-  | "runOutNonStriker"
+  | "runOut"
   | "obstructingField";
 
 export type WicketExtraType = "wide" | "noBall" | "none";
@@ -41,6 +40,7 @@ export type WicketEventRequest = {
   extraType?: WicketExtraType;
   newBatterId?: string;
   newBatterName?: string;
+  fielderId?: string;
   runOutBatsman?: "striker" | "nonStriker";
   runsWithWicket: RunValue;
   bowlerId?: string;

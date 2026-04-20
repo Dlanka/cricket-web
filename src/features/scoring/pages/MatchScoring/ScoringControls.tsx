@@ -3,10 +3,10 @@ import { Button } from "@/components/ui/button/Button";
 
 export const ScoringControls = () => (
   <Card>
-    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-40">
+    <p className="text-xs font-semibold uppercase tracking-widest text-on-surface-variant">
       Controls
     </p>
-    <p className="mt-2 text-sm text-neutral-40">Scoring controls coming next.</p>
+    <p className="mt-2 text-sm text-on-surface-variant">Scoring controls coming next.</p>
     <div className="mt-4 flex flex-wrap gap-2">
       <Button type="button" size="sm" disabled>
         +1 Run
@@ -20,3 +20,5 @@ export const ScoringControls = () => (
     </div>
   </Card>
 );
+
+

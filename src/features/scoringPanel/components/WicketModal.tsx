@@ -23,6 +23,7 @@ type Props = {
   runsWithWicket: RunValue;
   wicketExtraType: WicketExtraType;
   batterOptions: { id: string; name: string }[];
+  fielderOptions: { id: string; name: string }[];
   onClose: () => void;
   onSubmit: (payload: WicketEventRequest) => Promise<void>;
 };
@@ -33,8 +34,7 @@ const WICKET_TYPES = [
   { value: "lbw", label: "LBW" },
   { value: "stumping", label: "Stumping" },
   { value: "hitWicket", label: "Hit wicket" },
-  { value: "runOutStriker", label: "Run out (striker)" },
-  { value: "runOutNonStriker", label: "Run out (non-striker)" },
+  { value: "runOut", label: "Run out" },
   { value: "obstructingField", label: "Obstructing the field" },
 ] as const;
 
@@ -44,6 +44,7 @@ export const WicketModal = ({
   runsWithWicket,
   wicketExtraType,
   batterOptions,
+  fielderOptions,
   onClose,
   onSubmit,
 }: Props) => {
@@ -54,6 +55,7 @@ export const WicketModal = ({
       wicketType: "bowled",
       newBatterId: batterOptions[0]?.id ?? "",
       newBatterName: "",
+      fielderId: "",
       runOutBatsman: undefined,
       runsWithWicket,
     },
@@ -75,8 +77,11 @@ export const WicketModal = ({
     control: form.control,
     name: "wicketType",
   });
-  const showRunOutBatsman =
-    wicketType === "runOutStriker" || wicketType === "runOutNonStriker";
+  const showRunOutBatsman = wicketType === "runOut";
+  const showFielder =
+    wicketType === "caught" ||
+    wicketType === "stumping" ||
+    wicketType === "runOut";
   const wicketTypeOptions = WICKET_TYPES.map((type) => ({
     value: type.value,
     label: type.label,
@@ -90,6 +95,10 @@ export const WicketModal = ({
     { value: "", label: "Select incoming batter" },
     ...batterOptions.map((player) => ({ value: player.id, label: player.name })),
   ];
+  const caughtByOptions = [
+    { value: "", label: "Select fielder" },
+    ...fielderOptions.map((player) => ({ value: player.id, label: player.name })),
+  ];
 
   const submit = form.handleSubmit(async (values) => {
     try {
@@ -99,6 +108,7 @@ export const WicketModal = ({
         extraType: wicketExtraType,
         newBatterId: values.newBatterId?.trim() || undefined,
         newBatterName: values.newBatterName?.trim() || undefined,
+        fielderId: values.fielderId?.trim() || undefined,
         runOutBatsman: values.runOutBatsman,
         runsWithWicket,
       });
@@ -106,6 +116,7 @@ export const WicketModal = ({
         wicketType: "bowled",
         newBatterId: batterOptions[0]?.id ?? "",
         newBatterName: "",
+        fielderId: "",
         runOutBatsman: undefined,
         runsWithWicket,
       });
@@ -121,6 +132,16 @@ export const WicketModal = ({
         form.setError("wicketType", {
           type: "server",
           message: "Selected wicket type is not valid for this extra type.",
+        });
+      } else if (normalized.code === "score.fielder_required") {
+        form.setError("fielderId", {
+          type: "server",
+          message: "Select the fielder.",
+        });
+      } else if (normalized.code === "score.fielder_invalid") {
+        form.setError("fielderId", {
+          type: "server",
+          message: "Selected fielder is not in bowling XI.",
         });
       }
     }
@@ -173,6 +194,24 @@ export const WicketModal = ({
           </FormGroup>
         ) : null}
 
+        {showFielder ? (
+          <FormGroup
+            label={
+              wicketType === "caught"
+                ? "Caught by"
+                : wicketType === "stumping"
+                  ? "Stumped by"
+                  : "Run out by"
+            }
+            error={form.formState.errors.fielderId?.message}
+          >
+            <SelectField
+              options={caughtByOptions}
+              {...form.register("fielderId")}
+            />
+          </FormGroup>
+        ) : null}
+
         <FormGroup label="Next batter" error={form.formState.errors.newBatterId?.message}>
           <SelectField options={nextBatterOptions} {...form.register("newBatterId")} />
           <InputField
@@ -182,11 +221,11 @@ export const WicketModal = ({
           />
         </FormGroup>
 
-        <div className="rounded-xl border border-neutral-90 bg-neutral-99 px-3 py-2 text-xs text-neutral-40">
+        <div className="rounded-xl border border-outline bg-surface-container px-3 py-2 text-xs text-on-surface-variant">
           Extra type: {wicketExtraType}
         </div>
 
-        <div className="rounded-xl border border-neutral-90 bg-neutral-99 px-3 py-2 text-xs text-neutral-40">
+        <div className="rounded-xl border border-outline bg-surface-container px-3 py-2 text-xs text-on-surface-variant">
           Runs on wicket ball: {runsWithWicket}
         </div>
 
@@ -194,3 +233,4 @@ export const WicketModal = ({
     </RightSideModal>
   );
 };
+

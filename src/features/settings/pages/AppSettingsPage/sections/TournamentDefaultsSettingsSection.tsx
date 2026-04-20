@@ -112,12 +112,12 @@ export const TournamentDefaultsSettingsSection = () => {
   const { register, formState } = section.form;
 
   if (section.settingsQuery.isLoading) {
-    return <Card className="p-6 text-sm text-neutral-40">Loading settings...</Card>;
+    return <Card className="p-6 text-sm text-on-surface-variant">Loading settings...</Card>;
   }
 
   if (section.settingsQuery.isError) {
     return (
-      <Card className="p-6 text-sm text-error-40">
+      <Card className="p-6 text-sm text-on-error-container">
         {section.settingsQuery.error instanceof Error
           ? section.settingsQuery.error.message
           : "Unable to load settings."}
@@ -212,3 +212,4 @@ export const TournamentDefaultsSettingsSection = () => {
     </SettingsSectionCard>
   );
 };
+

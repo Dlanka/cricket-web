@@ -1,6 +1,7 @@
 import { useParams } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button/Button";
 import { Card } from "@/shared/components/card/Card";
+import { StatusPill } from "@/shared/components/badge/StatusPill";
 import { EmptyState } from "@/shared/components/feedback/EmptyState";
 import { PageHeader } from "@/shared/components/page/PageHeader";
 import { SkeletonBlock } from "@/shared/components/skeletons/SkeletonBlock";
@@ -19,59 +20,85 @@ const formatMetric = (value: unknown, digits = 2) =>
     ? value.toFixed(digits)
     : "-";
 
+const pointsFormulaItems = (
+  scoring: TournamentPlayerOfSeriesResponse["scoring"],
+) => [
+  { label: "Run", value: scoring.run },
+  { label: "Wicket", value: scoring.wicket },
+  { label: "4", value: scoring.four },
+  { label: "6", value: scoring.six },
+  { label: "50 Bonus", value: scoring.fiftyBonus },
+  { label: "100 Bonus", value: scoring.hundredBonus },
+  { label: "5W Bonus", value: scoring.fiveWicketBonus },
+  { label: "Catch", value: scoring.catch },
+  { label: "Run Out", value: scoring.runOut },
+];
+
 const renderWinnerSpotlight = (winner: PlayerOfSeriesRow) => (
-  <Card className="space-y-5 border-2 border-primary-80 bg-primary-95/70 p-5 shadow-sm md:p-6">
-    <div className="flex items-start justify-between gap-3">
+  <Card className="space-y-5 border-outline bg-surface-container p-6 md:p-7">
+    <div className="flex items-start justify-between gap-4">
       <div>
-        <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary-30">
+        <p className="font-display text-sm font-bold uppercase tracking-widest text-on-primary-container">
           Player of the Series
         </p>
-        <h2 className="mt-1 text-2xl font-bold text-primary-10 md:text-3xl">
+        <h2 className="mt-1 font-display text-5xl font-bold leading-none text-on-surface md:text-6xl">
           {winner.name}
         </h2>
-        <p className="text-sm font-medium text-neutral-50 md:text-base">
+        <p className="mt-2 text-xl font-medium text-on-surface-subtle">
           {teamName(winner)}
         </p>
       </div>
-      <div className="rounded-xl border border-primary-80 bg-white/80 px-4 py-3 text-center">
-        <p className="text-xs font-semibold uppercase tracking-[0.12em] text-primary-30">
+      <div className="rounded-2xl border border-primary/20 bg-surface-container-high px-5 py-4 text-center">
+        <StatusPill variant="success" size="xs">
           Points
-        </p>
-        <p className="text-3xl font-extrabold leading-none text-primary-20 md:text-4xl">
+        </StatusPill>
+        <p className="mt-2 font-display text-5xl font-extrabold leading-none text-on-primary-container md:text-6xl">
           {winner.points}
         </p>
       </div>
     </div>
 
-    <div className="grid grid-cols-2 gap-3 rounded-xl border border-primary-90/70 bg-white/80 p-3 text-sm md:grid-cols-6">
+    <div className="grid grid-cols-2 gap-4 rounded-2xl border border-outline bg-surface-container-high p-4 md:grid-cols-7">
       <div>
-        <p className="text-xs text-neutral-40">M</p>
-        <p className="font-semibold text-primary-10">{winner.matches}</p>
+        <p className="text-xs text-on-surface-muted">M</p>
+        <p className="font-display text-3xl font-bold leading-none text-on-surface">
+          {winner.matches}
+        </p>
       </div>
       <div>
-        <p className="text-xs text-neutral-40">Runs</p>
-        <p className="font-semibold text-primary-10">{winner.runs}</p>
+        <p className="text-xs text-on-surface-muted">Runs</p>
+        <p className="font-display text-3xl font-bold leading-none text-on-surface">
+          {winner.runs}
+        </p>
       </div>
       <div>
-        <p className="text-xs text-neutral-40">Wkts</p>
-        <p className="font-semibold text-primary-10">{winner.wickets}</p>
+        <p className="text-xs text-on-surface-muted">Wkts</p>
+        <p className="font-display text-3xl font-bold leading-none text-on-surface">
+          {winner.wickets}
+        </p>
       </div>
       <div>
-        <p className="text-xs text-neutral-40">SR</p>
-        <p className="font-semibold text-primary-10">
+        <p className="text-xs text-on-surface-muted">SR</p>
+        <p className="font-display text-3xl font-bold leading-none text-on-surface">
           {formatMetric(winner.strikeRate)}
         </p>
       </div>
       <div>
-        <p className="text-xs text-neutral-40">Econ</p>
-        <p className="font-semibold text-primary-10">
+        <p className="text-xs text-on-surface-muted">Econ</p>
+        <p className="font-display text-3xl font-bold leading-none text-on-surface">
           {formatMetric(winner.economy)}
         </p>
       </div>
       <div>
-        <p className="text-xs text-neutral-40">50s/100s/5W</p>
-        <p className="font-semibold text-primary-10">
+        <p className="text-xs text-on-surface-muted">50s/100s/5W</p>
+        <p className="font-display text-3xl font-bold leading-none text-on-surface">
           {winner.fifties}/{winner.hundreds}/{winner.fiveWicketHauls}
+        </p>
+      </div>
+      <div>
+        <p className="text-xs text-on-surface-muted">Catches/RO</p>
+        <p className="font-display text-3xl font-bold leading-none text-on-surface">
+          {winner.catches}/{winner.runOuts}
         </p>
       </div>
     </div>
@@ -135,7 +162,7 @@ export const TournamentAwardsPage = () => {
       <div className="space-y-4">
         {header}
         <Card className="space-y-4 p-4">
-          <div className="rounded-xl border border-error-80 bg-error-95 p-4 text-sm text-error-40">
+          <div className="rounded-xl border border-error/40 bg-error-container p-4 text-sm text-on-error-container">
             {awardsQuery.error instanceof Error
               ? awardsQuery.error.message
               : "Unable to load awards."}
@@ -196,7 +223,7 @@ export const TournamentAwardsPage = () => {
       render: (row) => (
         <span className="flex flex-col">
           <span>{row.name || "-"}</span>
-          <span className="text-xs text-neutral-40">{teamName(row)}</span>
+          <span className="text-xs text-on-surface-muted">{teamName(row)}</span>
         </span>
       ),
     },
@@ -263,38 +290,63 @@ export const TournamentAwardsPage = () => {
       className: "w-10 tabular-nums",
       render: (row) => row.fiveWicketHauls,
     },
+    {
+      key: "catches",
+      header: "C",
+      align: "right",
+      className: "w-10 tabular-nums",
+      render: (row) => row.catches,
+    },
+    {
+      key: "runOuts",
+      header: "RO",
+      align: "right",
+      className: "w-10 tabular-nums",
+      render: (row) => row.runOuts,
+    },
   ];
 
   return (
-    <div className="mx-auto w-full max-w-5xl space-y-4">
+    <div className="mx-auto w-full space-y-12">
       {header}
       {renderWinnerSpotlight(awards.winner)}
 
       <Card className="space-y-3 p-4">
         <div className="flex items-center justify-between gap-3">
-          <h3 className="text-sm font-semibold uppercase tracking-[0.16em] text-primary-20">
+          <h3 className="text-sm font-semibold uppercase tracking-wider text-on-primary-container">
             Leaderboard
           </h3>
-          <details className="text-xs text-neutral-40">
-            <summary className="cursor-pointer list-none font-semibold text-primary-20">
-              Points formula
-            </summary>
-            <p className="mt-2 text-right">
-              Run: {awards.scoring.run}, Wicket: {awards.scoring.wicket}, 4:{" "}
-              {awards.scoring.four}, 6: {awards.scoring.six}, 50 bonus:{" "}
-              {awards.scoring.fiftyBonus}, 100 bonus:{" "}
-              {awards.scoring.hundredBonus}, 5W bonus:{" "}
-              {awards.scoring.fiveWicketBonus}
-            </p>
-          </details>
         </div>
+
+        <details className="w-full text-xs text-on-surface-muted " open>
+          <summary className="mb-3 cursor-pointer list-none font-semibold text-on-primary-container">
+            Points formula
+          </summary>
+          <div className="mb-8 grid w-full grid-cols-2 gap-2 rounded-xl border border-outline bg-surface-container-high p-3 sm:grid-cols-3 lg:grid-cols-5">
+            {pointsFormulaItems(awards.scoring).map((item) => (
+              <div
+                key={item.label}
+                className="rounded-lg border border-outline-variant bg-surface-container px-3 py-2"
+              >
+                <p className="text-2xs font-semibold uppercase tracking-wider text-on-surface-muted">
+                  {item.label}
+                </p>
+                <p className="mt-1 font-display text-lg font-bold leading-none text-on-primary-container">
+                  {item.value}
+                </p>
+              </div>
+            ))}
+          </div>
+        </details>
+
+        <div className="border-t border-outline"></div>
 
         <Table
           columns={columns}
           rows={awards.leaderboard.slice(0, 10)}
           rowKey={(row, index) => `${row.playerId ?? row.name}-${index}`}
           emptyState={
-            <p className="text-sm text-neutral-40">No awards data yet</p>
+            <p className="text-sm text-on-surface-muted">No awards data yet</p>
           }
           tableClassName="min-w-0"
         />

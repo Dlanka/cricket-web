@@ -78,13 +78,13 @@ export const ProfileSettingsSection = () => {
 
   if (settingsQuery.isLoading) {
     return (
-      <Card className="p-6 text-sm text-neutral-40">Loading profile...</Card>
+      <Card className="p-6 text-sm text-on-surface-variant">Loading profile...</Card>
     );
   }
 
   if (settingsQuery.isError || !settingsQuery.data) {
     return (
-      <Card className="p-6 text-sm text-error-40">
+      <Card className="p-6 text-sm text-on-error-container">
         {settingsQuery.error instanceof Error
           ? settingsQuery.error.message
           : "Unable to load profile settings."}
@@ -115,27 +115,27 @@ export const ProfileSettingsSection = () => {
           </FormGroup>
         </div>
 
-        <div className="rounded-xl border border-neutral-90 p-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-neutral-40">
+        <div className="rounded-xl border border-outline p-4">
+          <p className="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">
             Tenant context
           </p>
-          <div className="mt-2 overflow-hidden rounded-lg border border-neutral-90">
-            <div className="grid grid-cols-[120px_1fr] gap-3 border-t border-neutral-90 px-3 py-2 text-sm text-primary-20 first:border-t-0">
-              <p className="text-xs font-semibold uppercase tracking-[0.12em] text-neutral-40">
+          <div className="mt-2 overflow-hidden rounded-lg border border-outline">
+            <div className="grid table-cols-label-value gap-3 border-t border-outline px-3 py-2 text-sm text-on-primary-container first:border-t-0">
+              <p className="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">
                 Tenant
               </p>
               <p className="font-semibold">{data.tenantContext.current.name}</p>
             </div>
-            <div className="grid grid-cols-[120px_1fr] gap-3 border-t border-neutral-90 px-3 py-2 text-sm text-primary-20">
-              <p className="text-xs font-semibold uppercase tracking-[0.12em] text-neutral-40">
+            <div className="grid table-cols-label-value gap-3 border-t border-outline px-3 py-2 text-sm text-on-primary-container">
+              <p className="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">
                 Role
               </p>
               <div className="">
                 <RoleBadge role={data.tenantContext.current.role} />
               </div>
             </div>
-            <div className="grid grid-cols-[120px_1fr] gap-3 border-t border-neutral-90 px-3 py-2 text-sm text-primary-20">
-              <p className="text-xs font-semibold uppercase tracking-[0.12em] text-neutral-40">
+            <div className="grid table-cols-label-value gap-3 border-t border-outline px-3 py-2 text-sm text-on-primary-container">
+              <p className="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">
                 Owner
               </p>
               <p>{data.tenantContext.current.isOwner ? "Yes" : "No"}</p>
@@ -143,36 +143,36 @@ export const ProfileSettingsSection = () => {
           </div>
         </div>
 
-        <div className="rounded-xl border border-neutral-90 p-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-neutral-40">
+        <div className="rounded-xl border border-outline p-4">
+          <p className="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">
             Account
           </p>
-          <div className="mt-2 grid grid-cols-1 gap-2 text-sm text-primary-20 md:grid-cols-3">
+          <div className="mt-2 grid grid-cols-1 gap-2 text-sm text-on-primary-container md:grid-cols-3">
             <p>Status: {data.account.status}</p>
             <p>Created: {formatDate(data.account.createdAt)}</p>
             <p>Last login: {formatDate(data.account.lastLoginAt)}</p>
           </div>
         </div>
 
-        <div className="rounded-xl border border-neutral-90 p-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-neutral-40">
+        <div className="rounded-xl border border-outline p-4">
+          <p className="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">
             Memberships
           </p>
-          <div className="mt-2 overflow-hidden rounded-lg border border-neutral-90">
-            <div className="grid grid-cols-[1fr_auto] bg-neutral-98 px-3 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-neutral-40">
+          <div className="mt-2 overflow-hidden rounded-lg border border-outline">
+            <div className="grid table-cols-auto-end bg-surface px-3 py-2 text-xs font-semibold uppercase tracking-wider text-on-surface-variant">
               <p>Name</p>
               <p>Status</p>
             </div>
             {data.tenantContext.memberships.map((membership) => (
               <div
                 key={membership.tenantId}
-                className="grid grid-cols-[1fr_auto] items-center gap-3 border-t border-neutral-90 px-3 py-2 text-sm text-primary-20"
+                className="grid table-cols-auto-end items-center gap-3 border-t border-outline px-3 py-2 text-sm text-on-primary-container"
               >
                 <div className="min-w-0">
                   <p className="truncate font-semibold">
                     {membership.tenantName}
                   </p>
-                  <p className="text-xs text-neutral-40">{membership.role}</p>
+                  <p className="text-xs text-on-surface-variant">{membership.role}</p>
                 </div>
                 <BadgePill label={membership.membershipStatus} tone="warning" />
               </div>
@@ -180,8 +180,8 @@ export const ProfileSettingsSection = () => {
           </div>
         </div>
 
-        <div className="rounded-xl border border-neutral-90 p-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-neutral-40">
+        <div className="rounded-xl border border-outline p-4">
+          <p className="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">
             Permissions
           </p>
           <div className="mt-2 flex flex-wrap gap-2">
@@ -194,7 +194,7 @@ export const ProfileSettingsSection = () => {
                 />
               ))
             ) : (
-              <p className="text-sm text-neutral-40">
+              <p className="text-sm text-on-surface-variant">
                 No permissions assigned.
               </p>
             )}
@@ -204,3 +204,6 @@ export const ProfileSettingsSection = () => {
     </SettingsSectionCard>
   );
 };
+
+
+

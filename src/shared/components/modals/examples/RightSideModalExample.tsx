@@ -6,16 +6,16 @@ export const RightSideModalExample = () => {
   const { isOpen, open, close } = useDisclosure();
 
   return (
-    <div className="rounded-3xl border border-neutral-90 bg-neutral-99 p-6 shadow-[0_30px_80px_-60px_rgba(15,23,42,0.45)]">
+    <div className="rounded-3xl border border-outline bg-surface-container p-6 shadow-surface-lg">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-40">
+          <p className="text-xs font-semibold uppercase tracking-widest text-on-surface-variant">
             Modal preview
           </p>
-          <h3 className="mt-2 text-xl font-semibold text-primary-10">
+          <h3 className="mt-2 text-xl font-semibold text-on-surface">
             Right side panel
           </h3>
-          <p className="mt-2 text-sm text-neutral-40">
+          <p className="mt-2 text-sm text-on-surface-variant">
             Use this panel for create or edit forms.
           </p>
         </div>
@@ -46,12 +46,12 @@ export const RightSideModalExample = () => {
           </div>
         }
       >
-        <div className="space-y-4 text-sm text-neutral-40">
+        <div className="space-y-4 text-sm text-on-surface-variant">
           <p>
             Replace this content with Team or Player forms inside feature
             folders.
           </p>
-          <div className="rounded-2xl border border-neutral-90 bg-neutral-99 p-4">
+          <div className="rounded-2xl border border-outline bg-surface-container p-4">
             Form fields go here.
           </div>
         </div>
@@ -59,3 +59,5 @@ export const RightSideModalExample = () => {
     </div>
   );
 };
+
+

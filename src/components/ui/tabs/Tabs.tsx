@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { tv } from "tailwind-variants";
 
 const tabsContainerStyles = tv({
-  base: "inline-flex rounded-xl border border-neutral-90 bg-neutral-98 p-1",
+  base: "inline-flex rounded-xl border border-outline bg-surface p-1",
   variants: {
     fullWidth: {
       true: "grid w-full",
@@ -15,8 +15,8 @@ const tabTriggerStyles = tv({
   base: "rounded-lg px-4 py-2 text-sm font-semibold transition",
   variants: {
     active: {
-      true: "bg-primary-90 text-primary-20",
-      false: "bg-transparent text-neutral-40 hover:bg-neutral-96",
+      true: "bg-primary-container text-on-primary-container",
+      false: "bg-transparent text-on-surface-variant hover:bg-surface-container-high",
     },
   },
 });
@@ -62,4 +62,6 @@ export const Tabs = ({
     ))}
   </div>
 );
+
+
 

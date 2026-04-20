@@ -10,9 +10,10 @@ export const AppSettingsPage = () => (
       description="Tenant-level defaults and permissions."
     />
 
-    <div className="grid grid-cols-1 gap-4 lg:grid-cols-[220px_minmax(0,1fr)]">
+    <div className="grid grid-cols-1 gap-4 lg:layout-split-sidebar">
       <SettingsNav />
       <Outlet />
     </div>
   </div>
 );
+

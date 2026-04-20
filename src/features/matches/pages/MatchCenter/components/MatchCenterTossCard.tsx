@@ -46,7 +46,7 @@ export const MatchCenterTossCard = ({
 
   return (
     <Card>
-      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-40">
+      <p className="text-xs font-semibold uppercase tracking-widest text-on-surface-muted">
         Toss
       </p>
       <div className="mt-4 grid gap-4 md:grid-cols-2">
@@ -72,7 +72,7 @@ export const MatchCenterTossCard = ({
       </div>
 
       {match.toss ? (
-        <p className="mt-3 text-xs text-neutral-40">
+        <p className="mt-3 text-xs text-on-surface-muted">
           Saved toss:{" "}
           {match.toss.wonByTeamId === match.teams.teamA.id
             ? match.teams.teamA.name
@@ -82,7 +82,7 @@ export const MatchCenterTossCard = ({
       ) : null}
 
       {tossError ? (
-        <div className="mt-3 rounded-xl border border-error-80 bg-error-95 px-3 py-2 text-xs text-error-40">
+        <div className="mt-3 rounded-xl border border-error/40 bg-error-container px-3 py-2 text-xs text-on-error-container">
           {tossError}
         </div>
       ) : null}
@@ -107,3 +107,5 @@ export const MatchCenterTossCard = ({
     </Card>
   );
 };
+
+

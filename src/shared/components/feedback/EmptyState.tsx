@@ -7,9 +7,10 @@ type EmptyStateProps = {
 };
 
 export const EmptyState = ({ title, description, action }: EmptyStateProps) => (
-  <div className="rounded-2xl border border-neutral-90 bg-neutral-99 p-6 text-center shadow-[0_20px_60px_-50px_rgba(15,23,42,0.4)]">
-    <h3 className="text-lg font-semibold text-primary-10">{title}</h3>
-    {description ? <p className="mt-2 text-sm text-neutral-40">{description}</p> : null}
+  <div className="rounded-2xl border border-outline bg-surface-container p-6 text-center shadow-surface-lg">
+    <h3 className="text-lg font-semibold text-on-surface">{title}</h3>
+    {description ? <p className="mt-2 text-sm text-on-surface-variant">{description}</p> : null}
     {action ? <div className="mt-4 flex justify-center">{action}</div> : null}
   </div>
 );
+

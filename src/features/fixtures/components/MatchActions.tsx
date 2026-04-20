@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { ButtonLink } from "@/components/ui/button/Button";
 import type { MatchItem } from "../types/fixtures.types";
 
 type Props = {
@@ -23,8 +23,7 @@ export const MatchActions = ({
 }: Props) => {
   const isKnockoutStage = ["R1", "QF", "SF", "FINAL"].includes(match.stage);
   const resultType =
-    match.result?.type ??
-    (match.result?.isNoResult ? "NO_RESULT" : null);
+    match.result?.type ?? (match.result?.isNoResult ? "NO_RESULT" : null);
   const canResolveTie =
     canStartMatch &&
     isKnockoutStage &&
@@ -41,94 +40,114 @@ export const MatchActions = ({
 
   return (
     <>
-    {canStartSuperOver ? (
-      <Link
-        to="/tournaments/$tournamentId/matches/$matchId"
-        params={{
-          tournamentId,
-          matchId: match.id,
-        }}
-        className="inline-flex items-center justify-center gap-2 rounded-full border border-primary-80 bg-primary-95 px-4 py-2 text-sm font-semibold text-primary-30 transition hover:border-primary-70"
-      >
-        Start Super Over
-      </Link>
-    ) : null}
-    {canResolveTie ? (
-      <Link
-        to="/tournaments/$tournamentId/matches/$matchId"
-        params={{
-          tournamentId,
-          matchId: match.id,
-        }}
-        className="inline-flex items-center justify-center gap-2 rounded-full border border-warning-80 bg-warning-95 px-4 py-2 text-sm font-semibold text-warning-30 transition hover:border-warning-70"
-      >
-        Resolve tie
-      </Link>
-    ) : null}
-    {match.status === "SCHEDULED" && canStartMatch ? (
-      <Link
-        to="/tournaments/$tournamentId/matches/$matchId"
-        params={{
-          tournamentId,
-          matchId: match.id,
-        }}
-        className="inline-flex items-center justify-center gap-2 rounded-full border border-neutral-90 px-4 py-2 text-sm font-semibold text-primary-20 transition hover:border-neutral-80 hover:text-primary-10"
-      >
-        Start match
-      </Link>
-    ) : null}
+      {canStartSuperOver ? (
+        <ButtonLink
+          to="/tournaments/$tournamentId/matches/$matchId"
+          params={{
+            tournamentId,
+            matchId: match.id,
+          }}
+          appearance="soft"
+          color="primary"
+          size="sm"
+        >
+          Start Super Over
+        </ButtonLink>
+      ) : null}
+      {canResolveTie ? (
+        <ButtonLink
+          to="/tournaments/$tournamentId/matches/$matchId"
+          params={{
+            tournamentId,
+            matchId: match.id,
+          }}
+          appearance="soft"
+          color="warning"
+          size="sm"
+          uppercase
+        >
+          Resolve tie
+        </ButtonLink>
+      ) : null}
+      {match.status === "SCHEDULED" && canStartMatch ? (
+        <ButtonLink
+          to="/tournaments/$tournamentId/matches/$matchId"
+          params={{
+            tournamentId,
+            matchId: match.id,
+          }}
+          appearance="filled"
+          color="primary"
+          uppercase
+          size="xs"
+        >
+          Start match
+        </ButtonLink>
+      ) : null}
 
-    {match.status === "LIVE" ? (
-      <Link
-        to="/tournaments/$tournamentId/matches/$matchId/score"
-        params={{
-          tournamentId,
-          matchId: match.id,
-        }}
-        className="inline-flex items-center justify-center gap-2 rounded-full border border-neutral-90 px-4 py-2 text-sm font-semibold text-primary-20 transition hover:border-neutral-80 hover:text-primary-10"
-      >
-        Live score
-      </Link>
-    ) : null}
+      {match.status === "LIVE" ? (
+        <ButtonLink
+          to="/tournaments/$tournamentId/matches/$matchId/score"
+          params={{
+            tournamentId,
+            matchId: match.id,
+          }}
+          appearance="filled"
+          color="primary"
+          size="xs"
+          uppercase
+        >
+          Live score
+        </ButtonLink>
+      ) : null}
 
-    {canEditRoster && match.status === "SCHEDULED" ? (
-      <Link
-        to="/tournaments/$tournamentId/matches/$matchId/roster"
-        params={{
-          tournamentId,
-          matchId: match.id,
-        }}
-        search={buildRosterSearch(match)}
-        className="inline-flex items-center justify-center gap-2 rounded-full border border-neutral-90 px-4 py-2 text-sm font-semibold text-primary-20 transition hover:border-neutral-80 hover:text-primary-10"
-      >
-        Set roster
-      </Link>
-    ) : match.status !== "COMPLETED" ? (
-      <Link
-        to="/tournaments/$tournamentId/matches/$matchId/roster"
-        params={{
-          tournamentId,
-          matchId: match.id,
-        }}
-        search={buildRosterSearch(match)}
-        className="inline-flex items-center justify-center gap-2 rounded-full border border-neutral-90 px-4 py-2 text-sm font-semibold text-primary-20 transition hover:border-neutral-80 hover:text-primary-10"
-      >
-        View roster
-      </Link>
-    ) : null}
+      {canEditRoster && match.status === "SCHEDULED" ? (
+        <ButtonLink
+          to="/tournaments/$tournamentId/matches/$matchId/roster"
+          params={{
+            tournamentId,
+            matchId: match.id,
+          }}
+          search={buildRosterSearch(match)}
+          appearance="soft"
+          color="neutral"
+          size="xs"
+          uppercase
+        >
+          Set roster
+        </ButtonLink>
+      ) : match.status !== "COMPLETED" ? (
+        <ButtonLink
+          to="/tournaments/$tournamentId/matches/$matchId/roster"
+          params={{
+            tournamentId,
+            matchId: match.id,
+          }}
+          search={buildRosterSearch(match)}
+          appearance="soft"
+          color="neutral"
+          size="xs"
+          uppercase
+        >
+          View roster
+        </ButtonLink>
+      ) : null}
 
-    {match.status === "COMPLETED" || match.status === "LIVE" ? (
-      <Link
-        to="/tournaments/$tournamentId/matches/$matchId/summary"
-        params={{
-          tournamentId,
-          matchId: match.id,
-        }}
-        className="inline-flex items-center justify-center gap-2 rounded-full border border-neutral-90 px-4 py-2 text-sm font-semibold text-primary-20 transition hover:border-neutral-80 hover:text-primary-10"
-      >
-        Summary
-      </Link>
-    ) : null}
-  </>
+      {match.status === "COMPLETED" || match.status === "LIVE" ? (
+        <ButtonLink
+          to="/tournaments/$tournamentId/matches/$matchId/summary"
+          params={{
+            tournamentId,
+            matchId: match.id,
+          }}
+          appearance="soft"
+          color="neutral"
+          size="xs"
+          uppercase
+        >
+          Summary
+        </ButtonLink>
+      ) : null}
+    </>
   );
 };

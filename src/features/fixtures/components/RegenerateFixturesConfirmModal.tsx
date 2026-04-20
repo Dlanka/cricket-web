@@ -44,9 +44,10 @@ export const RegenerateFixturesConfirmModal = ({
       </div>
     }
   >
-    <p className="text-sm text-neutral-40">
+    <p className="text-sm text-on-surface-muted">
       Regenerating replaces the currently scheduled fixtures using the latest
       tournament config.
     </p>
   </RightSideModal>
 );
+

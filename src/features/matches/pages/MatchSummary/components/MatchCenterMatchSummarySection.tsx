@@ -10,6 +10,7 @@ import type {
 import { formatMatchOutcome } from "@/features/matches/utils/formatMatchOutcome";
 import { EmptyState } from "@/shared/components/feedback/EmptyState";
 import { Card } from "@/shared/components/card/Card";
+import { StatusPill } from "@/shared/components/badge/StatusPill";
 import { SkeletonBlock } from "@/shared/components/skeletons/SkeletonBlock";
 import { Table, type TableColumn } from "@/shared/components/table/Table";
 
@@ -53,6 +54,13 @@ const formatTeamScoreLine = (innings: InningsSummary | undefined) =>
       )})`
     : "-/- (-)";
 
+const resultPillVariant = (badge: string) => {
+  if (badge === "WIN") return "success" as const;
+  if (badge === "TIE") return "warning" as const;
+  if (badge === "NO RESULT") return "neutral" as const;
+  return "info" as const;
+};
+
 const battingColumns: TableColumn<BattingRowSummary>[] = [
   {
     key: "name",
@@ -60,8 +68,8 @@ const battingColumns: TableColumn<BattingRowSummary>[] = [
     className: "w-[52%]",
     render: (row) => (
       <div>
-        <p className="font-medium text-primary-10">{fallback(row.name)}</p>
-        <p className="text-xs text-neutral-40">{formatDismissal(row)}</p>
+        <p className="font-medium text-on-surface">{fallback(row.name)}</p>
+        <p className="text-xs text-on-surface-muted">{formatDismissal(row)}</p>
       </div>
     ),
   },
@@ -150,7 +158,7 @@ const InningsCard = ({ innings }: { innings: InningsSummary }) => (
   <Card className="space-y-4">
     <div className="flex flex-wrap items-start justify-between gap-3">
       <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-40">
+        <p className="text-xs font-semibold uppercase tracking-widest text-on-surface-muted">
           Innings {innings.inningsNumber}
         </p>
       </div>
@@ -162,15 +170,15 @@ const InningsCard = ({ innings }: { innings: InningsSummary }) => (
         columns={battingColumns}
         rows={innings.batting}
         rowKey={(row, index) => `${row.playerId ?? row.name}-${index}`}
-        emptyState={<p className="text-sm text-neutral-40">No batting data.</p>}
+        emptyState={<p className="text-sm text-on-surface-muted">No batting data.</p>}
       />
     </div>
 
-    <div className="border-t border-neutral-90 pt-4 text-sm text-neutral-40">
+    <div className="border-t border-outline pt-4 text-sm text-on-surface-muted">
       <div className="flex items-center justify-between gap-3">
-        <p className="font-semibold text-primary-10">Extras</p>
+        <p className="font-semibold text-on-surface">Extras</p>
         <div className="text-right">
-          <p className="mt-1 whitespace-nowrap font-semibold text-primary-10">
+          <p className="mt-1 whitespace-nowrap font-semibold text-on-surface">
             {fallback(innings.extras.total, "0")} (Wd{" "}
             {fallback(innings.extras.wides, "0")}, Nb{" "}
             {fallback(innings.extras.noBalls, "0")}, B{" "}
@@ -181,24 +189,24 @@ const InningsCard = ({ innings }: { innings: InningsSummary }) => (
       </div>
     </div>
 
-    <div className="border-t border-neutral-90 pt-4 text-neutral-40 text-sm">
+    <div className="border-t border-outline pt-4 text-on-surface-muted text-sm">
       <div className="flex items-center justify-between gap-3">
-        <p className="font-semibold text-primary-10">Total</p>
-        <p className="text-right font-semibold text-primary-10">
+        <p className="font-semibold text-on-surface">Total</p>
+        <p className="text-right font-semibold text-on-surface">
           {fallback(innings.runs, "0")}/{fallback(innings.wickets, "0")} (
           {fallback(innings.overs, "0.0")} ov)
         </p>
       </div>
     </div>
 
-    <div className="border-t border-neutral-90 pt-4">
-      <p className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-neutral-40">
+    <div className="border-t border-outline pt-4">
+      <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-on-surface-muted">
         Fall of wickets
       </p>
       {innings.fallOfWickets.length === 0 ? (
-        <p className="text-sm text-neutral-40">No wickets yet.</p>
+        <p className="text-sm text-on-surface-muted">No wickets yet.</p>
       ) : (
-        <ul className="space-y-1 text-sm text-primary-10">
+        <ul className="space-y-1 text-sm text-on-surface">
           {innings.fallOfWickets.map((item, index) => (
             <li key={`${item.wicket ?? index}-${item.over ?? index}`}>
               {formatFow(item)}
@@ -208,12 +216,12 @@ const InningsCard = ({ innings }: { innings: InningsSummary }) => (
       )}
     </div>
 
-    <div className="pt-3 border-t border-neutral-90">
+    <div className="pt-3 border-t border-outline">
       <Table
         columns={bowlingColumns}
         rows={innings.bowling}
         rowKey={(row, index) => `${row.playerId ?? row.name}-${index}`}
-        emptyState={<p className="text-sm text-neutral-40">No bowling data.</p>}
+        emptyState={<p className="text-sm text-on-surface-muted">No bowling data.</p>}
       />
     </div>
   </Card>
@@ -236,7 +244,7 @@ export const MatchCenterMatchSummarySection = ({ matchId }: Props) => {
   if (summaryQuery.isError) {
     return (
       <Card className="space-y-4">
-        <div className="rounded-xl border border-error-80 bg-error-95 p-4 text-sm text-error-40">
+        <div className="rounded-xl border border-error/40 bg-error-container p-4 text-sm text-on-error-container">
           {summaryQuery.error instanceof Error
             ? summaryQuery.error.message
             : "Unable to load match summary."}
@@ -279,8 +287,8 @@ export const MatchCenterMatchSummarySection = ({ matchId }: Props) => {
   return (
     <div className="space-y-4">
       <Card className="space-y-4">
-        <div className="rounded-2xl border border-neutral-90 bg-neutral-99 p-5">
-          <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-neutral-40">
+        <div className="rounded-2xl border border-outline bg-surface-container p-5">
+          <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-on-surface-muted">
             <p>{fallback(summary.match.stage, "Match")}</p>
             <p>
               {fallback(summary.match.oversPerInnings, "0")} overs /{" "}
@@ -289,29 +297,33 @@ export const MatchCenterMatchSummarySection = ({ matchId }: Props) => {
           </div>
           <div className="mt-4 grid grid-cols-3 items-center gap-2 text-center">
             <div>
-              <p className="text-lg font-bold text-primary-10">
+              <p className="text-lg font-bold text-on-surface">
                 {formatTeamScoreLine(teamAInnings)}
               </p>
-              <p className="mt-1 text-sm font-semibold text-neutral-40">
+              <p className="mt-1 text-sm font-semibold text-on-surface-muted">
                 {fallback(summary.match.teamA?.name)}
               </p>
             </div>
             <div>
-              <p className="text-xs uppercase tracking-[0.2em] text-neutral-40">
+              <p className="text-xs uppercase tracking-widest text-on-surface-muted">
                 {fallback(summary.match.status)}
               </p>
-              <div className="mt-1 inline-flex rounded-full border border-primary-90 bg-primary-95 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-primary-20">
+              <StatusPill
+                variant={resultPillVariant(resultOutcome.badge)}
+                size="xs"
+                className="mt-1"
+              >
                 {resultOutcome.badge}
-              </div>
-              <p className="mt-2 text-sm font-semibold text-primary-30">
+              </StatusPill>
+              <p className="mt-2 text-sm font-semibold text-on-primary-container">
                 {resultOutcome.text}
               </p>
             </div>
             <div>
-              <p className="text-lg font-bold text-primary-10">
+              <p className="text-lg font-bold text-on-surface">
                 {formatTeamScoreLine(teamBInnings)}
               </p>
-              <p className="mt-1 text-sm font-semibold text-neutral-40">
+              <p className="mt-1 text-sm font-semibold text-on-surface-muted">
                 {fallback(summary.match.teamB?.name)}
               </p>
             </div>
@@ -336,8 +348,8 @@ export const MatchCenterMatchSummarySection = ({ matchId }: Props) => {
                 onClick={() => setActiveInningsIndex(tab.index)}
                 className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
                   activeInningsIndex === tab.index
-                    ? "bg-primary-90 text-primary-20"
-                    : "bg-neutral-98 text-neutral-40 hover:bg-neutral-95"
+                    ? "bg-primary-container text-on-primary-container"
+                    : "bg-surface-container text-on-surface-muted hover:bg-surface-container-high"
                 }`}
               >
                 {tab.label}
@@ -359,3 +371,5 @@ export const MatchCenterMatchSummarySection = ({ matchId }: Props) => {
     </div>
   );
 };
+
+

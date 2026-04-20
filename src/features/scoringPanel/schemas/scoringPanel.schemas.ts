@@ -14,12 +14,12 @@ export const wicketFormSchema = z
       "lbw",
       "stumping",
       "hitWicket",
-      "runOutStriker",
-      "runOutNonStriker",
+      "runOut",
       "obstructingField",
     ]),
     newBatterId: z.string().trim().optional(),
     newBatterName: z.string().trim().optional(),
+    fielderId: z.string().trim().optional(),
     runOutBatsman: z.enum(["striker", "nonStriker"]).optional(),
     runsWithWicket: z.union([
       z.literal(0),
@@ -31,14 +31,25 @@ export const wicketFormSchema = z
     ]),
   })
   .superRefine((values, ctx) => {
-    const isRunOut =
-      values.wicketType === "runOutStriker" ||
-      values.wicketType === "runOutNonStriker";
+    const isRunOut = values.wicketType === "runOut";
     if (isRunOut && !values.runOutBatsman) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["runOutBatsman"],
         message: "Select which batter is run out.",
+      });
+    }
+
+    const requiresFielder =
+      values.wicketType === "caught" ||
+      values.wicketType === "stumping" ||
+      values.wicketType === "runOut";
+
+    if (requiresFielder && !values.fielderId?.trim()) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["fielderId"],
+        message: "Select the fielder.",
       });
     }
   });

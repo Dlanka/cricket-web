@@ -35,7 +35,7 @@ export const TournamentFixturesPage = () => {
 
   if (!tournamentId) {
     return (
-      <div className="rounded-2xl border border-error-80 bg-error-95 p-6 text-sm text-error-40 shadow-[0_20px_60px_-50px_rgba(15,23,42,0.35)] backdrop-blur">
+      <div className="rounded-2xl border border-error/40 bg-error-container p-6 text-sm text-on-error-container shadow-surface-lg backdrop-blur">
         Missing tournament id.
       </div>
     );
@@ -57,17 +57,17 @@ export const TournamentFixturesPage = () => {
   };
 
   return (
-    <div className="mx-auto w-full max-w-5xl space-y-8 px-6">
+    <div className="mx-auto w-full space-y-12">
       <header className="space-y-3">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-40">
+        <p className="text-xs font-semibold uppercase tracking-widest text-on-surface-muted">
           Fixtures
         </p>
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-semibold text-primary-10">
+            <h1 className="text-3xl font-semibold text-on-surface">
               Tournament fixtures
             </h1>
-            <p className="mt-2 text-sm text-neutral-40">
+            <p className="mt-2 text-sm text-on-surface-muted">
               Track scheduled matches by stage.
             </p>
           </div>
@@ -88,17 +88,21 @@ export const TournamentFixturesPage = () => {
         </div>
       </header>
       {isError ? (
-        <div className="rounded-2xl border border-error-80 bg-error-95 p-6 text-sm text-error-40 shadow-[0_20px_60px_-50px_rgba(15,23,42,0.35)] backdrop-blur">
+        <div className="rounded-2xl border border-error/40 bg-error-container p-6 text-sm text-on-error-container shadow-surface-lg backdrop-blur">
           {error instanceof Error ? error.message : "Unable to load fixtures."}
         </div>
       ) : null}
       {data && data.length > 0 ? (
         <MatchList groups={groupedMatches} />
       ) : (
-        <div className="rounded-2xl border border-neutral-90 bg-neutral-99 p-6 text-sm text-neutral-40">
+        <div className="rounded-2xl border border-outline bg-surface-container p-6 text-sm text-on-surface-muted">
           No fixtures yet for this tournament.
         </div>
       )}
     </div>
   );
 };
+
+
+
+

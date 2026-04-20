@@ -75,7 +75,7 @@ export const ResolveTieModal = ({
           disabled={isSubmitting}
         />
         {errorMessage ? (
-          <div className="rounded-xl border border-error-80 bg-error-95 px-3 py-2 text-xs text-error-40">
+          <div className="rounded-xl border border-error/40 bg-error-container px-3 py-2 text-xs text-on-error-container">
             {errorMessage}
           </div>
         ) : null}
@@ -83,3 +83,4 @@ export const ResolveTieModal = ({
     </RightSideModal>
   );
 };
+

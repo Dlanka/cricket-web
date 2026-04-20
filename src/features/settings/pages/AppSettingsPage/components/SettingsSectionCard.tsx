@@ -22,7 +22,7 @@ export const SettingsSectionCard = ({
   children,
 }: SettingsSectionCardProps) => (
   <Card className="space-y-4 p-4">
-    <h2 className="text-sm font-semibold uppercase tracking-[0.16em] text-primary-20">
+    <h2 className="text-sm font-semibold uppercase tracking-wider text-on-primary-container">
       {title}
     </h2>
     {children}
@@ -43,3 +43,5 @@ export const SettingsSectionCard = ({
     ) : null}
   </Card>
 );
+
+

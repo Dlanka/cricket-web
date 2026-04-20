@@ -10,6 +10,16 @@ import { useTeamsByTournamentQuery } from "@/features/teams/hooks/useTeamsByTour
 import { useDeleteTournamentMutation } from "../../hooks/useDeleteTournamentMutation";
 import { normalizeApiError } from "@/shared/utils/apiErrors";
 import { useAuthorization } from "@/features/authz/hooks/useAuthorization";
+import { PageHeader } from "@/shared/components/page/PageHeader";
+import { TournamentStatusPill } from "@/features/tournament-ui/components/TournamentStatusPill";
+import { TournamentHeaderActions } from "../../components/TournamentHeaderActions";
+import type { TournamentType } from "../../types/tournamentTypes";
+
+const typeLabelMap: Record<TournamentType, string> = {
+  LEAGUE: "League",
+  KNOCKOUT: "Knockout",
+  LEAGUE_KNOCKOUT: "League + Knockout",
+};
 
 const formatDeleteSummary = (
   deleted?: {
@@ -62,7 +72,7 @@ export const TournamentDetailsPage = () => {
 
   if (!id) {
     return (
-      <div className="rounded-2xl border border-error-80 bg-error-95 p-6 text-sm text-error-40 shadow-[0_20px_60px_-50px_rgba(15,23,42,0.35)] backdrop-blur">
+      <div className="rounded-2xl border border-error/40 bg-error-container p-6 text-sm text-on-error-container shadow-surface-lg backdrop-blur">
         Missing tournament id.
       </div>
     );
@@ -87,9 +97,9 @@ export const TournamentDetailsPage = () => {
   };
 
   return (
-    <div className="mx-auto w-full max-w-4xl space-y-6">
+    <div className="mx-auto w-full space-y-12">
       {isError ? (
-        <div className="rounded-2xl border border-error-80 bg-error-95 p-6 text-sm text-error-40 shadow-[0_20px_60px_-50px_rgba(15,23,42,0.35)] backdrop-blur">
+        <div className="rounded-2xl border border-error/40 bg-error-container p-6 text-sm text-on-error-container shadow-surface-lg backdrop-blur">
           {error instanceof Error
             ? error.message
             : "Unable to load tournament."}
@@ -98,12 +108,33 @@ export const TournamentDetailsPage = () => {
 
       {data ? (
         <>
+          <PageHeader
+            eyebrow="Tournament overview"
+            title={data.name}
+            description={
+              data.overview?.type
+                ? typeLabelMap[data.overview.type]
+                : data.type
+                  ? typeLabelMap[data.type]
+                  : "Tournament details"
+            }
+            actions={
+              <div className="flex items-center gap-2">
+                <TournamentStatusPill
+                  status={data.overview?.status ?? data.status}
+                />
+                {canEdit ? (
+                  <TournamentHeaderActions
+                    onEdit={openEdit}
+                    onDelete={openDelete}
+                  />
+                ) : null}
+              </div>
+            }
+          />
           <TournamentDetailsCard
             tournament={data}
             teamCount={teamsQuery.data?.length}
-            canEdit={canEdit}
-            onEdit={openEdit}
-            onDelete={canEdit ? openDelete : undefined}
           />
         </>
       ) : null}
@@ -133,3 +164,4 @@ export const TournamentDetailsPage = () => {
     </div>
   );
 };
+

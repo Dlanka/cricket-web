@@ -14,7 +14,7 @@ export const MatchSummaryPage = ({
   const navigate = useNavigate();
 
   return (
-    <div className="mx-auto w-full max-w-4xl space-y-6 px-6">
+    <div className="mx-auto w-full space-y-12">
       <PageHeader
         eyebrow="Match"
         title="Summary"
@@ -33,3 +33,4 @@ export const MatchSummaryPage = ({
     </div>
   );
 };
+

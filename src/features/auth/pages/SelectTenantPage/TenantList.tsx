@@ -49,14 +49,14 @@ export const TenantList = ({ onSuccess }: Props) => {
           type="button"
           disabled={mutation.isPending}
           onClick={() => handleSelect(tenant.id)}
-          className="group flex flex-col rounded-2xl border border-neutral-90 bg-neutral-99 px-6 py-5 text-left text-primary-10 shadow-[0_20px_60px_-50px_rgba(15,23,42,0.35)] transition hover:-translate-y-0.5 hover:border-neutral-80 hover:text-primary-10 disabled:cursor-not-allowed disabled:opacity-70"
+          className="group flex flex-col rounded-2xl border border-outline bg-surface-container px-6 py-5 text-left text-on-surface shadow-surface-lg transition hover:-translate-y-0.5 hover:border-outline-strong hover:text-on-surface disabled:cursor-not-allowed disabled:opacity-70"
         >
           <span className="text-sm font-semibold">{tenant.name}</span>
-          <span className="mt-2 text-xs uppercase tracking-[0.2em] text-neutral-40">
+          <span className="mt-2 text-xs uppercase tracking-widest text-on-surface-variant">
             {tenant.role ?? "Member"}
           </span>
           {selectedTenant === tenant.id ? (
-            <span className="mt-2 text-xs font-semibold text-neutral-50">
+            <span className="mt-2 text-xs font-semibold text-on-surface-muted">
               Selecting...
             </span>
           ) : null}
@@ -65,3 +65,5 @@ export const TenantList = ({ onSuccess }: Props) => {
     </div>
   );
 };
+
+

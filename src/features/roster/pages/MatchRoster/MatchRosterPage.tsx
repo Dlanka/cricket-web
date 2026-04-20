@@ -67,7 +67,7 @@ export const MatchRosterPage = () => {
 
   if (!matchId) {
     return (
-      <div className="rounded-2xl border border-error-80 bg-error-95 p-6 text-sm text-error-40 shadow-[0_20px_60px_-50px_rgba(15,23,42,0.35)] backdrop-blur">
+      <div className="rounded-2xl border border-error/25 bg-error-container p-6 text-sm text-on-error-container shadow-surface-lg backdrop-blur">
         Missing match id.
       </div>
     );
@@ -111,10 +111,10 @@ export const MatchRosterPage = () => {
     status === "saved" ? "Saved" : status === "unsaved" ? "Unsaved" : "Incomplete";
   const getTabStatusDotClassName = (status: "saved" | "unsaved" | "incomplete") =>
     status === "saved"
-      ? "bg-success-40"
+      ? "bg-success"
       : status === "unsaved"
-        ? "bg-secondary-40"
-        : "bg-error-40";
+        ? "bg-warning"
+        : "bg-error";
   const handleTabStatusChange = (
     teamId: string,
     status: "saved" | "unsaved" | "incomplete",
@@ -132,7 +132,7 @@ export const MatchRosterPage = () => {
       errorMessage={loadErrorMessage}
       isNotFound={!teamAId}
       notFoundMessage="Match team details are missing."
-      alertClassName="shadow-[0_20px_60px_-50px_rgba(15,23,42,0.35)] backdrop-blur"
+      alertClassName="shadow-surface-lg backdrop-blur"
     >
       {teamAId ? (
         <div className="mx-auto w-full max-w-6xl space-y-8 px-6">
@@ -152,17 +152,17 @@ export const MatchRosterPage = () => {
           <div className="space-y-4">
             {teamBId ? (
               <>
-                <div className="flex flex-wrap items-center gap-4 text-xs text-neutral-40">
+                <div className="flex flex-wrap items-center gap-4 text-xs text-on-surface-variant">
                   <span className="inline-flex items-center gap-2">
-                    <span className="h-2.5 w-2.5 rounded-full bg-success-40" />
+                    <span className="h-2.5 w-2.5 rounded-full bg-success" />
                     Saved
                   </span>
                   <span className="inline-flex items-center gap-2">
-                    <span className="h-2.5 w-2.5 rounded-full bg-secondary-40" />
+                    <span className="h-2.5 w-2.5 rounded-full bg-warning" />
                     Unsaved
                   </span>
                   <span className="inline-flex items-center gap-2">
-                    <span className="h-2.5 w-2.5 rounded-full bg-error-40" />
+                    <span className="h-2.5 w-2.5 rounded-full bg-error" />
                     Incomplete
                   </span>
                 </div>
@@ -238,3 +238,5 @@ export const MatchRosterPage = () => {
     </PageStateGate>
   );
 };
+
+

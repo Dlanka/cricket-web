@@ -64,7 +64,7 @@ const renderLinkifiedText = (text: string) =>
           href={part}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-primary-20 underline underline-offset-2 hover:text-primary-10"
+          className="text-on-primary-container underline underline-offset-2 hover:text-on-surface"
         >
           {part}
         </a>
@@ -231,7 +231,7 @@ export const TeamAccessLinksModal = ({
       }
     >
       <div className="space-y-4">
-        <p className="rounded-xl border border-warning-80 bg-warning-95 px-3 py-2 text-xs text-warning-30">
+        <p className="rounded-xl border border-warning/25 bg-warning-container px-3 py-2 text-xs text-on-warning-container">
           Regenerating replaces the previous link immediately.
         </p>
         <FormGroup
@@ -259,19 +259,19 @@ export const TeamAccessLinksModal = ({
         </FormGroup>
 
         {currentShareQuery.isLoading ? (
-          <div className="rounded-xl border border-neutral-90 px-3 py-3 text-sm text-neutral-40">
+          <div className="rounded-xl border border-outline px-3 py-3 text-sm text-on-surface-variant">
             Loading current share...
           </div>
         ) : currentShareQuery.isError ? (
-          <div className="rounded-xl border border-error-80 bg-error-95 px-3 py-3 text-sm text-error-40">
+          <div className="rounded-xl border border-error/25 bg-error-container px-3 py-3 text-sm text-on-error-container">
             {mapTeamAccessError(currentShareQuery.error)}
           </div>
         ) : currentShare ? (
-          <div className="space-y-3 rounded-xl border border-neutral-90 p-3">
-            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-neutral-40">
+          <div className="space-y-3 rounded-xl border border-outline p-3">
+            <p className="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">
               Current active share
             </p>
-            <p className="text-xs text-neutral-40">Expires {relativeTime(currentShare.expiresAt)}</p>
+            <p className="text-xs text-on-surface-variant">Expires {relativeTime(currentShare.expiresAt)}</p>
             {currentAccessUrl ? (
               <FormGroup label="Access URL">
                 <div className="space-y-2">
@@ -279,7 +279,7 @@ export const TeamAccessLinksModal = ({
                     href={currentAccessUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex text-xs font-medium text-primary-20 underline underline-offset-2 hover:text-primary-10"
+                    className="inline-flex text-xs font-medium text-on-primary-container underline underline-offset-2 hover:text-on-surface"
                   >
                     Open access link
                   </a>
@@ -287,11 +287,10 @@ export const TeamAccessLinksModal = ({
                     <InputField value={currentAccessUrl} readOnly />
                     <Button
                       type="button"
-                      size="sm"
+                      size="md"
                       appearance="outline"
                       color="neutral"
                       shape="square"
-                      className="h-10 w-10 p-0"
                       onClick={() => {
                         void navigator.clipboard
                           .writeText(currentAccessUrl)
@@ -306,7 +305,7 @@ export const TeamAccessLinksModal = ({
             ) : null}
             <FormGroup label="Message">
               <div className="space-y-2">
-                <div className="rounded-lg border border-neutral-90 bg-neutral-99 p-2 text-xs text-neutral-30">
+                <div className="rounded-lg border border-outline bg-surface-container p-2 text-xs text-on-surface">
                   <p className="whitespace-pre-wrap break-words">
                     {renderLinkifiedText(normalizeShareMessage(currentShare.message, "", currentAccessUrl ?? undefined))}
                   </p>
@@ -357,7 +356,7 @@ export const TeamAccessLinksModal = ({
                   </Button>
                 </div>
                 {!currentShare.phoneNumber ? (
-                  <p className="text-xs text-warning-30">
+                  <p className="text-xs text-on-warning-container">
                     Phone number is missing. Share on WhatsApp is unavailable.
                   </p>
                 ) : null}
@@ -365,46 +364,45 @@ export const TeamAccessLinksModal = ({
             </FormGroup>
           </div>
         ) : (
-          <div className="rounded-xl border border-neutral-90 px-3 py-3 text-sm text-neutral-40">
+          <div className="rounded-xl border border-outline px-3 py-3 text-sm text-on-surface-variant">
             No active link. Generate a new team access link.
           </div>
         )}
 
-        <div className="overflow-hidden rounded-xl border border-neutral-90">
-          <div className="grid grid-cols-[1fr_auto] bg-neutral-98 px-3 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-neutral-40">
+        <div className="overflow-hidden rounded-xl border border-outline">
+          <div className="grid table-cols-auto-end bg-surface px-3 py-2 text-xs font-semibold uppercase tracking-wider text-on-surface-variant">
             <p>Link</p>
             <p>Actions</p>
           </div>
           {linksQuery.isLoading ? (
-            <p className="px-3 py-3 text-sm text-neutral-40">Loading links...</p>
+            <p className="px-3 py-3 text-sm text-on-surface-variant">Loading links...</p>
           ) : linksQuery.isError ? (
-            <p className="px-3 py-3 text-sm text-error-40">
+            <p className="px-3 py-3 text-sm text-on-error-container">
               {mapTeamAccessError(linksQuery.error)}
             </p>
           ) : (linksQuery.data ?? []).length === 0 ? (
-            <p className="px-3 py-3 text-sm text-neutral-40">No active links.</p>
+            <p className="px-3 py-3 text-sm text-on-surface-variant">No active links.</p>
           ) : (
             (linksQuery.data ?? []).map((link) => (
               <div
                 key={link.id}
-                className="grid grid-cols-[1fr_auto] items-center gap-3 border-t border-neutral-90 px-3 py-2 text-sm"
+                className="grid table-cols-auto-end items-center gap-3 border-t border-outline px-3 py-2 text-sm"
               >
                 <div>
-                  <p className="font-medium text-primary-20">
+                  <p className="font-medium text-on-primary-container">
                     <Link2 className="mr-1 inline h-4 w-4" />
                     Link #{link.id.slice(0, 8)}
                   </p>
-                  <p className="text-xs text-neutral-40">
+                  <p className="text-xs text-on-surface-variant">
                     Expires {relativeTime(link.expiresAt)}
                   </p>
                 </div>
                 <Button
                   type="button"
-                  size="sm"
+                  size="xs"
                   appearance="outline"
                   color="error"
                   shape="square"
-                  className="h-8 w-8 p-0"
                   onClick={() => void onRevoke(link.id)}
                   disabled={isBusy}
                   title="Revoke link"
@@ -419,3 +417,6 @@ export const TeamAccessLinksModal = ({
     </RightSideModal>
   );
 };
+
+
+

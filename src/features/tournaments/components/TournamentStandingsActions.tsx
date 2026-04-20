@@ -28,7 +28,7 @@ export const TournamentStandingsActions = ({
       disabled={!canRecompute || isRecomputing || isGenerating}
       onClick={onRecompute}
     >
-      {isRecomputing ? "Recomputing..." : "Recompute Standings"}
+      {isRecomputing ? "Recomputing..." : "Recompute"}
     </Button>
     {showGenerate ? (
       <Button

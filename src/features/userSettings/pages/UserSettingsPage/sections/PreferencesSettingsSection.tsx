@@ -97,12 +97,12 @@ export const PreferencesSettingsSection = () => {
   };
 
   if (settingsQuery.isLoading) {
-    return <Card className="p-6 text-sm text-neutral-40">Loading preferences...</Card>;
+    return <Card className="p-6 text-sm text-on-surface-variant">Loading preferences...</Card>;
   }
 
   if (settingsQuery.isError || !settingsQuery.data) {
     return (
-      <Card className="p-6 text-sm text-error-40">
+      <Card className="p-6 text-sm text-on-error-container">
         {settingsQuery.error instanceof Error
           ? settingsQuery.error.message
           : "Unable to load preferences."}
@@ -145,3 +145,4 @@ export const PreferencesSettingsSection = () => {
     </SettingsSectionCard>
   );
 };
+

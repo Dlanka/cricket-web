@@ -8,9 +8,11 @@ import { TeamCreateModal } from "../../components/TeamCreateModal";
 import { useDisclosure } from "@/shared/hooks/useDisclosure";
 import { TeamEditModal } from "../../components/TeamEditModal";
 import type { Team } from "../../types/teams.types";
-import { PageHeader } from "@/shared/components/page/PageHeader";
 import { useAuthorization } from "@/features/authz/hooks/useAuthorization";
 import { TeamAccessLinksModal } from "@/features/teams/components/TeamAccessLinksModal";
+import { TournamentCard } from "@/features/tournament-ui/components/TournamentCard";
+import { PageHeader } from "@/shared/components/page/PageHeader";
+import { Plus } from "lucide-react";
 
 export const TeamsByTournamentPage = () => {
   const { tournamentId } = useParams({
@@ -36,7 +38,7 @@ export const TeamsByTournamentPage = () => {
 
   if (!tournamentId) {
     return (
-      <div className="rounded-2xl border border-error-80 bg-error-95 p-6 text-sm text-error-40 shadow-[0_20px_60px_-50px_rgba(15,23,42,0.35)] backdrop-blur">
+      <div className="rounded-2xl border border-error/40 bg-error-container p-6 text-sm text-on-error-container shadow-surface-lg backdrop-blur">
         Missing tournament id.
       </div>
     );
@@ -47,7 +49,7 @@ export const TeamsByTournamentPage = () => {
   }
 
   return (
-    <div className="mx-auto w-full max-w-5xl space-y-8 px-6">
+    <div className="mx-auto w-full space-y-12">
       <PageHeader
         eyebrow="Teams"
         title="Teams for tournament"
@@ -59,6 +61,8 @@ export const TeamsByTournamentPage = () => {
               appearance="filled"
               color="primary"
               size="sm"
+              uppercase
+              icon={<Plus size={16} />}
               onClick={open}
             >
               Add team
@@ -67,7 +71,7 @@ export const TeamsByTournamentPage = () => {
         }
       />
       {isError ? (
-        <div className="rounded-2xl border border-error-80 bg-error-95 p-6 text-sm text-error-40 shadow-[0_20px_60px_-50px_rgba(15,23,42,0.35)] backdrop-blur">
+        <div className="rounded-2xl border border-error/35 bg-error-container p-6 text-sm text-on-error-container shadow-surface-lg backdrop-blur">
           {error instanceof Error ? error.message : "Unable to load teams."}
         </div>
       ) : null}
@@ -87,9 +91,11 @@ export const TeamsByTournamentPage = () => {
             }}
           />
         ) : (
-          <div className="rounded-2xl border border-neutral-90 bg-neutral-99 p-6 text-sm text-neutral-40">
-            No teams yet for this tournament.
-          </div>
+          <TournamentCard muted>
+            <p className="text-sm text-on-surface-variant">
+              No teams yet for this tournament.
+            </p>
+          </TournamentCard>
         )}
       </div>
       {canEdit ? (

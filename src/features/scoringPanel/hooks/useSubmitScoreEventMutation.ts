@@ -47,14 +47,11 @@ export const useSubmitScoreEventMutation = (
 
   return useMutation({
     mutationFn: (payload: ScoreEventRequest) => submitScoreEvent(matchId, payload),
-    onSuccess: async (data) => {
+    onSuccess: (data) => {
       queryClient.setQueryData<MatchScoreResponse | undefined>(
         scoringQueryKeys.score(matchId),
         (previous) => mergeScoreSnapshot(previous, data),
       );
-
-      await queryClient.invalidateQueries({ queryKey: scoringQueryKeys.score(matchId) });
-      await queryClient.invalidateQueries({ queryKey: ["match", matchId] });
 
       const cachedScore = queryClient.getQueryData<MatchScoreResponse>(
         scoringQueryKeys.score(matchId),
@@ -65,54 +62,47 @@ export const useSubmitScoreEventMutation = (
         return;
       }
 
-      await Promise.all([
-        queryClient.invalidateQueries({
-          queryKey: scoringQueryKeys.innings.batters(resolvedInningsId),
-        }),
-        queryClient.invalidateQueries({
-          queryKey: scoringQueryKeys.innings.bowlers(resolvedInningsId),
-        }),
-        queryClient.invalidateQueries({
-          queryKey: scoringQueryKeys.innings.overs(resolvedInningsId, 10),
-        }),
-        queryClient.invalidateQueries({
-          queryKey: scoringQueryKeys.innings.events(resolvedInningsId),
-        }),
-        queryClient.invalidateQueries({
-          queryKey: scoringQueryKeys.availableNextBatters(matchId),
-        }),
-        ...(tournamentId
-          ? [
-              queryClient.invalidateQueries({
-                queryKey: fixturesQueryKeys.byTournamentFixtures(tournamentId),
-              }),
-              queryClient.invalidateQueries({
-                queryKey: fixturesQueryKeys.byTournamentFixturesView(tournamentId),
-              }),
-              queryClient.invalidateQueries({
-                queryKey: fixturesQueryKeys.byTournamentBracket(tournamentId),
-              }),
-              queryClient.invalidateQueries({
-                queryKey: tournamentQueryKeys.standings(tournamentId),
-              }),
-              queryClient.invalidateQueries({
-                queryKey: tournamentQueryKeys.detail(tournamentId),
-              }),
-              queryClient.invalidateQueries({
-                queryKey: ["tournamentMatches", tournamentId],
-              }),
-              queryClient.invalidateQueries({
-                queryKey: ["fixturesView", tournamentId],
-              }),
-              queryClient.invalidateQueries({
-                queryKey: ["fixturesBracket", tournamentId],
-              }),
-              queryClient.invalidateQueries({
-                queryKey: tournamentQueryKeys.playerOfSeries(tournamentId),
-              }),
-            ]
-          : []),
-      ]);
+      // Keep delivery submit snappy: don't block mutation resolution with large refetch chains.
+      // MatchScoringPage already refreshes innings sections when score seq changes.
+      void queryClient.invalidateQueries({
+        queryKey: scoringQueryKeys.availableNextBatters(matchId),
+      });
+
+      // Refresh broader tournament/match contexts only when state likely changes beyond current ball.
+      const shouldRefreshGlobalViews =
+        Boolean(data.inningsCompleted) || Boolean(data.isMatchCompleted);
+      if (shouldRefreshGlobalViews) {
+        void queryClient.invalidateQueries({ queryKey: ["match", matchId] });
+        if (tournamentId) {
+          void queryClient.invalidateQueries({
+            queryKey: fixturesQueryKeys.byTournamentFixtures(tournamentId),
+          });
+          void queryClient.invalidateQueries({
+            queryKey: fixturesQueryKeys.byTournamentFixturesView(tournamentId),
+          });
+          void queryClient.invalidateQueries({
+            queryKey: fixturesQueryKeys.byTournamentBracket(tournamentId),
+          });
+          void queryClient.invalidateQueries({
+            queryKey: tournamentQueryKeys.standings(tournamentId),
+          });
+          void queryClient.invalidateQueries({
+            queryKey: tournamentQueryKeys.detail(tournamentId),
+          });
+          void queryClient.invalidateQueries({
+            queryKey: ["tournamentMatches", tournamentId],
+          });
+          void queryClient.invalidateQueries({
+            queryKey: ["fixturesView", tournamentId],
+          });
+          void queryClient.invalidateQueries({
+            queryKey: ["fixturesBracket", tournamentId],
+          });
+          void queryClient.invalidateQueries({
+            queryKey: tournamentQueryKeys.playerOfSeries(tournamentId),
+          });
+        }
+      }
     },
   });
 };

@@ -85,7 +85,7 @@ export const MatchCenterPage = ({
       notFoundMessage="Match not found."
     >
       {match ? (
-        <div className="mx-auto w-full max-w-4xl space-y-6 px-6">
+        <div className="mx-auto w-full space-y-12">
           <PageHeader
             eyebrow="Match center"
             title={`${match.teams.teamA.name} vs ${match.teams.teamB?.name ?? "BYE"}`}
@@ -115,10 +115,10 @@ export const MatchCenterPage = ({
             <Card>
               <div className="flex items-center justify-between gap-3">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-40">
+                  <p className="text-xs font-semibold uppercase tracking-widest text-on-surface-muted">
                     Super Over
                   </p>
-                  <p className="mt-1 text-sm text-neutral-40">
+                  <p className="mt-1 text-sm text-on-surface-muted">
                     Match is tied. Start Super Over to decide the winner.
                   </p>
                 </div>
@@ -131,7 +131,7 @@ export const MatchCenterPage = ({
                 </Button>
               </div>
               {vm.startSuperOverError ? (
-                <div className="mt-3 rounded-xl border border-error-80 bg-error-95 px-3 py-2 text-xs text-error-40">
+                <div className="mt-3 rounded-xl border border-error/40 bg-error-container px-3 py-2 text-xs text-on-error-container">
                   {vm.startSuperOverError}
                 </div>
               ) : null}
@@ -141,10 +141,10 @@ export const MatchCenterPage = ({
             <Card>
               <div className="flex items-center justify-between gap-3">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-40">
+                  <p className="text-xs font-semibold uppercase tracking-widest text-on-surface-muted">
                     Tie-break
                   </p>
-                  <p className="mt-1 text-sm text-neutral-40">
+                  <p className="mt-1 text-sm text-on-surface-muted">
                     Match ended as a tie. Select winner to progress knockout stage.
                   </p>
                 </div>
@@ -175,7 +175,7 @@ export const MatchCenterPage = ({
                         teamAName: match.teams.teamA.name,
                         teamBName: match.teams.teamB?.name ?? "Team B",
                       }}
-                      className="rounded-full border border-neutral-90 px-4 py-2 text-sm font-semibold text-primary-20"
+                      className="rounded-full border border-outline px-4 py-2 text-sm font-semibold text-on-primary-container"
                     >
                       Set roster
                     </Link>
@@ -271,3 +271,6 @@ export const MatchCenterPage = ({
     </PageStateGate>
   );
 };
+
+
+

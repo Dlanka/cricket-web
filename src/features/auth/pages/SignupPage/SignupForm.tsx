@@ -49,7 +49,7 @@ export const SignupForm = ({ onSuccess }: Props) => {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="rounded-3xl border border-neutral-90 bg-neutral-99 p-8 shadow-[0_30px_80px_-60px_rgba(15,23,42,0.45)] backdrop-blur"
+      className="rounded-3xl border border-outline bg-surface-container p-8 shadow-surface-lg backdrop-blur"
     >
       <div className="space-y-5">
         <FormGroup label="Full name" error={errors.fullName?.message}>
@@ -92,9 +92,9 @@ export const SignupForm = ({ onSuccess }: Props) => {
         >
           {mutation.isPending ? "Creating account..." : "Create account"}
         </Button>
-        <p className="text-center text-sm text-neutral-40">
+        <p className="text-center text-sm text-on-surface-variant">
           Already have an account?{" "}
-          <Link to="/login" className="font-semibold text-primary-20 underline">
+          <Link to="/login" className="font-semibold text-on-primary-container underline">
             Sign in
           </Link>
         </p>
@@ -102,3 +102,4 @@ export const SignupForm = ({ onSuccess }: Props) => {
     </form>
   );
 };
+

@@ -12,7 +12,7 @@ const isTransientStartCode = (code?: string) =>
 export const useMatchScoreQuery = (
   matchId: string,
   enabled = true,
-  refetchInterval: number | false = 2000,
+  refetchInterval: number | false | "adaptive" = "adaptive",
 ) =>
   useQuery({
     queryKey: scoringQueryKeys.score(matchId),
@@ -22,9 +22,22 @@ export const useMatchScoreQuery = (
       ? (query) => {
           const data = query.state.data as MatchScoreResponse | undefined;
           if (data?.isMatchCompleted) return false;
-          return refetchInterval;
+          if (refetchInterval === false || typeof refetchInterval === "number") {
+            return refetchInterval;
+          }
+
+          const isHidden =
+            typeof document !== "undefined" &&
+            document.visibilityState !== "visible";
+
+          if (!data) return isHidden ? 1500 : 800;
+          if (isHidden) return 2500;
+          if (data.inningsCompleted && !data.isMatchCompleted) return 1200;
+          return 900;
         }
       : false,
+    refetchIntervalInBackground: true,
+    refetchOnWindowFocus: true,
     retry: (failureCount, error) => {
       const normalized = normalizeApiError(error);
       if (isTransientStartCode(normalized.code)) {

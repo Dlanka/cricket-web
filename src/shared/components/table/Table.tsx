@@ -42,9 +42,14 @@ export const Table = <T,>({
 
   return (
     <div className={classNames("overflow-x-auto", wrapperClassName)}>
-      <table className={classNames("w-full min-w-190 table-fixed text-sm", tableClassName)}>
+      <table
+        className={classNames(
+          "w-full min-w-190 table-fixed text-sm",
+          tableClassName,
+        )}
+      >
         <thead>
-          <tr className="text-xs uppercase tracking-[0.12em] text-neutral-40">
+          <tr className="text-xs uppercase tracking-wider text-on-surface-variant">
             {columns.map((column) => (
               <th
                 key={column.key}
@@ -65,7 +70,7 @@ export const Table = <T,>({
             <tr
               key={rowKey(row, index)}
               className={classNames(
-                "border-t border-neutral-90 text-primary-10",
+                "border-t border-outline text-on-surface text-sm",
                 rowClassName?.(row, index),
               )}
             >

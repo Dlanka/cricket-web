@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { EmptyState } from "@/shared/components/feedback/EmptyState";
 import { useMatchScoreQuery } from "../../hooks/useMatchScoreQuery";
@@ -23,13 +22,12 @@ export const MatchScoringPage = ({
   matchId,
   tournamentId,
 }: MatchScoringPageProps) => {
-  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const previousSeq = useRef<number | null>(null);
   const [resolvedOverBoundaryBalls, setResolvedOverBoundaryBalls] = useState<
     number | null
   >(null);
-  const scoreQuery = useMatchScoreQuery(matchId, true, 2000);
+  const scoreQuery = useMatchScoreQuery(matchId, true, "adaptive");
 
   useEffect(() => {
     const inningsId = scoreQuery.data?.inningsId;
@@ -70,7 +68,10 @@ export const MatchScoringPage = ({
   const battingPlayersQuery = usePlayersByTeamQuery(battingTeamId);
   const bowlingPlayersQuery = usePlayersByTeamQuery(bowlingTeamId);
   const playerNameById = useMemo(() => {
-    const entries = [...(battingPlayersQuery.data ?? []), ...(bowlingPlayersQuery.data ?? [])]
+    const entries = [
+      ...(battingPlayersQuery.data ?? []),
+      ...(bowlingPlayersQuery.data ?? []),
+    ]
       .filter((player) => player.id)
       .map((player) => [player.id, player.fullName] as const);
     return Object.fromEntries(entries);
@@ -135,7 +136,7 @@ export const MatchScoringPage = ({
     }
 
     return (
-      <div className="rounded-2xl border border-error-80 bg-error-95 p-6 text-sm text-error-40">
+      <div className="rounded-2xl border border-error/25 bg-error-container p-6 text-sm text-on-error-container">
         {scoreQuery.error instanceof Error
           ? scoreQuery.error.message
           : "Unable to load score context."}
@@ -204,83 +205,69 @@ export const MatchScoringPage = ({
     resolvedOverBoundaryBalls !== score.score.balls;
 
   return (
-    <div className="mx-auto flex min-h-[calc(100vh-7rem)] w-full max-w-6xl flex-col px-6">
-      <div className="mt-4 flex-1 overflow-visible">
-        <div className="sticky top-3 z-30">
-          <ScoreboardHeader
-            score={score}
-            onBack={
-              tournamentId
-                ? () =>
-                    navigate({
-                      to: "/tournaments/$tournamentId/fixtures",
-                      params: { tournamentId },
-                    })
-                : undefined
-            }
-          />
-        </div>
-        <div className="mt-4 grid grid-cols-12 gap-4">
-          <div className="col-span-12 space-y-4 xl:col-span-6">
-            <BattersTable
-              inningsId={inningsId}
-              strikerId={score.current.strikerId}
-              nonStrikerId={score.current.nonStrikerId}
-              playerNameById={playerNameById}
-              totalRuns={score.score.runs}
-              extrasBreakdown={{
-                extras: pickNumber("extras", "extra", "extraRuns"),
-                wides: pickNumber("wides", "wide", "wd", "wideRuns"),
-                noBalls: pickNumber(
-                  "noBalls",
-                  "noballs",
-                  "no_ball",
-                  "noball",
-                  "nb",
-                  "noBallRuns",
-                ),
-                byes: pickNumber("byes", "bye", "byeRuns"),
-                legByes: pickNumber("legByes", "legbye", "leg_bye", "lb"),
-              }}
-            />
-            <BowlersTable
-              inningsId={inningsId}
-              currentBowlerId={score.current.bowlerId}
-              playerNameById={playerNameById}
-            />
+    <div className="flex min-h-scoring-page w-full flex-col">
+      <div className="flex-1 overflow-visible">
+        <div className="grid grid-cols-12 gap-4">
+          <div className="col-span-12 xl:col-span-9">
+            <div className="space-y-4 mx-auto">
+              <ScoreboardHeader score={score} />
+              <OverHistoryPanel
+                inningsId={inningsId}
+                currentBalls={score.score.balls}
+                ballsPerOver={score.settings.ballsPerOver}
+                resolvedOverBoundaryBalls={resolvedOverBoundaryBalls}
+              />
+              <BattersTable
+                inningsId={inningsId}
+                strikerId={score.current.strikerId}
+                nonStrikerId={score.current.nonStrikerId}
+                playerNameById={playerNameById}
+                totalRuns={score.score.runs}
+                extrasBreakdown={{
+                  extras: pickNumber("extras", "extra", "extraRuns"),
+                  wides: pickNumber("wides", "wide", "wd", "wideRuns"),
+                  noBalls: pickNumber(
+                    "noBalls",
+                    "noballs",
+                    "no_ball",
+                    "noball",
+                    "nb",
+                    "noBallRuns",
+                  ),
+                  byes: pickNumber("byes", "bye", "byeRuns"),
+                  legByes: pickNumber("legByes", "legbye", "leg_bye", "lb"),
+                }}
+              />
+              <BowlersTable
+                inningsId={inningsId}
+                currentBowlerId={score.current.bowlerId}
+                playerNameById={playerNameById}
+              />
+            </div>
           </div>
-          <div className="col-span-12 xl:col-span-6">
-            <div className="sticky top-35 z-20 space-y-4">
-              <Card className="space-y-4 ">
-                <OverHistoryPanel
+          <div className="col-span-12 xl:col-span-3 xl:-my-3 ">
+            <div className="sticky top-0 z-20 h-scoring-panel">
+              <Card className="h-full rounded-none overflow-y-auto space-y-4 border-outline-variant bg-surface p-4">
+                <ScoringPanel
+                  matchId={matchId}
+                  tournamentId={tournamentId}
                   inningsId={inningsId}
+                  battingTeamId={score.battingTeam.id}
+                  bowlingTeamId={score.bowlingTeam.id}
+                  currentStrikerId={score.current.strikerId}
+                  currentNonStrikerId={score.current.nonStrikerId}
+                  currentBowlerId={score.current.bowlerId}
+                  inningsNumber={score.inningsNumber}
+                  totalBallsPerOver={score.settings.ballsPerOver}
+                  totalOvers={score.settings.oversPerInnings}
                   currentBalls={score.score.balls}
-                  ballsPerOver={score.settings.ballsPerOver}
-                  resolvedOverBoundaryBalls={resolvedOverBoundaryBalls}
+                  inningsCompleted={score.inningsCompleted}
+                  isMatchCompleted={score.isMatchCompleted}
+                  phase={score.phase}
                   embedded
+                  showChangeBowlerButton={showChangeBowlerButton}
+                  onBowlerChangedAtBoundary={setResolvedOverBoundaryBalls}
                 />
-                <div className="border-t border-neutral-90 pt-4">
-                  <ScoringPanel
-                    matchId={matchId}
-                    tournamentId={tournamentId}
-                    inningsId={inningsId}
-                    battingTeamId={score.battingTeam.id}
-                    bowlingTeamId={score.bowlingTeam.id}
-                    currentStrikerId={score.current.strikerId}
-                    currentNonStrikerId={score.current.nonStrikerId}
-                    currentBowlerId={score.current.bowlerId}
-                    inningsNumber={score.inningsNumber}
-                    totalBallsPerOver={score.settings.ballsPerOver}
-                    totalOvers={score.settings.oversPerInnings}
-                    currentBalls={score.score.balls}
-                    inningsCompleted={score.inningsCompleted}
-                    isMatchCompleted={score.isMatchCompleted}
-                    phase={score.phase}
-                    embedded
-                    showChangeBowlerButton={showChangeBowlerButton}
-                    onBowlerChangedAtBoundary={setResolvedOverBoundaryBalls}
-                  />
-                </div>
               </Card>
             </div>
           </div>

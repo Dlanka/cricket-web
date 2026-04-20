@@ -23,23 +23,23 @@ export const PlayerPickList = ({
       return (
         <label
           key={player.id}
-          className="flex h-full items-center justify-between rounded-2xl border border-neutral-90 bg-neutral-99 px-4 py-3 text-sm text-primary-10"
+          className="flex h-full items-center justify-between rounded-2xl border border-outline bg-surface-container px-4 py-3 text-sm text-on-surface"
         >
           <div>
             <p className="flex items-center gap-2 font-semibold">
               <span>{player.fullName}</span>
-              <span className="text-xs text-neutral-40">
+              <span className="text-xs text-on-surface-variant">
                 {player.jerseyNumber != null ? `#${player.jerseyNumber}` : "--"}
               </span>
             </p>
-            <div className="mt-1 flex items-center gap-2 text-xs text-neutral-40">
+            <div className="mt-1 flex items-center gap-2 text-xs text-on-surface-variant">
               {captainId === player.id ? (
-                <span className="rounded-full border border-primary-90 bg-primary-95 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-primary-20">
+                <span className="rounded-full border border-primary/30 bg-primary-container px-2 py-0.5 text-xs font-semibold uppercase tracking-wider text-on-primary-container">
                   Captain
                 </span>
               ) : null}
               {keeperId === player.id ? (
-                <span className="rounded-full border border-secondary-90 bg-secondary-95 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-secondary-20">
+                <span className="rounded-full border border-warning/30 bg-warning-container px-2 py-0.5 text-xs font-semibold uppercase tracking-wider text-on-warning-container">
                   Keeper
                 </span>
               ) : null}
@@ -57,3 +57,6 @@ export const PlayerPickList = ({
     })}
   </div>
 );
+
+
+

@@ -11,9 +11,10 @@ import { useDisclosure } from "@/shared/hooks/useDisclosure";
 import { PlayerEditModal } from "../../components/PlayerEditModal";
 import type { Player } from "../../types/players.types";
 import { useTeamQuery } from "@/features/teams/hooks/useTeamQuery";
-import { PageHeader } from "@/shared/components/page/PageHeader";
 import { useAuthorization } from "@/features/authz/hooks/useAuthorization";
 import { TeamAccessLinksModal } from "@/features/teams/components/TeamAccessLinksModal";
+import { TournamentCard } from "@/features/tournament-ui/components/TournamentCard";
+import { PageHeader } from "@/shared/components/page/PageHeader";
 
 export const PlayersByTeamPage = () => {
   const { tournamentId, teamId } = useParams({
@@ -40,7 +41,7 @@ export const PlayersByTeamPage = () => {
 
   if (!teamId) {
     return (
-      <div className="rounded-2xl border border-error-80 bg-error-95 p-6 text-sm text-error-40 shadow-[0_20px_60px_-50px_rgba(15,23,42,0.35)] backdrop-blur">
+      <div className="rounded-2xl border border-error/40 bg-error-container p-6 text-sm text-on-error-container shadow-surface-lg backdrop-blur">
         Missing team id.
       </div>
     );
@@ -62,7 +63,7 @@ export const PlayersByTeamPage = () => {
   };
 
   return (
-    <div className="mx-auto w-full max-w-5xl space-y-8 px-6">
+    <div className="mx-auto w-full space-y-12">
       <PageHeader
         eyebrow="Players"
         title={team?.name ? `${team.name} squad` : "Team squad"}
@@ -80,7 +81,7 @@ export const PlayersByTeamPage = () => {
             <div className="flex items-center gap-2">
               <Button
                 type="button"
-                appearance="outline"
+                appearance="soft"
                 color="neutral"
                 size="sm"
                 onClick={openLinks}
@@ -89,7 +90,7 @@ export const PlayersByTeamPage = () => {
               </Button>
               <Button
                 type="button"
-                appearance="filled"
+                appearance="soft"
                 color="primary"
                 size="sm"
                 onClick={open}
@@ -101,7 +102,7 @@ export const PlayersByTeamPage = () => {
         }
       />
       {isError ? (
-        <div className="rounded-2xl border border-error-80 bg-error-95 p-6 text-sm text-error-40 shadow-[0_20px_60px_-50px_rgba(15,23,42,0.35)] backdrop-blur">
+        <div className="rounded-2xl border border-error/35 bg-error-container p-6 text-sm text-on-error-container shadow-surface-lg backdrop-blur">
           {error instanceof Error ? error.message : "Unable to load players."}
         </div>
       ) : null}
@@ -118,9 +119,11 @@ export const PlayersByTeamPage = () => {
             }}
           />
         ) : (
-          <div className="rounded-2xl border border-neutral-90 bg-neutral-99 p-6 text-sm text-neutral-40">
-            No players yet for this team.
-          </div>
+          <TournamentCard muted>
+            <p className="text-sm text-on-surface-variant">
+              No players yet for this team.
+            </p>
+          </TournamentCard>
         )}
       </div>
       {canEdit ? (
@@ -149,3 +152,4 @@ export const PlayersByTeamPage = () => {
     </div>
   );
 };
+

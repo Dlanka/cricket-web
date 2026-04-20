@@ -18,8 +18,8 @@ export const TournamentHeaderActions = ({ onEdit, onDelete }: Props) => {
           type="button"
           appearance="outline"
           color="neutral"
-          size="sm"
-          className="h-8 w-8 p-0"
+          size="xs"
+          shape="square"
           aria-label="Edit tournament"
           title="Edit tournament"
           onClick={onEdit}
@@ -32,8 +32,8 @@ export const TournamentHeaderActions = ({ onEdit, onDelete }: Props) => {
           type="button"
           appearance="outline"
           color="error"
-          size="sm"
-          className="h-8 w-8 p-0"
+          size="xs"
+          shape="square"
           aria-label="Delete tournament"
           title="Delete tournament"
           onClick={onDelete}

@@ -126,19 +126,18 @@ export const ScoringPanel = ({
   const isBallsExhausted = currentBalls >= totalBallsLimit;
   const isOversCompleted = isBallsExhausted || oversCompletedByServer;
   const controlsLocked =
-    isMatchCompleted || inningsCompleted || requiresNextBowler || isOversCompleted || !canWriteScore;
+    isMatchCompleted ||
+    inningsCompleted ||
+    showChangeBowlerButton ||
+    requiresNextBowler ||
+    isOversCompleted ||
+    !canWriteScore;
   const canScoreBall = !controlsLocked;
   const shouldShowChangeBowlerButton =
     showChangeBowlerButton || requiresNextBowler || nextBowlerModalOpen;
   const showStartSecondInningsButton = Boolean(
     inningsNumber === 1 && (isOversCompleted || inningsCompleted),
   );
-
-  useEffect(() => {
-    if (!isMatchCompleted && undoUnavailableReason) {
-      setUndoUnavailableReason(null);
-    }
-  }, [isMatchCompleted, undoUnavailableReason]);
 
   useEffect(() => {
     const completedOverBoundary =
@@ -149,7 +148,6 @@ export const ScoringPanel = ({
     if (completedOverBoundary && resolvedOverBoundaryBalls !== currentBalls) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setRequiresNextBowler(true);
-      setNextBowlerModalOpen(true);
     }
   }, [
     currentBalls,
@@ -245,7 +243,6 @@ export const ScoringPanel = ({
         nextBalls % totalBallsPerOver === 0
       ) {
         setRequiresNextBowler(true);
-        setNextBowlerModalOpen(true);
       }
       resetPanelState();
       return result;
@@ -288,9 +285,6 @@ export const ScoringPanel = ({
       return;
     }
     if (!canScoreBall) {
-      if (requiresNextBowler) {
-        setNextBowlerModalOpen(true);
-      }
       return;
     }
     if (wicketSelected) {
@@ -336,9 +330,6 @@ export const ScoringPanel = ({
 
   const handleSwap = async () => {
     if (!canScoreBall) {
-      if (requiresNextBowler) {
-        setNextBowlerModalOpen(true);
-      }
       return;
     }
     await submitEvent({ type: "swap" });
@@ -351,57 +342,58 @@ export const ScoringPanel = ({
 
   const content = (
     <>
-      <div className="space-y-4">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-40">
+      <div className="space-y-6">
+        <div>
+          <p className="font-display text-xs font-bold uppercase tracking-widest text-on-surface-muted">
             Scoring panel
           </p>
         </div>
 
         {isOversCompleted ? (
-          <div className="rounded-lg border border-warning-80 bg-warning-95 px-3 py-2 text-xs font-medium text-warning-30">
+          <div className="rounded-lg border border-warning/25 bg-warning-container px-3 py-2 text-xs font-medium text-on-warning-container">
             Innings overs completed.
           </div>
         ) : null}
 
         {inningsCompleted && !isOversCompleted ? (
-          <div className="rounded-lg border border-warning-80 bg-warning-95 px-3 py-2 text-xs font-medium text-warning-30">
+          <div className="rounded-lg border border-warning/25 bg-warning-container px-3 py-2 text-xs font-medium text-on-warning-container">
             Innings completed (all out).
           </div>
         ) : null}
 
         {phase === "SUPER_OVER" ? (
-          <div className="rounded-lg border border-primary-90 bg-primary-95 px-3 py-2 text-xs font-medium text-primary-30">
+          <div className="rounded-lg border border-primary/30 bg-primary-container px-3 py-2 text-xs font-medium text-on-primary-container">
             Innings ends at 2 wickets.
           </div>
         ) : null}
 
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex-1 space-y-2">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-neutral-40">
-              Extras
-            </p>
-            <ExtrasSelector
-              selectedExtraType={selectedExtraType}
-              disabled={mutation.isPending || controlsLocked}
-              onToggle={handleExtraToggle}
-            />
-          </div>
-          <div className="mt-6">
-            <WicketToggle
-              checked={wicketSelected}
-              disabled={mutation.isPending || controlsLocked}
-              onChange={handleWicketChange}
-            />
-          </div>
+        <div className="space-y-2">
+          <p className="font-display text-xs font-bold uppercase tracking-widest text-on-surface-muted">
+            Extras
+          </p>
+          <ExtrasSelector
+            selectedExtraType={selectedExtraType}
+            disabled={mutation.isPending || controlsLocked}
+            onToggle={handleExtraToggle}
+          />
+          <WicketToggle
+            checked={wicketSelected}
+            disabled={mutation.isPending || controlsLocked}
+            onChange={handleWicketChange}
+          />
         </div>
 
+        <div className="space-y-2">
+          <p className="font-display text-xs font-bold uppercase tracking-widest text-on-surface-muted">
+            Runs
+          </p>
         <RunButtons
           disabled={
             mutation.isPending || controlsLocked
           }
           onRunClick={handleRunClick}
         />
+        </div>
 
         <ActionButtons
           showCompletedButton={isMatchCompleted}
@@ -448,7 +440,7 @@ export const ScoringPanel = ({
           }}
         />
         {undoUnavailableReason ? (
-          <p className="text-xs text-warning-30">{undoUnavailableReason}</p>
+          <p className="text-xs text-on-warning-container">{undoUnavailableReason}</p>
         ) : null}
       </div>
 
@@ -458,6 +450,10 @@ export const ScoringPanel = ({
         runsWithWicket={runsWithWicket}
         wicketExtraType={wicketExtraType}
         batterOptions={incomingBatterOptions}
+        fielderOptions={bowlingPlayers.map((player) => ({
+          id: player.id,
+          name: player.fullName,
+        }))}
         onClose={() => setWicketModalOpen(false)}
         onSubmit={async (payload) => {
           await submitEvent(payload);
@@ -535,3 +531,6 @@ export const ScoringPanel = ({
     </Card>
   );
 };
+
+
+

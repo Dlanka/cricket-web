@@ -26,12 +26,37 @@ export const OverHistoryPanel = ({
     resolvedOverBoundaryBalls === currentBalls &&
     currentBalls > 0 &&
     currentBalls % ballsPerOver === 0;
+  const isOverBoundary =
+    currentBalls > 0 && currentBalls % ballsPerOver === 0;
+  const isAwaitingBowlerChange =
+    isOverBoundary && !isResolvedBoundary;
+
+  const isBallDisplay = (display: string) => {
+    const token = display.trim().toLowerCase();
+    return (
+      token !== "undo" &&
+      token !== "retire" &&
+      !token.includes("swap")
+    );
+  };
+
   const latestOverBalls = latestOver
-    ? latestOver.balls.filter((ball) => {
-        const token = ball.display.trim().toLowerCase();
-        return token !== "undo" && !token.includes("swap");
-      })
+    ? latestOver.balls.filter((ball) => isBallDisplay(ball.display))
     : [];
+  const firstNonEmptyOver = data?.items?.find((over) =>
+    over.balls.some((ball) => isBallDisplay(ball.display)),
+  );
+  const effectiveOver =
+    isAwaitingBowlerChange &&
+    latestOver &&
+    latestOverBalls.length === 0 &&
+    firstNonEmptyOver
+      ? firstNonEmptyOver
+      : latestOver;
+  const effectiveOverBalls = effectiveOver
+    ? effectiveOver.balls.filter((ball) => isBallDisplay(ball.display))
+    : [];
+
   const getChipClassName = (display: string) => {
     const token = display.trim().toLowerCase();
     const isFour = token === "4";
@@ -45,70 +70,83 @@ export const OverHistoryPanel = ({
       token.startsWith("nb+");
     const isWicket =
       token === "w" ||
+      token.startsWith("w+") ||
       token === "wk" ||
       token === "ro" ||
       token.includes("out");
 
     if (isWicket) {
-      return "border-error-50 bg-error-50 text-error-100";
+      return "border-error/30 bg-error-container text-on-error-container";
     }
     if (isSix) {
-      return "border-success-50 bg-success-50 text-success-100";
+      return "border-primary/40 bg-primary-container text-on-primary-container";
     }
     if (isFour) {
-      return "border-info-50 bg-info-50 text-info-100";
+      return "border-success/30 bg-success-container text-on-success-container";
     }
     if (isWide || isNoBall) {
-      return "border-warning-50 bg-warning-50 text-warning-100";
+      return "border-warning/30 bg-warning-container text-on-warning-container";
     }
-    return "border-neutral-80 bg-neutral-99 text-primary-10";
+    return "border-outline-strong bg-surface-container-high text-on-surface-variant";
   };
 
   const content = (
     <>
-      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-40">
-        This over
-      </p>
       {isLoading ? (
-        <p className="mt-3 text-sm text-neutral-40">Loading overs...</p>
+        <p className="mt-3 text-sm text-on-surface-variant">Loading overs...</p>
       ) : null}
       {isError ? (
-        <p className="mt-3 text-sm text-error-40">
+        <p className="mt-3 text-sm text-on-error-container">
           {error instanceof Error ? error.message : "Unable to load overs."}
         </p>
       ) : null}
-      {latestOver ? (
-        <div className="mt-3 rounded-xl border border-neutral-90 p-3">
-          <div className="flex items-center justify-between text-xs text-neutral-40">
-            <span>
-              Over{" "}
-              {isResolvedBoundary
-                ? latestOver.overNumber + 1
-                : latestOver.overNumber}
-            </span>
-            <span>{isResolvedBoundary ? 0 : latestOver.runsThisOver} runs</span>
-          </div>
-          <div className="mt-2 flex flex-wrap gap-2">
-            {!isResolvedBoundary
-              ? latestOverBalls.map((ball) => (
-                  <span
-                    key={ball.seq}
-                    className={`rounded-full border px-2 py-1 text-xs ${getChipClassName(ball.display)}`}
-                  >
-                    {ball.display}
+      {effectiveOver ? (
+        <div className=" bg-surface-container">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex w-full flex-col gap-3">
+              <div className="flex w-full items-center justify-between">
+                <p className="font-display text-sm font-bold uppercase tracking-wider text-on-surface-muted">
+                  Over{" "}
+                  {isResolvedBoundary
+                    ? effectiveOver.overNumber + 1
+                    : effectiveOver.overNumber}
+                </p>
+
+                <p className="font-display text-sm font-semibold uppercase tracking-wide text-on-surface">
+                  <span className="text-on-primary-container">
+                    {isResolvedBoundary ? 0 : effectiveOver.runsThisOver}
+                  </span>{" "}
+                  <span className="text-on-surface-muted">runs</span>
+                </p>
+              </div>
+
+              <div className="flex flex-wrap gap-3">
+                {!isResolvedBoundary
+                  ? effectiveOverBalls.map((ball) => (
+                      <span
+                        key={ball.seq}
+                        className={`inline-flex h-9 w-9 items-center justify-center rounded-full border font-mono text-sm font-semibold ${getChipClassName(ball.display)}`}
+                      >
+                        {ball.display}
+                      </span>
+                    ))
+                  : null}
+                {!isResolvedBoundary && !effectiveOverBalls.length ? (
+                  <span className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-dashed border-outline text-on-surface-muted">
+                    -
                   </span>
-                ))
-              : null}
-            {!isResolvedBoundary && !latestOverBalls.length ? (
-              <span className="text-xs text-neutral-40">-</span>
-            ) : null}
-            {isResolvedBoundary ? (
-              <span className="text-xs text-neutral-40">-</span>
-            ) : null}
+                ) : null}
+                {isResolvedBoundary ? (
+                  <span className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-dashed border-outline text-on-surface-muted">
+                    -
+                  </span>
+                ) : null}
+              </div>
+            </div>
           </div>
         </div>
       ) : !isLoading && !isError ? (
-        <p className="mt-3 text-sm text-neutral-40">No overs yet.</p>
+        <p className="mt-3 text-sm text-on-surface-variant">No overs yet.</p>
       ) : null}
     </>
   );

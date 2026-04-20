@@ -25,8 +25,8 @@ export const UserSettingsNav = () => {
             className={classNames(
               "block w-full border-l-2 px-3 py-2 text-left text-sm transition",
               active
-                ? "border-primary-50 font-semibold text-primary-20"
-                : "border-transparent text-neutral-40 hover:text-primary-20",
+                ? "border-primary/35 font-semibold text-on-primary-container"
+                : "border-transparent text-on-surface-variant hover:text-on-primary-container",
             )}
           >
             {item.label}
@@ -36,3 +36,4 @@ export const UserSettingsNav = () => {
     </div>
   );
 };
+

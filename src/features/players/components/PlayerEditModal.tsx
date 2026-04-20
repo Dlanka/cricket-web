@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -120,13 +120,13 @@ export const PlayerEditModal = ({ teamId, player, isOpen, onClose }: Props) => {
         className="space-y-5"
       >
         {formError ? (
-          <div className="rounded-2xl border border-error-80 bg-error-95 p-3 text-xs text-error-40">
+          <div className="rounded-2xl border border-error/25 bg-error-container p-3 text-xs text-on-error-container">
             {formError}
           </div>
         ) : null}
         <FormGroup label="Player name" error={errors.fullName?.message}>
           <input
-            className="w-full rounded-xl border border-neutral-90 bg-neutral-99 px-4 py-3 text-sm text-primary-10 shadow-sm focus:border-neutral-80 focus:outline-none"
+            className="w-full rounded-xl border border-outline bg-surface-container px-4 py-3 text-sm text-on-surface shadow-sm focus:border-outline-strong focus:outline-none"
             placeholder="Player name"
             {...register("fullName")}
           />
@@ -135,7 +135,7 @@ export const PlayerEditModal = ({ teamId, player, isOpen, onClose }: Props) => {
           <input
             type="number"
             min={0}
-            className="w-full rounded-xl border border-neutral-90 bg-neutral-99 px-4 py-3 text-sm text-primary-10 shadow-sm focus:border-neutral-80 focus:outline-none"
+            className="w-full rounded-xl border border-outline bg-surface-container px-4 py-3 text-sm text-on-surface shadow-sm focus:border-outline-strong focus:outline-none"
             {...register("jerseyNumber", {
               setValueAs: (value) =>
                 value === "" || value === null ? undefined : Number(value),
@@ -144,7 +144,7 @@ export const PlayerEditModal = ({ teamId, player, isOpen, onClose }: Props) => {
         </FormGroup>
         <FormGroup label="Batting style" error={errors.battingStyle?.message}>
           <select
-            className="w-full rounded-xl border border-neutral-90 bg-neutral-99 px-4 py-3 text-sm text-primary-10 shadow-sm focus:border-neutral-80 focus:outline-none"
+            className="w-full rounded-xl border border-outline bg-surface-container px-4 py-3 text-sm text-on-surface shadow-sm focus:border-outline-strong focus:outline-none"
             {...register("battingStyle", {
               setValueAs: (value) => (value === "" ? undefined : value),
             })}
@@ -159,7 +159,7 @@ export const PlayerEditModal = ({ teamId, player, isOpen, onClose }: Props) => {
         </FormGroup>
         <FormGroup label="Bowling style" error={errors.bowlingStyle?.message}>
           <select
-            className="w-full rounded-xl border border-neutral-90 bg-neutral-99 px-4 py-3 text-sm text-primary-10 shadow-sm focus:border-neutral-80 focus:outline-none"
+            className="w-full rounded-xl border border-outline bg-surface-container px-4 py-3 text-sm text-on-surface shadow-sm focus:border-outline-strong focus:outline-none"
             {...register("bowlingStyle", {
               setValueAs: (value) => (value === "" ? undefined : value),
             })}
@@ -172,7 +172,7 @@ export const PlayerEditModal = ({ teamId, player, isOpen, onClose }: Props) => {
             ))}
           </select>
         </FormGroup>
-        <label className="flex items-center gap-2 text-sm text-neutral-40">
+        <label className="flex items-center gap-2 text-sm text-on-surface-variant">
           <input type="checkbox" className="h-4 w-4" {...register("isWicketKeeper")} />
           Wicket keeper
         </label>
@@ -180,3 +180,4 @@ export const PlayerEditModal = ({ teamId, player, isOpen, onClose }: Props) => {
     </RightSideModal>
   );
 };
+

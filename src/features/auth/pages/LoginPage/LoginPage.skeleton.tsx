@@ -1,6 +1,6 @@
 export const LoginPageSkeleton = () => (
   <div className="mx-auto w-full max-w-5xl animate-pulse">
-    <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr]">
+    <div className="grid gap-10 lg:layout-split-auth">
       <div className="space-y-4">
         <div className="h-3 w-32 rounded-full bg-neutral-variant-90" />
         <div className="h-10 w-3/4 rounded-full bg-neutral-variant-90" />
@@ -11,3 +11,4 @@ export const LoginPageSkeleton = () => (
     </div>
   </div>
 );
+

@@ -86,6 +86,7 @@ export type BatterRow = {
   sixes: number;
   isOut: boolean;
   outKind?: string | null;
+  dismissalText?: string | null;
   sr: number;
 };
 

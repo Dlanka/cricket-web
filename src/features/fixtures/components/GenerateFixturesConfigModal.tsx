@@ -307,12 +307,12 @@ export const GenerateFixturesConfigModal = ({
         }}
       >
         {typeof teamsCount === "number" ? (
-          <div className="rounded-xl border border-info-80 bg-info-95 px-3 py-2 text-sm text-info-20">
+          <div className="rounded-xl border border-secondary/35 bg-secondary-container px-3 py-2 text-sm text-on-secondary-container">
             Teams registered: <span className="font-semibold">{teamsCount}</span>
           </div>
         ) : null}
         {isTeamsInsufficient ? (
-          <div className="rounded-xl border border-warning-80 bg-warning-95 px-3 py-2 text-sm text-warning-30">
+          <div className="rounded-xl border border-warning/35 bg-warning-container px-3 py-2 text-sm text-on-warning-container">
             At least 2 teams are required to generate fixtures.
           </div>
         ) : null}
@@ -329,7 +329,7 @@ export const GenerateFixturesConfigModal = ({
           />
         </FormGroup>
         {isTypeLocked ? (
-          <p className="-mt-2 text-xs text-warning-30">
+          <p className="-mt-2 text-xs text-on-warning-container">
             Tournament type can't be changed after a match has started.
           </p>
         ) : null}
@@ -375,13 +375,13 @@ export const GenerateFixturesConfigModal = ({
         </FormGroup>
 
         {isLocked ? (
-          <div className="rounded-xl border border-warning-80 bg-warning-95 px-3 py-2 text-sm text-warning-30">
+          <div className="rounded-xl border border-warning/35 bg-warning-container px-3 py-2 text-sm text-on-warning-container">
             Format/overs config is locked because fixtures already exist.
           </div>
         ) : null}
 
         {formError ? (
-          <div className="rounded-xl border border-error-80 bg-error-95 px-3 py-2 text-sm text-error-40">
+          <div className="rounded-xl border border-error/40 bg-error-container px-3 py-2 text-sm text-on-error-container">
             {formError}
           </div>
         ) : null}
@@ -389,3 +389,5 @@ export const GenerateFixturesConfigModal = ({
     </RightSideModal>
   );
 };
+
+

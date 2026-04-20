@@ -152,13 +152,13 @@ export const PermissionsSettingsSection = () => {
 
   if (section.settingsQuery.isLoading) {
     return (
-      <Card className="p-6 text-sm text-neutral-40">Loading settings...</Card>
+      <Card className="p-6 text-sm text-on-surface-variant">Loading settings...</Card>
     );
   }
 
   if (section.settingsQuery.isError) {
     return (
-      <Card className="p-6 text-sm text-error-40">
+      <Card className="p-6 text-sm text-on-error-container">
         {section.settingsQuery.error instanceof Error
           ? section.settingsQuery.error.message
           : "Unable to load settings."}
@@ -187,17 +187,17 @@ export const PermissionsSettingsSection = () => {
       }
     >
       <div className="space-y-3">
-        <p className="text-sm text-neutral-40">
+        <p className="text-sm text-on-surface-variant">
           Enable permissions by role. This controls what each role can do in the
           app.
         </p>
-        <p className="text-xs text-neutral-40">
+        <p className="text-xs text-on-surface-variant">
           Full access overrides all other permissions for that role.
         </p>
-        <div className="overflow-x-auto rounded-xl border border-neutral-90">
+        <div className="overflow-x-auto rounded-xl border border-outline">
           <table className="w-full min-w-155 text-sm">
             <thead>
-              <tr className="bg-neutral-98 text-xs uppercase tracking-[0.12em] text-neutral-40">
+              <tr className="bg-surface text-xs uppercase tracking-wider text-on-surface-variant">
                 <th className="px-3 py-2 text-left">Permission</th>
                 <th className="w-28 px-3 py-2 text-center">Admin ({adminCount})</th>
                 <th className="w-28 px-3 py-2 text-center">Scorer ({scorerCount})</th>
@@ -208,11 +208,11 @@ export const PermissionsSettingsSection = () => {
               {permissionGroups.flatMap((group) => [
                 <tr
                   key={`${group.title}-header`}
-                  className="border-t border-neutral-90 bg-neutral-99"
+                  className="border-t border-outline bg-surface-container"
                 >
                   <td
                     colSpan={4}
-                    className="px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-neutral-40"
+                    className="px-3 py-1 text-xs font-semibold uppercase tracking-wider text-on-surface-variant"
                   >
                     {group.title}
                   </td>
@@ -220,9 +220,9 @@ export const PermissionsSettingsSection = () => {
                 ...group.items.map((permission) => (
                   <tr
                     key={permission}
-                    className="border-t border-neutral-90 transition-colors hover:bg-neutral-98"
+                    className="border-t border-outline transition-colors hover:bg-surface"
                   >
-                    <td className="px-3 py-2 pl-7 text-primary-20">
+                    <td className="px-3 py-2 pl-7 text-on-primary-container">
                       {permissionLabels[permission]}
                     </td>
                     <td className="px-3 py-2 text-center">
@@ -285,7 +285,7 @@ export const PermissionsSettingsSection = () => {
           return roleError ? (
             <p
               key={roleConfig.field}
-              className="pl-1 text-xs font-semibold text-error-40"
+              className="pl-1 text-xs font-semibold text-on-error-container"
             >
               {roleConfig.label}: {roleError}
             </p>
@@ -295,3 +295,5 @@ export const PermissionsSettingsSection = () => {
     </SettingsSectionCard>
   );
 };
+
+

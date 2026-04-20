@@ -17,19 +17,19 @@ export const MatchCenterSummaryCard = ({
   superOverStatus,
 }: Props) => (
   <Card>
-    <div className="grid gap-4 text-sm text-neutral-40 md:grid-cols-3">
+    <div className="grid gap-4 text-sm text-on-surface-muted md:grid-cols-3">
       <div>
-        <p className="text-xs uppercase tracking-[0.2em]">Stage</p>
-        <p className="mt-1 text-base font-semibold text-primary-10">{stage}</p>
+        <p className="text-xs uppercase tracking-widest">Stage</p>
+        <p className="mt-1 text-base font-semibold text-on-surface">{stage}</p>
       </div>
       <div>
-        <p className="text-xs uppercase tracking-[0.2em]">Status</p>
-        <p className="mt-1 text-base font-semibold text-primary-10">{formatMatchStatus(status)}</p>
+        <p className="text-xs uppercase tracking-widest">Status</p>
+        <p className="mt-1 text-base font-semibold text-on-surface">{formatMatchStatus(status)}</p>
       </div>
       {phase === "SUPER_OVER" || hasSuperOver ? (
         <div>
-          <p className="text-xs uppercase tracking-[0.2em]">Super Over</p>
-          <p className="mt-1 text-base font-semibold text-primary-10">
+          <p className="text-xs uppercase tracking-widest">Super Over</p>
+          <p className="mt-1 text-base font-semibold text-on-surface">
             {superOverStatus ?? "PENDING"}
           </p>
         </div>
@@ -37,3 +37,5 @@ export const MatchCenterSummaryCard = ({
     </div>
   </Card>
 );
+
+

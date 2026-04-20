@@ -19,7 +19,7 @@ export const TournamentsList = ({
     {tournaments.map((tournament) => (
       <div
         key={tournament.id}
-        className="group relative rounded-2xl border border-neutral-90 bg-neutral-99 p-6 text-left text-primary-10 shadow-[0_20px_60px_-50px_rgba(15,23,42,0.35)] transition hover:-translate-y-0.5 hover:border-neutral-80 hover:text-primary-10"
+        className="group relative rounded-2xl border border-outline bg-surface-container p-6 text-left text-on-surface shadow-surface-lg transition hover:-translate-y-0.5 hover:border-outline-strong hover:text-on-surface"
       >
         <Link
           to="/tournaments/$tournamentId"
@@ -30,7 +30,7 @@ export const TournamentsList = ({
             <div>
               <p className="text-lg font-semibold">{tournament.name}</p>
               {tournament.location ? (
-                <p className="mt-1 text-xs uppercase tracking-[0.2em] text-neutral-40">
+                <p className="mt-1 text-xs uppercase tracking-widest text-on-surface-muted">
                   {tournament.location}
                 </p>
               ) : null}
@@ -57,7 +57,7 @@ export const TournamentsList = ({
               ) : null}
             </div>
           </div>
-          <p className="mt-3 text-sm text-neutral-40">
+          <p className="mt-3 text-sm text-on-surface-muted">
             {formatDateRange(tournament.startDate, tournament.endDate)}
           </p>
         </Link>
@@ -65,3 +65,6 @@ export const TournamentsList = ({
     ))}
   </section>
 );
+
+
+

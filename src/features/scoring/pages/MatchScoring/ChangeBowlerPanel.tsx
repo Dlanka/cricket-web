@@ -82,7 +82,7 @@ export const ChangeBowlerPanel = ({
   return (
     <Card>
       <div className="flex flex-wrap items-end gap-3">
-        <div className="min-w-[14rem] flex-1">
+        <div className="min-w-bowler-select flex-1">
           <FormGroup label="Current bowler">
             <SelectField
               options={bowlerOptions}
@@ -108,10 +108,12 @@ export const ChangeBowlerPanel = ({
         </Button>
       </div>
       {normalizedError ? (
-        <p className="mt-2 text-xs text-error-40">
+        <p className="mt-2 text-xs text-on-error-container">
           {getErrorMessage(normalizedError.code, normalizedError.message)}
         </p>
       ) : null}
     </Card>
   );
 };
+
+

@@ -16,7 +16,7 @@ export const SelectField = ({
   ...props
 }: SelectFieldProps) => (
   <select
-    className={`w-full rounded-xl border border-neutral-90 bg-neutral-99 px-3 py-2 text-sm text-primary-10 ${className ?? ""}`}
+    className={`w-full rounded-xl border border-outline bg-surface-container px-3 py-2 text-sm text-on-surface ${className ?? ""}`}
     {...props}
   >
     {options?.map((option) => (
@@ -30,3 +30,4 @@ export const SelectField = ({
     ))}
   </select>
 );
+

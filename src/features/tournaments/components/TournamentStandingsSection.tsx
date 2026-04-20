@@ -1,9 +1,3 @@
-import { Card } from "@/shared/components/card/Card";
-import { SectionHeader } from "@/shared/components/page/SectionHeader";
-import {
-  Table,
-  type TableColumn,
-} from "@/shared/components/table/Table";
 import { TournamentStandingsActions } from "./TournamentStandingsActions";
 import type { TournamentStandingsResponse } from "../types/tournamentTypes";
 
@@ -18,6 +12,7 @@ type Props = {
   canViewActions: boolean;
   isRecomputing: boolean;
   isGenerating: boolean;
+  qualificationSlots?: number;
   onRecompute: () => void;
   onGenerate: () => void;
 };
@@ -29,41 +24,13 @@ const formatNrr = (value: number) => {
   return "0.000";
 };
 
-type StandingRow = TournamentStandingsResponse["items"][number];
-
-const columns: TableColumn<StandingRow>[] = [
-  { key: "rank", header: "#", render: (row) => row.rank },
-  {
-    key: "team",
-    header: "Team",
-    className: "w-60 font-semibold",
-    render: (row) => row.team.name,
-  },
-  { key: "played", header: "P", align: "right", render: (row) => row.played },
-  { key: "won", header: "W", align: "right", render: (row) => row.won },
-  { key: "lost", header: "L", align: "right", render: (row) => row.lost },
-  { key: "tied", header: "T", align: "right", render: (row) => row.tied },
-  {
-    key: "noResult",
-    header: "NR",
-    align: "right",
-    render: (row) => row.noResult,
-  },
-  {
-    key: "points",
-    header: "Pts",
-    align: "right",
-    className: "font-semibold",
-    render: (row) => row.points,
-  },
-  {
-    key: "nrr",
-    header: "NRR",
-    align: "right",
-    className: "font-medium",
-    render: (row) => formatNrr(row.netRunRate),
-  },
-];
+const getBadgeTone = (shortName?: string | null) => {
+  const code = (shortName ?? "").trim().toUpperCase();
+  if (code === "CR") return "border-secondary/35 bg-secondary-container text-on-secondary-container";
+  if (code === "RR") return "border-success/35 bg-success-container text-on-success-container";
+  if (code === "SR") return "border-warning/35 bg-warning-container text-on-warning-container";
+  return "border-primary/35 bg-primary-container text-on-primary-container";
+};
 
 export const TournamentStandingsSection = ({
   standings,
@@ -76,57 +43,151 @@ export const TournamentStandingsSection = ({
   canViewActions,
   isRecomputing,
   isGenerating,
+  qualificationSlots = 2,
   onRecompute,
   onGenerate,
-}: Props) => (
-  <Card className="space-y-5 rounded-3xl shadow-[0_30px_80px_-60px_rgba(15,23,42,0.45)]">
-    <SectionHeader
-      eyebrow="Points Table"
-      title="League standings"
-      subtitle={
-        standings
-          ? `${standings.completedLeagueMatches} / ${standings.totalLeagueMatches} completed`
-          : "League progress unavailable"
-      }
-      actions={
-        canViewActions ? (
-          <TournamentStandingsActions
-            canRecompute={canRecompute}
-            showGenerate={showGenerate}
-            canGenerate={canGenerate}
-            isRecomputing={isRecomputing}
-            isGenerating={isGenerating}
-            onRecompute={onRecompute}
-            onGenerate={onGenerate}
-          />
-        ) : null
-      }
-    />
+}: Props) => {
+  const rows = standings?.items ?? [];
+  const completed = standings?.completedLeagueMatches ?? 0;
+  const total = standings?.totalLeagueMatches ?? 0;
+  const slots = Math.max(1, qualificationSlots);
+  const qualifiedCount = Math.min(slots, rows.length || slots);
 
-    <div>
-      {isLoading ? (
-        <p className="text-sm text-neutral-40">Loading standings...</p>
-      ) : null}
+  return (
+    <section className="space-y-3">
+      <p className="font-display text-2xs font-bold tracking-widest uppercase text-on-surface-subtle">
+        Points table
+      </p>
 
-      {isError ? (
-        <div className="rounded-2xl border border-error-80 bg-error-95 p-4 text-sm text-error-40">
-          {errorMessage ?? "Unable to load standings."}
+      <div className="overflow-hidden rounded-2xl border border-outline bg-surface-container shadow-surface-lg">
+        <div className="flex flex-wrap items-start justify-between gap-3 border-b border-outline-variant px-5 py-4">
+          <div>
+            <h3 className="font-display text-2xl font-bold text-on-surface">
+              League standings
+            </h3>
+            <p className="mt-1 text-sm text-on-surface-muted">
+              {completed} / {total} completed
+            </p>
+          </div>
+          {canViewActions ? (
+            <div className="flex items-center gap-2">
+              <TournamentStandingsActions
+                canRecompute={canRecompute}
+                showGenerate={showGenerate}
+                canGenerate={canGenerate}
+                isRecomputing={isRecomputing}
+                isGenerating={isGenerating}
+                onRecompute={onRecompute}
+                onGenerate={onGenerate}
+              />
+            </div>
+          ) : null}
         </div>
-      ) : null}
 
-      {!isLoading && !isError && standings && standings.items.length === 0 ? (
-        <div className="rounded-2xl border border-neutral-90 bg-neutral-100 p-4 text-sm text-neutral-40">
-          No completed league matches yet.
-        </div>
-      ) : null}
+        {isLoading ? (
+          <div className="px-5 py-4 text-sm text-on-surface-muted">
+            Loading standings...
+          </div>
+        ) : null}
 
-      {!isLoading && !isError && standings && standings.items.length > 0 ? (
-        <Table
-          columns={columns}
-          rows={standings.items}
-          rowKey={(row) => row.team.id}
-        />
-      ) : null}
-    </div>
-  </Card>
-);
+        {isError ? (
+          <div className="px-5 py-4">
+            <div className="rounded-xl border border-error/40 bg-error-container p-3 text-sm text-on-error-container">
+              {errorMessage ?? "Unable to load standings."}
+            </div>
+          </div>
+        ) : null}
+
+        {!isLoading && !isError && rows.length === 0 ? (
+          <div className="px-5 py-4">
+            <div className="rounded-xl border border-outline bg-surface-container-high p-3 text-sm text-on-surface-muted">
+              No completed league matches yet.
+            </div>
+          </div>
+        ) : null}
+
+        {!isLoading && !isError && rows.length > 0 ? (
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-190 table-fixed">
+              <colgroup>
+                <col className="w-2" />
+                <col className="w-12" />
+                <col className="w-auto" />
+                <col className="w-12" />
+                <col className="w-12" />
+                <col className="w-12" />
+                <col className="w-12" />
+                <col className="w-12" />
+                <col className="w-14" />
+                <col className="w-20" />
+              </colgroup>
+              <thead>
+                <tr className="border-b border-outline-variant text-2xs uppercase tracking-widest text-on-surface-subtle">
+                  <th className="w-2" />
+                  <th className="px-2 py-3 text-left">#</th>
+                  <th className="px-3 py-3 text-left">Team</th>
+                  <th className="px-2 py-3 text-right">P</th>
+                  <th className="px-2 py-3 text-right">W</th>
+                  <th className="px-2 py-3 text-right">L</th>
+                  <th className="px-2 py-3 text-right">T</th>
+                  <th className="px-2 py-3 text-right">NR</th>
+                  <th className="px-2 py-3 text-right">Pts</th>
+                  <th className="px-3 py-3 text-right">NRR</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((row, index) => {
+                  const qualify = index < qualifiedCount;
+                  const initials = (row.team.shortName ?? row.team.name)
+                    .slice(0, 2)
+                    .toUpperCase();
+                  return (
+                    <tr
+                      key={row.team.id}
+                      className="border-b border-outline-variant text-sm text-on-surface"
+                    >
+                      <td className="px-0">
+                        {qualify ? (
+                          <span className="mx-auto block h-14 w-1 rounded-full bg-primary" />
+                        ) : null}
+                      </td>
+                      <td className="px-2 py-4 text-on-primary-container">{row.rank}</td>
+                      <td className="px-3 py-4">
+                        <div className="flex items-center gap-3">
+                          <span
+                            className={`inline-flex h-7 min-w-7 items-center justify-center rounded-md border px-2 font-display text-2xs font-bold tracking-wide uppercase ${getBadgeTone(row.team.shortName)}`}
+                          >
+                            {initials}
+                          </span>
+                          <span className="font-semibold text-on-surface">
+                            {row.team.name}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-2 py-4 text-right font-mono text-on-primary-container">{row.played}</td>
+                      <td className="px-2 py-4 text-right font-mono text-on-primary-container">{row.won}</td>
+                      <td className="px-2 py-4 text-right font-mono text-on-primary-container">{row.lost}</td>
+                      <td className="px-2 py-4 text-right font-mono text-on-primary-container">{row.tied}</td>
+                      <td className="px-2 py-4 text-right font-mono text-on-primary-container">{row.noResult}</td>
+                      <td className="px-2 py-4 text-right font-display text-base font-bold text-on-surface">{row.points}</td>
+                      <td className="px-3 py-4 text-right font-mono text-on-surface-muted">
+                        {formatNrr(row.netRunRate)}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        ) : null}
+
+        {!isLoading && !isError && rows.length > 0 && showGenerate ? (
+          <div className="border-t border-outline-variant bg-surface-container-high px-5 py-3 text-sm text-on-surface-muted">
+            <span className="mr-2 inline-block h-2.5 w-2.5 rounded-full bg-primary align-middle" />
+            Top {qualifiedCount} {qualifiedCount === 1 ? "team" : "teams"} qualify for the knockout stage
+          </div>
+        ) : null}
+      </div>
+    </section>
+  );
+};

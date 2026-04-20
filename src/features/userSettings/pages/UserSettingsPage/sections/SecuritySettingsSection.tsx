@@ -56,7 +56,7 @@ export const SecuritySettingsSection = () => {
       isDirty={form.formState.isDirty}
       onSave={() => void onSave()}
     >
-      <Card className="space-y-4 border border-neutral-90">
+      <Card className="space-y-4 border border-outline">
         <FormGroup
           label="Current password"
           error={form.formState.errors.currentPassword?.message}
@@ -79,3 +79,4 @@ export const SecuritySettingsSection = () => {
     </SettingsSectionCard>
   );
 };
+

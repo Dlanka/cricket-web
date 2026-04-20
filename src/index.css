@@ -1,312 +1,280 @@
-@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap");
 @import "tailwindcss";
 
+:root {
+  --bg0: #0a0e14;
+  --bg1: #0f1520;
+  --bg2: #141d2e;
+  --bg3: #1a2438;
+  --bg4: #1f2b42;
+  --bg5: #243050;
+
+  --cyan: #00e5c8;
+  --blue: #4f8ef7;
+  --green: #22c55e;
+  --amber: #f59e0b;
+  --red: #ef4444;
+  --purple: #a78bfa;
+
+  --text-primary: #f0f4fc;
+  --text-secondary: #a8b8d8;
+  --border-subtle: rgba(255, 255, 255, 0.08);
+}
+
 @theme {
-  --font-display: "Space Grotesk", system-ui, sans-serif;
+  --font-display: "Rajdhani", system-ui, sans-serif;
   --font-body: "IBM Plex Sans", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
 
   --blur-glow: 140px;
   --blur-glow-lg: 160px;
 
-  --color-primary-base: #00175f;
-  --color-secondary-base: #f59e0b;
-  --color-neutral-base: #64748b;
-  --color-neutral-variant-base: #f1f5f9;
-  --color-success-base: #10b981;
-  --color-warning-base: #f59e0b;
-  --color-info-base: #38bdf8;
-  --color-error-base: #f43f5e;
+  /* Surface roles */
+  --color-background: var(--bg0);
+  --color-surface: var(--bg1);
+  --color-surface-container: var(--bg2);
+  --color-surface-container-high: var(--bg3);
+  --color-surface-container-highest: var(--bg4);
+  --color-surface-bright: var(--bg5);
 
-  --color-primary-0: #000000;
-  --color-primary-10: color-mix(in oklab, var(--color-primary-base) 20%, black);
-  --color-primary-20: color-mix(in oklab, var(--color-primary-base) 40%, black);
-  --color-primary-30: color-mix(in oklab, var(--color-primary-base) 60%, black);
-  --color-primary-40: color-mix(in oklab, var(--color-primary-base) 80%, black);
-  --color-primary-50: var(--color-primary-base);
-  --color-primary-60: color-mix(in oklab, var(--color-primary-base) 80%, white);
-  --color-primary-70: color-mix(in oklab, var(--color-primary-base) 60%, white);
-  --color-primary-80: color-mix(in oklab, var(--color-primary-base) 40%, white);
-  --color-primary-90: color-mix(in oklab, var(--color-primary-base) 20%, white);
-  --color-primary-95: color-mix(in oklab, var(--color-primary-base) 10%, white);
-  --color-primary-98: color-mix(in oklab, var(--color-primary-base) 4%, white);
-  --color-primary-99: color-mix(in oklab, var(--color-primary-base) 2%, white);
-  --color-primary-100: #ffffff;
+  /* Action roles */
+  --color-primary: var(--cyan);
+  --color-on-primary: #042c25;
+  --color-primary-container: color-mix(in oklab, var(--cyan) 14%, transparent);
+  --color-on-primary-container: var(--cyan);
 
-  --color-secondary-0: #000000;
-  --color-secondary-10: color-mix(
+  --color-secondary: var(--blue);
+  --color-on-secondary: #042848;
+  --color-secondary-container: color-mix(
     in oklab,
-    var(--color-secondary-base) 20%,
-    black
+    var(--blue) 14%,
+    transparent
   );
-  --color-secondary-20: color-mix(
-    in oklab,
-    var(--color-secondary-base) 40%,
-    black
-  );
-  --color-secondary-30: color-mix(
-    in oklab,
-    var(--color-secondary-base) 60%,
-    black
-  );
-  --color-secondary-40: color-mix(
-    in oklab,
-    var(--color-secondary-base) 80%,
-    black
-  );
-  --color-secondary-50: var(--color-secondary-base);
-  --color-secondary-60: color-mix(
-    in oklab,
-    var(--color-secondary-base) 80%,
-    white
-  );
-  --color-secondary-70: color-mix(
-    in oklab,
-    var(--color-secondary-base) 60%,
-    white
-  );
-  --color-secondary-80: color-mix(
-    in oklab,
-    var(--color-secondary-base) 40%,
-    white
-  );
-  --color-secondary-90: color-mix(
-    in oklab,
-    var(--color-secondary-base) 20%,
-    white
-  );
-  --color-secondary-95: color-mix(
-    in oklab,
-    var(--color-secondary-base) 10%,
-    white
-  );
-  --color-secondary-98: color-mix(
-    in oklab,
-    var(--color-secondary-base) 4%,
-    white
-  );
-  --color-secondary-99: color-mix(
-    in oklab,
-    var(--color-secondary-base) 2%,
-    white
-  );
-  --color-secondary-100: #ffffff;
+  --color-on-secondary-container: var(--blue);
 
-  --color-neutral-0: #000000;
-  --color-neutral-10: color-mix(in oklab, var(--color-neutral-base) 20%, black);
-  --color-neutral-20: color-mix(in oklab, var(--color-neutral-base) 40%, black);
-  --color-neutral-30: color-mix(in oklab, var(--color-neutral-base) 60%, black);
-  --color-neutral-40: color-mix(in oklab, var(--color-neutral-base) 80%, black);
-  --color-neutral-50: var(--color-neutral-base);
-  --color-neutral-60: color-mix(in oklab, var(--color-neutral-base) 80%, white);
-  --color-neutral-70: color-mix(in oklab, var(--color-neutral-base) 60%, white);
-  --color-neutral-80: color-mix(in oklab, var(--color-neutral-base) 40%, white);
-  --color-neutral-90: color-mix(in oklab, var(--color-neutral-base) 20%, white);
-  --color-neutral-95: color-mix(in oklab, var(--color-neutral-base) 10%, white);
-  --color-neutral-98: color-mix(in oklab, var(--color-neutral-base) 4%, white);
-  --color-neutral-99: color-mix(in oklab, var(--color-neutral-base) 2%, white);
-  --color-neutral-100: #ffffff;
+  --color-success: var(--green);
+  --color-on-success: #0e2d1a;
+  --color-success-container: color-mix(in oklab, var(--green) 12%, transparent);
+  --color-on-success-container: var(--green);
 
-  --color-neutral-variant-0: #000000;
-  --color-neutral-variant-10: color-mix(
-    in oklab,
-    var(--color-neutral-variant-base) 20%,
-    black
-  );
-  --color-neutral-variant-20: color-mix(
-    in oklab,
-    var(--color-neutral-variant-base) 40%,
-    black
-  );
-  --color-neutral-variant-30: color-mix(
-    in oklab,
-    var(--color-neutral-variant-base) 60%,
-    black
-  );
-  --color-neutral-variant-40: color-mix(
-    in oklab,
-    var(--color-neutral-variant-base) 80%,
-    black
-  );
-  --color-neutral-variant-50: var(--color-neutral-variant-base);
-  --color-neutral-variant-60: color-mix(
-    in oklab,
-    var(--color-neutral-variant-base) 80%,
-    white
-  );
-  --color-neutral-variant-70: color-mix(
-    in oklab,
-    var(--color-neutral-variant-base) 60%,
-    white
-  );
-  --color-neutral-variant-80: color-mix(
-    in oklab,
-    var(--color-neutral-variant-base) 40%,
-    white
-  );
-  --color-neutral-variant-90: color-mix(
-    in oklab,
-    var(--color-neutral-variant-base) 20%,
-    white
-  );
-  --color-neutral-variant-95: color-mix(
-    in oklab,
-    var(--color-neutral-variant-base) 10%,
-    white
-  );
-  --color-neutral-variant-98: color-mix(
-    in oklab,
-    var(--color-neutral-variant-base) 4%,
-    white
-  );
-  --color-neutral-variant-99: color-mix(
-    in oklab,
-    var(--color-neutral-variant-base) 2%,
-    white
-  );
-  --color-neutral-variant-100: #ffffff;
+  --color-warning: var(--amber);
+  --color-on-warning: #2d1f03;
+  --color-warning-container: color-mix(in oklab, var(--amber) 10%, transparent);
+  --color-on-warning-container: var(--amber);
 
-  --color-success-0: #000000;
-  --color-success-10: color-mix(in oklab, var(--color-success-base) 20%, black);
-  --color-success-20: color-mix(in oklab, var(--color-success-base) 40%, black);
-  --color-success-30: color-mix(in oklab, var(--color-success-base) 60%, black);
-  --color-success-40: color-mix(in oklab, var(--color-success-base) 80%, black);
-  --color-success-50: var(--color-success-base);
-  --color-success-60: color-mix(in oklab, var(--color-success-base) 80%, white);
-  --color-success-70: color-mix(in oklab, var(--color-success-base) 60%, white);
-  --color-success-80: color-mix(in oklab, var(--color-success-base) 40%, white);
-  --color-success-90: color-mix(in oklab, var(--color-success-base) 20%, white);
-  --color-success-95: color-mix(in oklab, var(--color-success-base) 10%, white);
-  --color-success-98: color-mix(in oklab, var(--color-success-base) 4%, white);
-  --color-success-99: color-mix(in oklab, var(--color-success-base) 2%, white);
-  --color-success-100: #ffffff;
+  --color-error: var(--red);
+  --color-on-error: #3a0a0d;
+  --color-error-container: color-mix(in oklab, var(--red) 12%, transparent);
+  --color-on-error-container: var(--red);
 
-  --color-warning-0: #000000;
-  --color-warning-10: color-mix(in oklab, var(--color-warning-base) 20%, black);
-  --color-warning-20: color-mix(in oklab, var(--color-warning-base) 40%, black);
-  --color-warning-30: color-mix(in oklab, var(--color-warning-base) 60%, black);
-  --color-warning-40: color-mix(in oklab, var(--color-warning-base) 80%, black);
-  --color-warning-50: var(--color-warning-base);
-  --color-warning-60: color-mix(in oklab, var(--color-warning-base) 80%, white);
-  --color-warning-70: color-mix(in oklab, var(--color-warning-base) 60%, white);
-  --color-warning-80: color-mix(in oklab, var(--color-warning-base) 40%, white);
-  --color-warning-90: color-mix(in oklab, var(--color-warning-base) 20%, white);
-  --color-warning-95: color-mix(in oklab, var(--color-warning-base) 10%, white);
-  --color-warning-98: color-mix(in oklab, var(--color-warning-base) 4%, white);
-  --color-warning-99: color-mix(in oklab, var(--color-warning-base) 2%, white);
-  --color-warning-100: #ffffff;
-
-  --color-info-0: #000000;
-  --color-info-10: color-mix(in oklab, var(--color-info-base) 20%, black);
-  --color-info-20: color-mix(in oklab, var(--color-info-base) 40%, black);
-  --color-info-30: color-mix(in oklab, var(--color-info-base) 60%, black);
-  --color-info-40: color-mix(in oklab, var(--color-info-base) 80%, black);
-  --color-info-50: var(--color-info-base);
-  --color-info-60: color-mix(in oklab, var(--color-info-base) 80%, white);
-  --color-info-70: color-mix(in oklab, var(--color-info-base) 60%, white);
-  --color-info-80: color-mix(in oklab, var(--color-info-base) 40%, white);
-  --color-info-90: color-mix(in oklab, var(--color-info-base) 20%, white);
-  --color-info-95: color-mix(in oklab, var(--color-info-base) 10%, white);
-  --color-info-98: color-mix(in oklab, var(--color-info-base) 4%, white);
-  --color-info-99: color-mix(in oklab, var(--color-info-base) 2%, white);
-  --color-info-100: #ffffff;
-
-  --color-error-0: #000000;
-  --color-error-10: color-mix(in oklab, var(--color-error-base) 20%, black);
-  --color-error-20: color-mix(in oklab, var(--color-error-base) 40%, black);
-  --color-error-30: color-mix(in oklab, var(--color-error-base) 60%, black);
-  --color-error-40: color-mix(in oklab, var(--color-error-base) 80%, black);
-  --color-error-50: var(--color-error-base);
-  --color-error-60: color-mix(in oklab, var(--color-error-base) 80%, white);
-  --color-error-70: color-mix(in oklab, var(--color-error-base) 60%, white);
-  --color-error-80: color-mix(in oklab, var(--color-error-base) 40%, white);
-  --color-error-90: color-mix(in oklab, var(--color-error-base) 20%, white);
-  --color-error-95: color-mix(in oklab, var(--color-error-base) 10%, white);
-  --color-error-98: color-mix(in oklab, var(--color-error-base) 4%, white);
-  --color-error-99: color-mix(in oklab, var(--color-error-base) 2%, white);
-  --color-error-100: #ffffff;
+  /* Text + outline roles */
+  --color-on-surface: var(--text-primary);
+  --color-on-surface-variant: var(--text-secondary);
+  --color-on-surface-muted: #6278a0;
+  --color-on-surface-subtle: #3a4a68;
+  --color-outline: var(--border-subtle);
+  --color-outline-variant: rgba(255, 255, 255, 0.04);
+  --color-outline-strong: rgba(255, 255, 255, 0.14);
 
   --spacing-104: 26rem;
   --spacing-112: 28rem;
   --spacing-128: 32rem;
   --spacing-toolbar: 72px;
+
+  --text-2xs: 11px;
 }
 
 @utility bg-linear-to-r {
   background-image: linear-gradient(to right, var(--tw-gradient-stops));
 }
 
-@utility bg-secondary-90-40 {
+@utility bg-secondary-soft {
   background-color: color-mix(
     in oklab,
-    var(--color-secondary-90) 40%,
+    var(--color-secondary) 20%,
     transparent
   );
 }
 
-@utility bg-info-90-35 {
-  background-color: color-mix(in oklab, var(--color-info-90) 35%, transparent);
-}
-
-@utility bg-warning-90-35 {
+@utility bg-info-soft {
   background-color: color-mix(
     in oklab,
-    var(--color-warning-90) 35%,
+    var(--color-secondary) 18%,
     transparent
   );
 }
 
-@utility via-neutral-80-40 {
+@utility bg-warning-soft {
+  background-color: color-mix(in oklab, var(--color-warning) 18%, transparent);
+}
+
+@utility via-surface-soft {
   --tw-gradient-via: color-mix(
     in oklab,
-    var(--color-neutral-80) 40%,
+    var(--color-surface-container-highest) 40%,
     transparent
   );
   --tw-gradient-to: color-mix(
     in oklab,
-    var(--color-neutral-80) 0%,
+    var(--color-surface-container-highest) 0%,
     transparent
   );
 }
 
+@utility shadow-surface-lg {
+  box-shadow: 0 24px 60px -50px rgba(0, 0, 0, 0.8);
+}
+
+@utility min-h-half-screen {
+  min-height: 50vh;
+}
+
+@utility min-h-60vh {
+  min-height: 60vh;
+}
+
+@utility min-h-scoring-page {
+  min-height: calc(100vh - 7rem);
+}
+
+@utility h-scoring-panel {
+  height: calc(100vh - 3.25rem);
+}
+
+@utility app-orb-right {
+  right: -12%;
+}
+
+@utility app-orb-left {
+  left: -10%;
+}
+
+@utility layout-split-auth {
+  grid-template-columns: 1.1fr 0.9fr;
+}
+
+@utility layout-split-sidebar {
+  grid-template-columns: 220px minmax(0, 1fr);
+}
+
+@utility grid-scoring-layout {
+  grid-template-columns: 1.6fr 1fr;
+}
+
+@utility table-cols-standing {
+  grid-template-columns: 40px 1fr 80px 80px;
+}
+
+@utility table-cols-label-value {
+  grid-template-columns: 120px 1fr;
+}
+
+@utility table-cols-auto-end {
+  grid-template-columns: 1fr auto;
+}
+
+@utility min-w-bowler-select {
+  min-width: 14rem;
+}
+
+@utility min-w-table-batter {
+  min-width: 520px;
+}
+
+@utility w-col-batter {
+  width: 44%;
+}
+
+@utility w-col-stat {
+  width: 11%;
+}
+
+@utility w-col-sr {
+  width: 13%;
+}
+
 :root {
-  color-scheme: light;
+  color-scheme: dark;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-html,
-body,
-#root {
-  /* height: 100%; */
-}
-
 body {
   margin: 0;
   overflow: hidden;
   font-family: var(--font-body);
-  background-color: var(--color-neutral-98);
-  color: var(--color-primary-10);
+  background-color: var(--color-background);
+  color: var(--color-on-surface);
   overflow-y: auto;
 }
 
-#root {
-  /* overflow-y: auto; */
+html,
+body,
+* {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(
+      in oklab,
+      var(--color-primary) 55%,
+      var(--color-outline)
+    )
+    color-mix(in oklab, var(--color-surface-container) 86%, black);
+}
+
+*::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+*::-webkit-scrollbar-track {
+  background: color-mix(in oklab, var(--color-surface-container) 86%, black);
+  border-left: 1px solid var(--color-outline);
+}
+
+*::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--color-primary) 72%, var(--color-outline)),
+    color-mix(
+      in oklab,
+      var(--color-primary) 45%,
+      var(--color-surface-container-high)
+    )
+  );
+  border: 2px solid
+    color-mix(in oklab, var(--color-surface-container) 86%, black);
+  border-radius: 999px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(
+    180deg,
+    color-mix(
+      in oklab,
+      var(--color-primary) 82%,
+      var(--color-surface-container-high)
+    ),
+    color-mix(
+      in oklab,
+      var(--color-primary) 58%,
+      var(--color-surface-container-high)
+    )
+  );
 }
 
 .dashboard-pattern-bg {
-  background-color: var(--color-neutral-98);
+  background-color: var(--color-surface-container);
   background-image:
     radial-gradient(
       circle at 1px 1px,
-      color-mix(in oklab, var(--color-primary-40) 12%, transparent) 1px,
+      color-mix(in oklab, var(--color-primary) 16%, transparent) 1px,
       transparent 0
     ),
     linear-gradient(
       135deg,
-      color-mix(in oklab, var(--color-neutral-99) 90%, white),
-      color-mix(in oklab, var(--color-primary-95) 32%, white)
+      color-mix(in oklab, var(--color-background) 92%, black),
+      color-mix(in oklab, var(--color-primary-container) 80%, black)
     );
   background-size:
     20px 20px,

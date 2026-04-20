@@ -26,26 +26,26 @@ export const MatchList = ({ groups }: Props) => {
     <div className="space-y-6">
       {stages.map((stage) => (
         <section key={stage} className="space-y-3">
-          <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-neutral-40">
+          <h3 className="text-sm font-semibold uppercase tracking-widest text-on-surface-muted">
             {stageLabels[stage] ?? stage}
           </h3>
           <div className="space-y-3">
             {groups[stage].map((match) => (
               <div
                 key={match.id}
-                className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-neutral-90 bg-neutral-99 p-4 shadow-[0_20px_60px_-50px_rgba(15,23,42,0.4)]"
+                className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-outline bg-surface-container p-4 shadow-surface-lg"
               >
                 <div>
-                  <p className="text-sm font-semibold text-primary-10">
+                  <p className="text-sm font-semibold text-on-surface">
                     {match.homeTeamName || "TBD"} vs{" "}
                     {match.awayTeamName || "TBD"}
                   </p>
-                  <p className="text-xs text-neutral-40">
+                  <p className="text-xs text-on-surface-muted">
                     {formatDateTime(match.scheduledAt)}
                   </p>
                 </div>
                 {match.matchNumber ? (
-                  <span className="rounded-full border border-neutral-90 bg-neutral-99 px-3 py-1 text-xs text-neutral-40">
+                  <span className="rounded-full border border-outline bg-surface-container px-3 py-1 text-xs text-on-surface-muted">
                     Match {match.matchNumber}
                   </span>
                 ) : null}
@@ -57,3 +57,6 @@ export const MatchList = ({ groups }: Props) => {
     </div>
   );
 };
+
+
+

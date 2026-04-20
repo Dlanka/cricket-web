@@ -8,9 +8,12 @@ type RoleBadgeProps = {
 };
 
 const roleBadgeStyles = tv({
-  base: "inline-flex items-center rounded-md border border-primary-40 bg-primary-40 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-neutral-98",
+  base: "inline-flex items-center rounded-md border border-primary/25 bg-primary px-2 py-0.5 text-xs font-semibold uppercase tracking-wide text-on-primary",
 });
 
 export const RoleBadge = ({ role, className }: RoleBadgeProps) => (
   <span className={roleBadgeStyles({ className })}>{role}</span>
 );
+
+
+

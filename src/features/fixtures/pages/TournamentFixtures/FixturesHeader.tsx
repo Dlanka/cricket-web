@@ -27,7 +27,8 @@ export const FixturesHeader = ({
             type="button"
             appearance="filled"
             color="primary"
-            size="md"
+            size="action"
+            shape="square"
             disabled={isGenerating || isGenerateDisabled}
             onClick={onGenerate}
           >
@@ -37,9 +38,11 @@ export const FixturesHeader = ({
       }
     />
     {errorMessage ? (
-      <div className="rounded-2xl border border-error-80 bg-error-95 px-4 py-3 text-sm text-error-40">
+      <div className="rounded-2xl border border-error/40 bg-error-container px-4 py-3 text-sm text-on-error-container">
         {errorMessage}
       </div>
     ) : null}
   </div>
 );
+
+

@@ -1,0 +1,1319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cricket Tournament Manager</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ─── RESET & BASE ──────────────────────────────────────────── */
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg0:#0a0e14;
+  --bg1:#0f1520;
+  --bg2:#141d2e;
+  --bg3:#1a2438;
+  --bg4:#1f2b42;
+  --bg5:#243050;
+  --border0:rgba(255,255,255,.04);
+  --border1:rgba(255,255,255,.08);
+  --border2:rgba(255,255,255,.14);
+  --border3:rgba(255,255,255,.22);
+  --text0:#f0f4fc;
+  --text1:#a8b8d8;
+  --text2:#6278a0;
+  --text3:#3a4a68;
+  --cyan:#00e5c8;
+  --cyan-dim:rgba(0,229,200,.12);
+  --cyan-glow:rgba(0,229,200,.25);
+  --blue:#4f8ef7;
+  --blue-dim:rgba(79,142,247,.12);
+  --green:#22c55e;
+  --green-dim:rgba(34,197,94,.1);
+  --amber:#f59e0b;
+  --amber-dim:rgba(245,158,11,.1);
+  --red:#ef4444;
+  --red-dim:rgba(239,68,68,.12);
+  --purple:#a78bfa;
+  --purple-dim:rgba(167,139,250,.12);
+  --gold:#f0b429;
+  --font-head:'Rajdhani',sans-serif;
+  --font-body:'IBM Plex Sans',sans-serif;
+  --font-mono:'IBM Plex Mono',monospace;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg0);color:var(--text0);font-family:var(--font-body);font-size:14px;line-height:1.5;min-height:100vh}
+
+/* ─── LAYOUT ─────────────────────────────────────────────────── */
+.app{display:flex;flex-direction:column;min-height:100vh}
+
+/* ─── NAV ────────────────────────────────────────────────────── */
+.nav{
+  background:var(--bg1);
+  border-bottom:1px solid var(--border1);
+  height:52px;display:flex;align-items:center;
+  padding:0 20px;gap:6px;
+  position:sticky;top:0;z-index:100;
+  backdrop-filter:blur(12px);
+}
+.nav-back{
+  display:flex;align-items:center;gap:6px;
+  background:none;border:none;color:var(--text2);
+  font-family:var(--font-body);font-size:12px;font-weight:500;
+  cursor:pointer;padding:6px 10px;border-radius:6px;
+  letter-spacing:.3px;transition:color .15s;
+}
+.nav-back:hover{color:var(--text0)}
+.nav-back svg{opacity:.6}
+.nav-tabs{flex:1;display:flex;justify-content:center;gap:2px}
+.nav-tab{
+  background:none;border:none;
+  color:var(--text2);font-family:var(--font-head);font-size:13px;
+  font-weight:600;letter-spacing:1px;text-transform:uppercase;
+  padding:6px 18px;border-radius:20px;cursor:pointer;
+  transition:all .15s;
+}
+.nav-tab:hover{color:var(--text1)}
+.nav-tab.active{background:var(--cyan);color:var(--bg0)}
+.badge{
+  padding:4px 12px;border-radius:20px;
+  font-family:var(--font-head);font-size:11px;font-weight:700;
+  letter-spacing:.8px;text-transform:uppercase;
+}
+.badge-draft{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(245,158,11,.3)}
+.badge-active{
+  background:var(--cyan-dim);color:var(--cyan);
+  border:1px solid rgba(0,229,200,.3);
+  box-shadow:0 0 12px var(--cyan-glow);
+  display:flex;align-items:center;gap:6px;
+}
+.badge-active:before{content:'';width:6px;height:6px;border-radius:50%;background:var(--cyan);animation:pulse 1.5s ease infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+
+/* ─── SCREEN SWITCHER ────────────────────────────────────────── */
+.screen{display:none}
+.screen.active{display:block}
+.content{padding:28px 24px;max-width:1100px;margin:0 auto;width:100%}
+.page-label{font-family:var(--font-head);font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--text3);margin-bottom:8px}
+.page-title{font-family:var(--font-head);font-size:28px;font-weight:700;color:var(--text0);letter-spacing:.5px;margin-bottom:4px}
+.page-sub{font-size:12px;color:var(--text2);margin-bottom:28px}
+
+/* ─── CARDS ──────────────────────────────────────────────────── */
+.card{
+  background:var(--bg2);border:1px solid var(--border1);
+  border-radius:10px;overflow:hidden;
+}
+.card-body{padding:20px 22px}
+.card-header{
+  padding:14px 22px;border-bottom:1px solid var(--border0);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.card-title-sm{
+  font-family:var(--font-head);font-size:11px;font-weight:700;
+  letter-spacing:1px;text-transform:uppercase;color:var(--text2);
+}
+
+/* ─── GRID ───────────────────────────────────────────────────── */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.mb12{margin-bottom:12px}
+.mb16{margin-bottom:16px}
+.mb24{margin-bottom:24px}
+
+/* ─── STAT TILES ─────────────────────────────────────────────── */
+.stat-tile{
+  background:var(--bg3);border:1px solid var(--border0);
+  border-radius:8px;padding:14px 16px;
+}
+.stat-label{font-family:var(--font-head);font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:6px}
+.stat-value{font-family:var(--font-head);font-size:18px;font-weight:700;color:var(--text0)}
+.stat-value.cyan{color:var(--cyan)}
+.stat-value.amber{color:var(--amber)}
+.stat-value.green{color:var(--green)}
+.stat-value.blue{color:var(--blue)}
+.stat-value.sm{font-size:14px}
+
+/* ─── BTNS ───────────────────────────────────────────────────── */
+.btn{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:8px 16px;border-radius:7px;border:none;
+  font-family:var(--font-head);font-size:13px;font-weight:700;
+  letter-spacing:.5px;cursor:pointer;transition:all .15s;
+  text-transform:uppercase;
+}
+.btn-primary{background:var(--cyan);color:var(--bg0)}
+.btn-primary:hover{background:#00ccb2;box-shadow:0 0 16px var(--cyan-glow)}
+.btn-secondary{background:var(--bg4);color:var(--text1);border:1px solid var(--border2)}
+.btn-secondary:hover{background:var(--bg5);border-color:var(--border3)}
+.btn-ghost{background:none;border:1px solid var(--border1);color:var(--text2)}
+.btn-ghost:hover{border-color:var(--border2);color:var(--text1)}
+.btn-danger{background:var(--red-dim);color:var(--red);border:1px solid rgba(239,68,68,.25)}
+.btn-danger:hover{background:rgba(239,68,68,.2)}
+.btn-amber{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(245,158,11,.25)}
+.btn-sm{padding:6px 12px;font-size:11px}
+.btn-icon{padding:8px;border-radius:7px;border:1px solid var(--border1);background:none;color:var(--text2);cursor:pointer;transition:all .15s;display:flex;align-items:center}
+.btn-icon:hover{border-color:var(--border2);color:var(--text0)}
+
+/* ─── PILLS ──────────────────────────────────────────────────── */
+.pill{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-family:var(--font-head);font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
+.pill-sched{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(245,158,11,.25)}
+.pill-tbd{background:var(--bg4);color:var(--text2);border:1px solid var(--border1)}
+.pill-live{background:var(--cyan-dim);color:var(--cyan);border:1px solid rgba(0,229,200,.3)}
+.pill-done{background:var(--green-dim);color:var(--green);border:1px solid rgba(34,197,94,.3)}
+
+/* ─── OVERVIEW SCREEN ────────────────────────────────────────── */
+.summary-block{
+  background:var(--bg3);border:1px solid var(--border0);
+  border-radius:8px;padding:16px 18px;margin-top:14px;
+}
+.summary-item{
+  display:flex;align-items:flex-start;gap:10px;
+  padding:5px 0;font-size:13px;color:var(--text1);
+}
+.summary-bullet{
+  width:4px;height:4px;border-radius:50%;
+  background:var(--cyan);margin-top:8px;flex-shrink:0;
+}
+.rule-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 0;border-bottom:1px solid var(--border0);
+}
+.rule-row:last-child{border:none}
+.rule-key{font-size:12px;color:var(--text2)}
+.rule-val{font-family:var(--font-mono);font-size:14px;font-weight:600;color:var(--text0)}
+.tie-note{
+  background:var(--bg3);border-left:3px solid var(--cyan);
+  border-radius:0 6px 6px 0;padding:10px 14px;margin-top:14px;
+  font-size:12px;color:var(--text1);
+}
+.progress-track{background:var(--bg4);border-radius:3px;height:5px;margin-top:8px}
+.progress-fill{height:5px;border-radius:3px;background:var(--cyan);transition:width .4s}
+
+/* ─── TEAMS ──────────────────────────────────────────────────── */
+.team-row{
+  background:var(--bg2);border:1px solid var(--border1);
+  border-radius:10px;padding:16px 20px;
+  display:flex;align-items:center;gap:16px;
+  margin-bottom:10px;transition:border-color .15s;cursor:default;
+}
+.team-row:hover{border-color:var(--border2)}
+.avatar{
+  width:42px;height:42px;border-radius:9px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-head);font-size:14px;font-weight:700;flex-shrink:0;
+}
+.av-cyan{background:var(--cyan-dim);color:var(--cyan);border:1px solid rgba(0,229,200,.25)}
+.av-blue{background:var(--blue-dim);color:var(--blue);border:1px solid rgba(79,142,247,.25)}
+.av-purple{background:var(--purple-dim);color:var(--purple);border:1px solid rgba(167,139,250,.25)}
+.av-amber{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(245,158,11,.25)}
+.av-green{background:var(--green-dim);color:var(--green);border:1px solid rgba(34,197,94,.25)}
+.team-info{flex:1}
+.team-name{font-family:var(--font-head);font-size:16px;font-weight:700;color:var(--text0);letter-spacing:.3px}
+.team-meta{font-size:11px;color:var(--text2);margin-top:2px}
+.team-actions{display:flex;gap:8px}
+
+/* ─── PLAYERS ─────────────────────────────────────────────────── */
+.player-row{
+  background:var(--bg2);border:1px solid var(--border1);
+  border-radius:8px;padding:14px 18px;
+  display:flex;align-items:center;gap:14px;
+  margin-bottom:8px;transition:border-color .15s;
+}
+.player-row:hover{border-color:var(--border2)}
+.player-num{
+  font-family:var(--font-mono);font-size:11px;color:var(--text3);
+  width:24px;text-align:right;flex-shrink:0;
+}
+.player-name{font-size:14px;font-weight:500;color:var(--text0);flex:1}
+.player-role{font-size:12px;color:var(--text2)}
+
+/* ─── FIXTURES ────────────────────────────────────────────────── */
+.stage-divider{
+  display:flex;align-items:center;gap:12px;
+  margin:24px 0 14px;
+}
+.stage-divider-label{
+  font-family:var(--font-head);font-size:11px;font-weight:700;
+  letter-spacing:1.2px;text-transform:uppercase;color:var(--text3);
+  white-space:nowrap;
+}
+.stage-divider-line{flex:1;height:1px;background:var(--border0)}
+.fixture-row{
+  background:var(--bg2);border:1px solid var(--border1);
+  border-radius:10px;padding:14px 18px;
+  display:flex;align-items:center;gap:14px;
+  margin-bottom:8px;transition:border-color .15s;
+}
+.fixture-row:hover{border-color:var(--border2)}
+.fixture-row.tbd{border-style:dashed;border-color:var(--border0)}
+.fixture-teams{flex:1;display:flex;align-items:center;gap:12px}
+.fix-team{font-family:var(--font-head);font-size:15px;font-weight:700;color:var(--text0);letter-spacing:.3px}
+.fix-vs{font-size:11px;color:var(--text3);font-weight:400}
+.fixture-actions{display:flex;align-items:center;gap:8px}
+
+/* ─── STANDINGS ───────────────────────────────────────────────── */
+.standings-table{width:100%;border-collapse:collapse}
+.standings-table thead th{
+  padding:11px 14px;text-align:left;
+  font-family:var(--font-head);font-size:10px;font-weight:700;
+  letter-spacing:1px;text-transform:uppercase;color:var(--text3);
+  border-bottom:1px solid var(--border1);
+}
+.standings-table thead th.r{text-align:right}
+.standings-table tbody tr{
+  border-bottom:1px solid var(--border0);
+  transition:background .12s;
+}
+.standings-table tbody tr:last-child{border:none}
+.standings-table tbody tr:hover{background:rgba(255,255,255,.02)}
+.standings-table td{padding:13px 14px;font-size:13px;color:var(--text1)}
+.standings-table td.r{text-align:right;font-family:var(--font-mono);font-size:12px}
+.standings-table td.pts{text-align:right;font-family:var(--font-mono);font-size:15px;font-weight:600;color:var(--text0)}
+.standings-table td.nrr{text-align:right;font-family:var(--font-mono);font-size:12px;color:var(--text2)}
+.qualify-stripe{width:3px;padding:0}
+.qualify-stripe-fill{width:3px;height:100%;background:var(--cyan)}
+.rank-num{font-family:var(--font-mono);font-size:12px;color:var(--text3);width:32px}
+.team-cell-inner{display:flex;align-items:center;gap:10px}
+.avatar-xs{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-size:10px;font-weight:700}
+.qualify-footer{
+  padding:12px 20px;border-top:1px solid var(--border0);
+  background:var(--bg3);display:flex;align-items:center;gap:8px;
+  font-size:11px;color:var(--text2);
+}
+.q-dot{width:8px;height:8px;border-radius:50%;background:var(--cyan);flex-shrink:0}
+
+/* ─── MATCH CENTER ────────────────────────────────────────────── */
+.match-center-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.stage-info-card{
+  background:var(--bg2);border:1px solid var(--border1);
+  border-radius:10px;padding:18px 22px;
+  display:flex;gap:32px;margin-bottom:14px;
+}
+.stage-field{display:flex;flex-direction:column;gap:4px}
+.stage-field-label{font-family:var(--font-head);font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3)}
+.stage-field-value{font-family:var(--font-head);font-size:16px;font-weight:700;color:var(--text0)}
+.empty-state{
+  background:var(--bg2);border:1px solid var(--border1);
+  border-radius:10px;padding:48px;text-align:center;
+}
+.empty-title{font-family:var(--font-head);font-size:17px;font-weight:700;color:var(--text1);margin-bottom:6px}
+.empty-sub{font-size:12px;color:var(--text2);margin-bottom:20px}
+
+/* ─── PLAYING XI ──────────────────────────────────────────────── */
+.xi-tabs{display:flex;gap:8px;margin-bottom:20px}
+.xi-tab{
+  padding:8px 18px;border-radius:8px;border:1px solid var(--border1);
+  background:none;font-family:var(--font-head);font-size:13px;font-weight:700;
+  letter-spacing:.5px;color:var(--text2);cursor:pointer;transition:all .15s;
+  display:flex;align-items:center;gap:7px;
+}
+.xi-tab.active{background:var(--bg4);border-color:var(--border2);color:var(--text0)}
+.xi-dot{width:7px;height:7px;border-radius:50%}
+.xi-dot.saved{background:var(--green)}
+.xi-dot.unsaved{background:var(--amber)}
+.xi-dot.incomplete{background:var(--red)}
+.xi-legend{display:flex;gap:16px;margin-bottom:16px}
+.xi-legend-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text2)}
+.player-select-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
+.player-pick{
+  background:var(--bg3);border:1px solid var(--border1);
+  border-radius:8px;padding:12px 14px;
+  display:flex;align-items:flex-start;gap:10px;
+  transition:border-color .15s;
+}
+.player-pick:hover{border-color:var(--border2)}
+.player-pick.selected{border-color:rgba(0,229,200,.4);background:rgba(0,229,200,.04)}
+.player-pick-name{font-family:var(--font-head);font-size:14px;font-weight:700;color:var(--text0);letter-spacing:.3px}
+.player-pick-num{font-family:var(--font-mono);font-size:11px;color:var(--text2)}
+.player-badge{
+  font-family:var(--font-head);font-size:9px;font-weight:700;
+  letter-spacing:.5px;padding:2px 7px;border-radius:4px;
+  display:inline-block;margin-top:4px;text-transform:uppercase;
+}
+.badge-captain{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(245,158,11,.25)}
+.badge-keeper{background:var(--cyan-dim);color:var(--cyan);border:1px solid rgba(0,229,200,.25)}
+.xi-form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.form-group{display:flex;flex-direction:column;gap:6px}
+.form-label{font-family:var(--font-head);font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text2)}
+.form-select{
+  background:var(--bg3);border:1px solid var(--border2);
+  border-radius:7px;padding:9px 12px;color:var(--text0);
+  font-family:var(--font-body);font-size:13px;
+  appearance:none;cursor:pointer;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%236278a0' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 10px center;
+  padding-right:30px;
+}
+.form-select:focus{outline:none;border-color:var(--cyan)}
+.form-input{
+  background:var(--bg3);border:1px solid var(--border2);
+  border-radius:7px;padding:9px 12px;color:var(--text0);
+  font-family:var(--font-body);font-size:13px;
+}
+.form-input:focus{outline:none;border-color:var(--cyan)}
+.xi-count{font-family:var(--font-mono);font-size:12px;color:var(--text2)}
+.checkbox-row{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+input[type=checkbox]{
+  width:16px;height:16px;accent-color:var(--cyan);cursor:pointer;
+}
+
+/* ─── TOSS ────────────────────────────────────────────────────── */
+.toss-card{
+  background:var(--bg2);border:1px solid var(--border1);
+  border-radius:10px;padding:24px;max-width:640px;
+}
+.toss-section-label{
+  font-family:var(--font-head);font-size:10px;font-weight:700;
+  letter-spacing:1px;text-transform:uppercase;color:var(--text3);
+  margin-bottom:14px;
+}
+.toss-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
+
+/* ─── LIVE SCORE ──────────────────────────────────────────────── */
+.live-layout{display:grid;grid-template-columns:1fr 340px;gap:0;min-height:calc(100vh - 52px)}
+.live-main{padding:20px 24px;border-right:1px solid var(--border0)}
+.live-panel{padding:20px;display:flex;flex-direction:column;gap:14px;background:var(--bg1)}
+
+/* Score Hero */
+.score-hero{
+  background:var(--bg2);border:1px solid var(--border1);
+  border-radius:10px;padding:18px 22px;margin-bottom:14px;
+}
+.score-hero-top{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.live-label{
+  font-family:var(--font-head);font-size:10px;font-weight:700;
+  letter-spacing:1px;text-transform:uppercase;color:var(--text3);
+  display:flex;align-items:center;gap:6px;
+}
+.live-label:before{content:'';width:5px;height:5px;border-radius:50%;background:var(--cyan);animation:pulse 1.5s ease infinite}
+.score-match-title{
+  font-size:13px;color:var(--text1);margin-bottom:6px;
+}
+.score-match-title strong{color:var(--text0);font-weight:600}
+.score-big{
+  font-family:var(--font-head);font-size:52px;font-weight:700;
+  color:var(--text0);line-height:1;letter-spacing:-1px;
+  display:flex;align-items:baseline;gap:4px;margin-bottom:6px;
+}
+.score-wickets{font-size:30px;color:var(--cyan);font-weight:700}
+.score-overs{font-size:18px;color:var(--text2);font-weight:400}
+.score-crr{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text2)}
+.score-crr span{font-family:var(--font-mono);font-size:16px;font-weight:600;color:var(--cyan)}
+
+/* Over balls */
+.over-strip{
+  background:var(--bg2);border:1px solid var(--border1);
+  border-radius:10px;padding:14px 18px;margin-bottom:14px;
+}
+.over-strip-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.over-strip-label{font-family:var(--font-head);font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--text2)}
+.over-strip-runs{font-family:var(--font-mono);font-size:13px;font-weight:600;color:var(--text1)}
+.balls-row{display:flex;gap:8px}
+.ball{
+  width:36px;height:36px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-mono);font-size:13px;font-weight:600;
+  background:var(--bg4);border:1px solid var(--border1);color:var(--text1);
+  transition:all .15s;
+}
+.ball.empty{background:var(--bg3);border:1px dashed var(--border1);color:var(--text3)}
+.ball.six{background:var(--cyan-dim);border-color:rgba(0,229,200,.4);color:var(--cyan)}
+.ball.four{background:var(--green-dim);border-color:rgba(34,197,94,.3);color:var(--green)}
+.ball.wicket{background:var(--red-dim);border-color:rgba(239,68,68,.3);color:var(--red)}
+.ball.dot{background:var(--bg4);color:var(--text2)}
+
+/* Stats tables */
+.live-table{width:100%;border-collapse:collapse}
+.live-table th{
+  padding:8px 10px;font-family:var(--font-head);font-size:9px;
+  font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);
+  border-bottom:1px solid var(--border0);text-align:left;
+}
+.live-table th.r{text-align:right}
+.live-table td{padding:10px 10px;font-size:12px;color:var(--text1);border-top:1px solid var(--border0)}
+.live-table td.r{text-align:right;font-family:var(--font-mono);font-size:12px}
+.live-table td.bold-val{text-align:right;font-family:var(--font-mono);font-size:14px;font-weight:600;color:var(--text0)}
+.live-table td.sr-good{text-align:right;font-family:var(--font-mono);font-size:12px;color:var(--cyan)}
+.live-table td.sr-bad{text-align:right;font-family:var(--font-mono);font-size:12px;color:var(--red)}
+.batter-name{display:flex;align-items:center;gap:7px;font-weight:500;color:var(--text0)}
+.on-strike{width:7px;height:7px;border-radius:50%;background:var(--cyan);flex-shrink:0}
+.on-bowl{width:7px;height:7px;border-radius:50%;background:var(--amber);flex-shrink:0}
+.total-row td{border-top:1px solid var(--border1);font-family:var(--font-mono);font-size:13px;font-weight:600;color:var(--text0)}
+.total-row td:first-child{color:var(--text2);font-family:var(--font-body);font-size:12px;font-weight:400}
+.extras-row td{color:var(--text2);font-size:11px}
+
+/* Scoring panel */
+.panel-section-label{
+  font-family:var(--font-head);font-size:10px;font-weight:700;
+  letter-spacing:1px;text-transform:uppercase;color:var(--text2);
+  margin-bottom:10px;
+}
+.extras-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.extra-btn{
+  background:var(--bg3);border:1px solid var(--border1);
+  border-radius:7px;padding:9px;
+  font-family:var(--font-head);font-size:12px;font-weight:700;
+  letter-spacing:.5px;text-transform:uppercase;color:var(--text1);
+  cursor:pointer;transition:all .15s;text-align:center;
+}
+.extra-btn:hover{border-color:var(--border2);background:var(--bg4)}
+.extra-btn.wicket-btn{
+  grid-column:1/-1;
+  background:var(--red-dim);border-color:rgba(239,68,68,.3);color:var(--red);
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.extra-btn.wicket-btn:hover{background:rgba(239,68,68,.2)}
+.runs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.run-btn{
+  background:var(--bg3);border:1px solid var(--border2);
+  border-radius:9px;padding:0;height:64px;
+  font-family:var(--font-head);font-size:26px;font-weight:700;
+  color:var(--text0);cursor:pointer;transition:all .15s;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;
+}
+.run-btn:hover{background:var(--bg5);border-color:var(--border3)}
+.run-btn:active{transform:scale(.96)}
+.run-btn.btn-four{
+  background:var(--green-dim);border-color:rgba(34,197,94,.3);color:var(--green);
+}
+.run-btn.btn-six{
+  background:var(--cyan-dim);border-color:rgba(0,229,200,.3);color:var(--cyan);
+}
+.run-sublabel{font-size:9px;font-weight:700;letter-spacing:.8px;color:inherit;opacity:.7;text-transform:uppercase}
+.actions-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.action-btn{
+  background:var(--bg3);border:1px solid var(--border1);
+  border-radius:7px;padding:10px;
+  font-family:var(--font-head);font-size:11px;font-weight:700;
+  letter-spacing:.5px;text-transform:uppercase;color:var(--text2);
+  cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:5px;
+}
+.action-btn:hover{border-color:var(--border2);color:var(--text1)}
+.action-btn.retire{color:var(--amber);border-color:rgba(245,158,11,.25);background:var(--amber-dim)}
+.action-btn.swap{color:var(--cyan);border-color:rgba(0,229,200,.2);background:var(--cyan-dim)}
+
+/* ─── SCREEN SWITCHER UI ──────────────────────────────────────── */
+.switcher{
+  display:flex;gap:8px;flex-wrap:wrap;
+  padding:12px 16px;background:var(--bg0);
+  border-bottom:1px solid var(--border1);
+  position:sticky;top:52px;z-index:99;
+}
+.switch-btn{
+  background:var(--bg3);border:1px solid var(--border1);
+  border-radius:6px;padding:5px 12px;
+  font-family:var(--font-body);font-size:11px;font-weight:500;
+  color:var(--text2);cursor:pointer;transition:all .15s;
+}
+.switch-btn:hover{border-color:var(--border2);color:var(--text1)}
+.switch-btn.active{background:var(--cyan-dim);border-color:rgba(0,229,200,.3);color:var(--cyan)}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav" id="main-nav">
+  <button class="nav-back">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7l5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Back
+  </button>
+  <div class="nav-tabs" id="nav-tabs"></div>
+  <span class="badge badge-draft" id="nav-badge">DRAFT</span>
+</nav>
+
+<!-- SCREEN SWITCHER (dev helper) -->
+<div class="switcher" id="switcher"></div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SCREEN 1 — OVERVIEW
+═══════════════════════════════════════════════════════════ -->
+<div class="screen active" id="screen-overview">
+  <div class="content">
+    <div class="mb24">
+      <div class="page-label">Tournament Overview</div>
+      <div style="display:flex;align-items:flex-start;justify-content:space-between">
+        <div>
+          <div style="font-family:var(--font-head);font-size:32px;font-weight:700;color:var(--text0);letter-spacing:.5px">Test 2026</div>
+          <div style="font-family:var(--font-head);font-size:15px;color:var(--cyan);font-weight:600;margin-top:2px">League + Knockout</div>
+          <div style="font-size:12px;color:var(--text2);margin-top:4px">19 Apr 2026 · Alawwa</div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M11.5 2.5a1.5 1.5 0 0 1 2.12 2.12L5 13.25l-2.75.5.5-2.75L11.5 2.5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+          <button class="btn-icon" style="color:var(--red)"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 4h10M6 4V2.5h4V4M6 7v5M10 7v5M4 4l.8 9h6.4L12 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        </div>
+      </div>
+      <div class="summary-block">
+        <div class="summary-item"><div class="summary-bullet"></div><span>Tournament is League Knockout format and currently DRAFT.</span></div>
+        <div class="summary-item"><div class="summary-bullet"></div><span>Matches are 2 overs per innings with 6 balls per over.</span></div>
+        <div class="summary-item"><div class="summary-bullet"></div><span>Progress: 0/6 completed, 0 live, 6 scheduled.</span></div>
+        <div class="summary-item"><div class="summary-bullet"></div><span>League stage is PENDING (0/6 completed).</span></div>
+        <div class="summary-item"><div class="summary-bullet"></div><span>League points: win 2, tie 1, no result 1, loss 0. Top 2 teams qualify.</span></div>
+        <div class="summary-item"><div class="summary-bullet"></div><span>Knockout stage is PENDING (0/0 completed).</span></div>
+        <div class="summary-item"><div class="summary-bullet"></div><span>Tied knockout matches → Super Over; if still tied, manual tie-break required.</span></div>
+      </div>
+    </div>
+
+    <div class="g2 mb12">
+      <!-- Snapshot -->
+      <div class="card">
+        <div class="card-header"><span class="card-title-sm">Tournament Snapshot</span></div>
+        <div class="card-body">
+          <div class="stat-tile mb12">
+            <div class="stat-label">Format</div>
+            <div class="stat-value cyan">League + Knockout</div>
+          </div>
+          <div class="g2 mb12">
+            <div class="stat-tile"><div class="stat-label">Teams</div><div class="stat-value">4</div></div>
+            <div class="stat-tile"><div class="stat-label">Overs / Inn.</div><div class="stat-value">2</div></div>
+          </div>
+          <div class="g2 mb12">
+            <div class="stat-tile"><div class="stat-label">Balls / Over</div><div class="stat-value">6</div></div>
+            <div class="stat-tile"><div class="stat-label">Status</div><div class="stat-value amber">DRAFT</div></div>
+          </div>
+          <div class="stat-tile"><div class="stat-label">Venues</div><div class="stat-value sm">Alawwa</div></div>
+        </div>
+      </div>
+      <!-- Progress -->
+      <div class="card">
+        <div class="card-header"><span class="card-title-sm">Match Progress</span></div>
+        <div class="card-body">
+          <div class="g2 mb12">
+            <div class="stat-tile"><div class="stat-label">Completed</div><div class="stat-value">0 / 6</div></div>
+            <div class="stat-tile"><div class="stat-label">Live</div><div class="stat-value green">0</div></div>
+          </div>
+          <div class="g2 mb12">
+            <div class="stat-tile"><div class="stat-label">Scheduled</div><div class="stat-value">6</div></div>
+            <div class="stat-tile"><div class="stat-label">Total</div><div class="stat-value">6</div></div>
+          </div>
+          <div class="stat-tile mb12">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+              <div class="stat-label" style="margin:0">League Stage</div>
+              <span class="pill pill-sched">Pending 0/6</span>
+            </div>
+            <div class="progress-track"><div class="progress-fill" style="width:0%"></div></div>
+          </div>
+          <div class="stat-tile">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+              <div class="stat-label" style="margin:0">Knockout Stage</div>
+              <span class="pill pill-sched">Pending 0/0</span>
+            </div>
+            <div class="progress-track"><div class="progress-fill" style="width:0%"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rules -->
+    <div class="card">
+      <div class="card-header"><span class="card-title-sm">Rules</span></div>
+      <div class="card-body">
+        <div class="g4 mb12">
+          <div class="stat-tile"><div class="stat-label">Points Win</div><div class="stat-value green">2</div></div>
+          <div class="stat-tile"><div class="stat-label">Points Tie</div><div class="stat-value cyan">1</div></div>
+          <div class="stat-tile"><div class="stat-label">No Result</div><div class="stat-value blue">1</div></div>
+          <div class="stat-tile"><div class="stat-label">Points Loss</div><div class="stat-value" style="color:var(--text3)">0</div></div>
+        </div>
+        <div class="tie-note"><strong style="color:var(--cyan)">Tie policy:</strong> Knockout tie → Super Over, then manual tie-break if still tied.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SCREEN 2 — TEAMS
+═══════════════════════════════════════════════════════════ -->
+<div class="screen" id="screen-teams">
+  <div class="content">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:28px">
+      <div>
+        <div class="page-label">Teams</div>
+        <div class="page-title">Teams for tournament</div>
+        <div class="page-sub">Manage squads participating in this tournament.</div>
+      </div>
+      <button class="btn btn-primary">+ Add Team</button>
+    </div>
+    <div class="team-row">
+      <div class="avatar av-cyan">TR</div>
+      <div class="team-info">
+        <div class="team-name">Temple Runners</div>
+        <div class="team-meta">Created 12 Apr 2026 · 3 players</div>
+      </div>
+      <div class="team-actions">
+        <button class="btn btn-ghost btn-sm">Access link</button>
+        <button class="btn btn-ghost btn-sm">Edit</button>
+        <button class="btn btn-secondary btn-sm">Players</button>
+      </div>
+    </div>
+    <div class="team-row">
+      <div class="avatar av-green">RR</div>
+      <div class="team-info">
+        <div class="team-name">Road Runners</div>
+        <div class="team-meta">Created 12 Apr 2026</div>
+      </div>
+      <div class="team-actions">
+        <button class="btn btn-ghost btn-sm">Access link</button>
+        <button class="btn btn-ghost btn-sm">Edit</button>
+        <button class="btn btn-secondary btn-sm">Players</button>
+      </div>
+    </div>
+    <div class="team-row">
+      <div class="avatar av-purple">CR</div>
+      <div class="team-info">
+        <div class="team-name">Cemetery Runners</div>
+        <div class="team-meta">Created 12 Apr 2026</div>
+      </div>
+      <div class="team-actions">
+        <button class="btn btn-ghost btn-sm">Access link</button>
+        <button class="btn btn-ghost btn-sm">Edit</button>
+        <button class="btn btn-secondary btn-sm">Players</button>
+      </div>
+    </div>
+    <div class="team-row">
+      <div class="avatar av-amber">SR</div>
+      <div class="team-info">
+        <div class="team-name">School Runners</div>
+        <div class="team-meta">Created 12 Apr 2026</div>
+      </div>
+      <div class="team-actions">
+        <button class="btn btn-ghost btn-sm">Access link</button>
+        <button class="btn btn-ghost btn-sm">Edit</button>
+        <button class="btn btn-secondary btn-sm">Players</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SCREEN 3 — PLAYERS (Squad)
+═══════════════════════════════════════════════════════════ -->
+<div class="screen" id="screen-players">
+  <div class="content">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:28px">
+      <div>
+        <div style="font-size:12px;color:var(--text2);margin-bottom:8px;display:flex;align-items:center;gap:6px;cursor:pointer">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M8 2L4 6l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          Players
+        </div>
+        <div class="page-title">Temple Runners squad</div>
+        <div class="page-sub">Maintain the roster for this team.</div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-ghost">Access links</button>
+        <button class="btn btn-primary">+ Add Player</button>
+      </div>
+    </div>
+    <div class="player-row">
+      <div class="player-num">#3</div>
+      <div class="player-name">Chaminda</div>
+      <div class="player-role">Right-hand bat</div>
+    </div>
+    <div class="player-row">
+      <div class="player-num">#2</div>
+      <div class="player-name">Lasntha H</div>
+      <div class="player-role">Right-hand bat</div>
+    </div>
+    <div class="player-row">
+      <div class="player-num">#1</div>
+      <div class="player-name">Chathura H</div>
+      <div class="player-role">Right-hand bat</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SCREEN 4 — FIXTURES
+═══════════════════════════════════════════════════════════ -->
+<div class="screen" id="screen-fixtures">
+  <div class="content">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:4px">
+      <div>
+        <div class="page-label">Fixtures</div>
+        <div class="page-title">Tournament fixtures</div>
+        <div class="page-sub">Track scheduled matches by stage.</div>
+      </div>
+      <button class="btn btn-primary">Generate fixtures</button>
+    </div>
+
+    <div class="stage-divider">
+      <div class="stage-divider-label">League</div>
+      <div class="stage-divider-line"></div>
+      <span class="pill pill-sched" style="flex-shrink:0">6 matches</span>
+    </div>
+
+    <div class="fixture-row">
+      <div class="fixture-teams">
+        <span class="fix-team">School Runners</span>
+        <span class="fix-vs">VS</span>
+        <span class="fix-team">Temple Runners</span>
+      </div>
+      <div class="fixture-actions">
+        <span class="pill pill-sched">Scheduled</span>
+        <button class="btn btn-primary btn-sm">Start match</button>
+        <button class="btn btn-ghost btn-sm">Set roster</button>
+      </div>
+    </div>
+    <div class="fixture-row">
+      <div class="fixture-teams">
+        <span class="fix-team">Cemetery Runners</span>
+        <span class="fix-vs">VS</span>
+        <span class="fix-team">Road Runners</span>
+      </div>
+      <div class="fixture-actions">
+        <span class="pill pill-sched">Scheduled</span>
+        <button class="btn btn-primary btn-sm">Start match</button>
+        <button class="btn btn-ghost btn-sm">Set roster</button>
+      </div>
+    </div>
+    <div class="fixture-row">
+      <div class="fixture-teams">
+        <span class="fix-team">Road Runners</span>
+        <span class="fix-vs">VS</span>
+        <span class="fix-team">School Runners</span>
+      </div>
+      <div class="fixture-actions">
+        <span class="pill pill-sched">Scheduled</span>
+        <button class="btn btn-primary btn-sm">Start match</button>
+        <button class="btn btn-ghost btn-sm">Set roster</button>
+      </div>
+    </div>
+    <div class="fixture-row">
+      <div class="fixture-teams">
+        <span class="fix-team">Cemetery Runners</span>
+        <span class="fix-vs">VS</span>
+        <span class="fix-team">Temple Runners</span>
+      </div>
+      <div class="fixture-actions">
+        <span class="pill pill-sched">Scheduled</span>
+        <button class="btn btn-primary btn-sm">Start match</button>
+        <button class="btn btn-ghost btn-sm">Set roster</button>
+      </div>
+    </div>
+    <div class="fixture-row">
+      <div class="fixture-teams">
+        <span class="fix-team">School Runners</span>
+        <span class="fix-vs">VS</span>
+        <span class="fix-team">Cemetery Runners</span>
+      </div>
+      <div class="fixture-actions">
+        <span class="pill pill-sched">Scheduled</span>
+        <button class="btn btn-primary btn-sm">Start match</button>
+        <button class="btn btn-ghost btn-sm">Set roster</button>
+      </div>
+    </div>
+    <div class="fixture-row">
+      <div class="fixture-teams">
+        <span class="fix-team">Road Runners</span>
+        <span class="fix-vs">VS</span>
+        <span class="fix-team">Temple Runners</span>
+      </div>
+      <div class="fixture-actions">
+        <span class="pill pill-sched">Scheduled</span>
+        <button class="btn btn-primary btn-sm">Start match</button>
+        <button class="btn btn-ghost btn-sm">Set roster</button>
+      </div>
+    </div>
+
+    <div class="stage-divider">
+      <div class="stage-divider-label">Final</div>
+      <div class="stage-divider-line"></div>
+    </div>
+    <div class="fixture-row tbd">
+      <div class="fixture-teams">
+        <span class="fix-team" style="color:var(--text3)">TBD</span>
+        <span class="fix-vs">VS</span>
+        <span class="fix-team" style="color:var(--text3)">TBD</span>
+      </div>
+      <span class="pill pill-tbd">TBD</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SCREEN 5 — STANDINGS
+═══════════════════════════════════════════════════════════ -->
+<div class="screen" id="screen-standings">
+  <div class="content">
+    <div class="page-label" style="margin-bottom:16px">Points Table</div>
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div style="font-family:var(--font-head);font-size:20px;font-weight:700;color:var(--text0)">League standings</div>
+          <div style="font-size:12px;color:var(--text3);margin-top:2px">0 / 6 completed</div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-ghost">Recompute</button>
+          <button class="btn btn-primary">Generate Knockout</button>
+        </div>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="standings-table">
+          <thead>
+            <tr>
+              <th style="width:3px;padding:0"></th>
+              <th style="width:36px">#</th>
+              <th>Team</th>
+              <th class="r">P</th><th class="r">W</th><th class="r">L</th>
+              <th class="r">T</th><th class="r">NR</th>
+              <th class="r">PTS</th><th class="r">NRR</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="qualify-stripe"><div class="qualify-stripe-fill" style="height:52px"></div></td>
+              <td class="rank-num">1</td>
+              <td><div class="team-cell-inner"><div class="avatar-xs av-purple">CR</div><span style="font-weight:600;color:var(--text0)">Cemetery Runners</span></div></td>
+              <td class="r">0</td><td class="r">0</td><td class="r">0</td><td class="r">0</td><td class="r">0</td>
+              <td class="pts">0</td><td class="nrr">0.000</td>
+            </tr>
+            <tr>
+              <td class="qualify-stripe"><div class="qualify-stripe-fill" style="height:52px"></div></td>
+              <td class="rank-num">2</td>
+              <td><div class="team-cell-inner"><div class="avatar-xs av-green">RR</div><span style="font-weight:600;color:var(--text0)">Road Runners</span></div></td>
+              <td class="r">0</td><td class="r">0</td><td class="r">0</td><td class="r">0</td><td class="r">0</td>
+              <td class="pts">0</td><td class="nrr">0.000</td>
+            </tr>
+            <tr>
+              <td style="padding:0;width:3px"></td>
+              <td class="rank-num">3</td>
+              <td><div class="team-cell-inner"><div class="avatar-xs av-amber">SR</div><span style="color:var(--text1)">School Runners</span></div></td>
+              <td class="r">0</td><td class="r">0</td><td class="r">0</td><td class="r">0</td><td class="r">0</td>
+              <td class="pts" style="color:var(--text2)">0</td><td class="nrr">0.000</td>
+            </tr>
+            <tr>
+              <td style="padding:0;width:3px"></td>
+              <td class="rank-num">4</td>
+              <td><div class="team-cell-inner"><div class="avatar-xs av-cyan">TR</div><span style="color:var(--text1)">Temple Runners</span></div></td>
+              <td class="r">0</td><td class="r">0</td><td class="r">0</td><td class="r">0</td><td class="r">0</td>
+              <td class="pts" style="color:var(--text2)">0</td><td class="nrr">0.000</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="qualify-footer">
+        <div class="q-dot"></div>
+        Top 2 teams qualify for the knockout stage
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SCREEN 6 — MATCH CENTER (pre-start)
+═══════════════════════════════════════════════════════════ -->
+<div class="screen" id="screen-matchcenter">
+  <div class="content">
+    <div style="font-size:12px;color:var(--text2);margin-bottom:12px;display:flex;align-items:center;gap:6px">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M8 2L4 6l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      Match Center
+    </div>
+    <div class="page-title" style="margin-bottom:4px">School Runners vs Temple Runners</div>
+    <div class="page-sub">Manage roster, start state, and live context.</div>
+    <div class="stage-info-card">
+      <div class="stage-field"><div class="stage-field-label">Stage</div><div class="stage-field-value">League</div></div>
+      <div class="stage-field"><div class="stage-field-label">Status</div><div class="stage-field-value" style="color:var(--amber)">Scheduled</div></div>
+    </div>
+    <div class="empty-state">
+      <div class="empty-title">Playing XI not set</div>
+      <div class="empty-sub">Set roster before match start.</div>
+      <button class="btn btn-secondary">Set roster</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SCREEN 7 — PLAYING XI
+═══════════════════════════════════════════════════════════ -->
+<div class="screen" id="screen-playingxi">
+  <div class="content">
+    <div style="font-size:12px;color:var(--text2);margin-bottom:12px;display:flex;align-items:center;gap:6px">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M8 2L4 6l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      Match Roster
+    </div>
+    <div class="page-title" style="margin-bottom:4px">Playing XI</div>
+    <div class="page-sub">Pick the squad, captain, and keeper for each team.</div>
+
+    <div class="xi-legend">
+      <div class="xi-legend-item"><div class="xi-dot saved"></div>Saved</div>
+      <div class="xi-legend-item"><div class="xi-dot unsaved"></div>Unsaved</div>
+      <div class="xi-legend-item"><div class="xi-dot incomplete"></div>Incomplete</div>
+    </div>
+
+    <div class="xi-tabs">
+      <button class="xi-tab active"><div class="xi-dot unsaved"></div>School Runners</button>
+      <button class="xi-tab"><div class="xi-dot incomplete"></div>Temple Runners</button>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+        <div class="checkbox-row">
+          <input type="checkbox" id="selectall" checked>
+          <label for="selectall" style="font-size:13px;color:var(--text1);cursor:pointer">Select all (max 11)</label>
+        </div>
+        <div class="player-select-grid">
+          <div class="player-pick selected">
+            <input type="checkbox" checked style="margin-top:2px;flex-shrink:0">
+            <div>
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">
+                <div class="player-pick-name">Janidu</div>
+                <div class="player-pick-num">#3</div>
+              </div>
+              <span class="player-badge badge-captain">Captain</span>
+            </div>
+          </div>
+          <div class="player-pick selected">
+            <input type="checkbox" checked style="margin-top:2px;flex-shrink:0">
+            <div>
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">
+                <div class="player-pick-name">Chamika</div>
+                <div class="player-pick-num">#2</div>
+              </div>
+              <span class="player-badge badge-keeper">Keeper</span>
+            </div>
+          </div>
+          <div class="player-pick selected">
+            <input type="checkbox" checked style="margin-top:2px;flex-shrink:0">
+            <div>
+              <div style="display:flex;align-items:center;gap:8px">
+                <div class="player-pick-name">Chathuranga</div>
+                <div class="player-pick-num">#1</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+          <span class="xi-count">3 / 11 selected</span>
+        </div>
+
+        <div class="xi-form-row">
+          <div class="form-group">
+            <label class="form-label">Captain</label>
+            <select class="form-select"><option>Janidu</option><option>Chamika</option><option>Chathuranga</option></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Keeper</label>
+            <select class="form-select"><option>Chamika</option><option>Janidu</option><option>Chathuranga</option></select>
+          </div>
+        </div>
+
+        <div style="display:flex;justify-content:flex-end;margin-top:16px">
+          <button class="btn btn-primary">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SCREEN 8 — TOSS
+═══════════════════════════════════════════════════════════ -->
+<div class="screen" id="screen-toss">
+  <div class="content">
+    <div style="font-size:12px;color:var(--text2);margin-bottom:12px;display:flex;align-items:center;gap:6px">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M8 2L4 6l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      Match Center
+    </div>
+    <div class="page-title" style="margin-bottom:4px">School Runners vs Temple Runners</div>
+    <div class="page-sub">Manage roster, start state, and live context.</div>
+
+    <div class="stage-info-card">
+      <div class="stage-field"><div class="stage-field-label">Stage</div><div class="stage-field-value">League</div></div>
+      <div class="stage-field"><div class="stage-field-label">Status</div><div class="stage-field-value" style="color:var(--amber)">Scheduled</div></div>
+    </div>
+
+    <div class="toss-card">
+      <div class="toss-section-label">Toss</div>
+      <div class="toss-grid">
+        <div class="form-group">
+          <label class="form-label">Who won toss?</label>
+          <select class="form-select">
+            <option>School Runners</option>
+            <option>Temple Runners</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Decision</label>
+          <select class="form-select">
+            <option>Bowl</option>
+            <option>Bat</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:flex-end">
+        <button class="btn btn-primary">Next →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SCREEN 9 — MATCH CONFIG + START
+═══════════════════════════════════════════════════════════ -->
+<div class="screen" id="screen-matchconfig">
+  <div class="content">
+    <div style="font-size:12px;color:var(--text2);margin-bottom:12px;display:flex;align-items:center;gap:6px">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M8 2L4 6l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      Match Center
+    </div>
+    <div class="page-title" style="margin-bottom:4px">School Runners vs Temple Runners</div>
+    <div class="page-sub">Manage roster, start state, and live context.</div>
+
+    <div class="stage-info-card">
+      <div class="stage-field"><div class="stage-field-label">Stage</div><div class="stage-field-value">League</div></div>
+      <div class="stage-field"><div class="stage-field-label">Status</div><div class="stage-field-value" style="color:var(--amber)">Scheduled</div></div>
+    </div>
+
+    <div class="card mb12">
+      <div class="card-header"><span class="card-title-sm">Match Config</span></div>
+      <div class="card-body">
+        <div class="g2">
+          <div class="form-group">
+            <label class="form-label">Overs per innings</label>
+            <div style="display:flex;align-items:center;gap:8px">
+              <input class="form-input" type="number" value="2" style="flex:1">
+              <span style="font-size:12px;color:var(--text2)">overs</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Balls per over</label>
+            <input class="form-input" type="number" value="6">
+          </div>
+        </div>
+        <div style="margin-top:12px;font-size:12px;color:var(--text3)">Match config is saved automatically when you click Start match.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><span class="card-title-sm">Start Match</span></div>
+      <div class="card-body">
+        <div style="font-size:12px;color:var(--cyan);margin-bottom:16px;display:flex;align-items:center;gap:6px">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.2"/><path d="M6 3.5v3l1.5 1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+          School Runners won the toss and chose to bowl.
+        </div>
+        <div class="g3 mb12">
+          <div class="form-group">
+            <label class="form-label">Opening striker</label>
+            <select class="form-select"><option>Chaminda</option><option>Lasntha H</option><option>Chathura H</option></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Opening non-striker</label>
+            <select class="form-select"><option>Lasntha H</option><option>Chaminda</option><option>Chathura H</option></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Opening bowler</label>
+            <select class="form-select"><option>Janidu</option><option>Chamika</option></select>
+          </div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+          <button class="btn btn-ghost">← Back to toss</button>
+          <button class="btn btn-primary" style="padding:10px 24px;font-size:14px">Start match</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SCREEN 10 — LIVE SCORE
+═══════════════════════════════════════════════════════════ -->
+<div class="screen" id="screen-livescore">
+  <div class="live-layout">
+    <!-- LEFT: main stats -->
+    <div class="live-main">
+      <!-- Score hero -->
+      <div class="score-hero">
+        <div class="live-label">Live score</div>
+        <div class="score-match-title" style="margin-top:8px">
+          <strong>Temple Runners</strong>
+          <span style="color:var(--text3);font-size:12px;margin:0 4px">batting vs</span>
+          School Runners
+        </div>
+        <div class="score-big">
+          8<span class="score-wickets">/ 0</span>
+          <span class="score-overs">(0.5)</span>
+        </div>
+        <div class="score-crr">CRR <span>9.60</span></div>
+      </div>
+
+      <!-- Over strip -->
+      <div class="over-strip">
+        <div class="over-strip-head">
+          <span class="over-strip-label">Over 0</span>
+          <span class="over-strip-runs">8 runs</span>
+        </div>
+        <div class="balls-row">
+          <div class="ball dot">0</div>
+          <div class="ball">1</div>
+          <div class="ball dot">0</div>
+          <div class="ball">1</div>
+          <div class="ball six">6</div>
+          <div class="ball empty"></div>
+        </div>
+      </div>
+
+      <!-- Batters -->
+      <div class="card mb12">
+        <div class="card-header"><span class="card-title-sm">Batters</span></div>
+        <div style="padding:0 4px">
+          <table class="live-table" style="padding:0 10px">
+            <thead>
+              <tr>
+                <th>Batter</th>
+                <th class="r">R</th><th class="r">B</th>
+                <th class="r">4s</th><th class="r">6s</th><th class="r">SR</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><div class="batter-name"><div class="on-strike"></div>Chaminda</div></td>
+                <td class="bold-val">7</td>
+                <td class="r">3</td><td class="r">0</td><td class="r">1</td>
+                <td class="sr-good">233.33</td>
+              </tr>
+              <tr>
+                <td><div class="batter-name" style="padding-left:14px">Lasntha H</div></td>
+                <td class="bold-val">1</td>
+                <td class="r">2</td><td class="r">0</td><td class="r">0</td>
+                <td class="r">50.00</td>
+              </tr>
+              <tr class="extras-row">
+                <td colspan="5" style="font-size:11px;color:var(--text3)">Extras</td>
+                <td class="r">0</td>
+              </tr>
+              <tr class="total-row">
+                <td colspan="5">Total runs</td>
+                <td class="r" style="font-family:var(--font-mono);font-size:15px;font-weight:700;color:var(--cyan);text-align:right">8</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Bowlers -->
+      <div class="card">
+        <div class="card-header"><span class="card-title-sm">Bowlers</span></div>
+        <div style="padding:0 4px">
+          <table class="live-table">
+            <thead>
+              <tr>
+                <th>Bowler</th>
+                <th class="r">O</th><th class="r">R</th>
+                <th class="r">W</th><th class="r">M</th><th class="r">ER</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><div class="batter-name"><div class="on-bowl"></div>Janidu</div></td>
+                <td class="r" style="font-family:var(--font-mono);font-size:12px">0.5</td>
+                <td class="bold-val">8</td>
+                <td class="r">0</td><td class="r">0</td>
+                <td class="sr-bad">9.60</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: scoring panel -->
+    <div class="live-panel">
+      <div>
+        <div class="panel-section-label">Scoring Panel</div>
+        <div class="panel-section-label" style="margin-bottom:8px;margin-top:14px">Extras</div>
+        <div class="extras-grid">
+          <button class="extra-btn">Wide</button>
+          <button class="extra-btn">No-ball</button>
+          <button class="extra-btn">Byes</button>
+          <button class="extra-btn">Leg byes</button>
+          <button class="extra-btn wicket-btn">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 2l9 9M11 2l-9 9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            Wicket
+          </button>
+        </div>
+      </div>
+      <div>
+        <div class="panel-section-label">Runs</div>
+        <div class="runs-grid">
+          <button class="run-btn">0</button>
+          <button class="run-btn">1</button>
+          <button class="run-btn">2</button>
+          <button class="run-btn">3</button>
+          <button class="run-btn btn-four">4<div class="run-sublabel">four</div></button>
+          <button class="run-btn btn-six">6<div class="run-sublabel">six</div></button>
+        </div>
+      </div>
+      <div>
+        <div class="actions-row">
+          <button class="action-btn">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6a4 4 0 1 1 8 0M10 6l-2-2M10 6l-2 2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            Undo
+          </button>
+          <button class="action-btn swap">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4h8M8 2l2 2-2 2M10 8H2M4 6l-2 2 2 2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            Swap
+          </button>
+          <button class="action-btn retire">Retire</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const screens = [
+  {id:'overview',   label:'Overview',     nav:'Overview'},
+  {id:'teams',      label:'Teams',        nav:'Teams'},
+  {id:'players',    label:'Players',      nav:'Teams'},
+  {id:'fixtures',   label:'Fixtures',     nav:'Fixtures'},
+  {id:'standings',  label:'Standings',    nav:'Standings'},
+  {id:'matchcenter',label:'Match Center', nav:'Fixtures'},
+  {id:'playingxi',  label:'Playing XI',   nav:'Fixtures'},
+  {id:'toss',       label:'Toss',         nav:'Fixtures'},
+  {id:'matchconfig',label:'Match Config', nav:'Fixtures'},
+  {id:'livescore',  label:'Live Score',   nav:'Fixtures'},
+];
+
+const navItems = ['Overview','Teams','Fixtures','Standings','Stats'];
+const navEl = document.getElementById('nav-tabs');
+navItems.forEach(t => {
+  const b = document.createElement('button');
+  b.className = 'nav-tab';
+  b.textContent = t;
+  navEl.appendChild(b);
+});
+
+const switcher = document.getElementById('switcher');
+const badge = document.getElementById('nav-badge');
+
+screens.forEach((s, i) => {
+  const b = document.createElement('button');
+  b.className = 'switch-btn' + (i===0?' active':'');
+  b.textContent = s.label;
+  b.onclick = () => showScreen(s.id, b, s.nav);
+  switcher.appendChild(b);
+});
+
+function showScreen(id, btn, navActive) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-'+id).classList.add('active');
+  document.querySelectorAll('.switch-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.nav-tab').forEach(t => {
+    t.classList.toggle('active', t.textContent === navActive);
+  });
+  if (id === 'livescore') {
+    badge.className = 'badge badge-active';
+    badge.innerHTML = 'ACTIVE';
+  } else {
+    badge.className = 'badge badge-draft';
+    badge.textContent = 'DRAFT';
+  }
+}
+
+document.querySelectorAll('.nav-tab').forEach(t => {
+  if (t.textContent === 'Overview') t.classList.add('active');
+});
+</script>
+</body>
+</html>

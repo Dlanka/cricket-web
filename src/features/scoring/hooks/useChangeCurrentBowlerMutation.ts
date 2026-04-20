@@ -34,14 +34,13 @@ export const useChangeCurrentBowlerMutation = (
         queryClient.setQueryData(scoringQueryKeys.score(matchId), context.previousScore);
       }
     },
-    onSuccess: async () => {
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: scoringQueryKeys.score(matchId) }),
-        queryClient.invalidateQueries({ queryKey: scoringQueryKeys.innings.batters(inningsId) }),
-        queryClient.invalidateQueries({ queryKey: scoringQueryKeys.innings.bowlers(inningsId) }),
-        queryClient.invalidateQueries({ queryKey: scoringQueryKeys.innings.overs(inningsId, 10) }),
-        queryClient.invalidateQueries({ queryKey: scoringQueryKeys.innings.events(inningsId) }),
-      ]);
+    onSuccess: () => {
+      // Fire-and-forget refresh so modal/button state is not blocked by network round trips.
+      void queryClient.invalidateQueries({ queryKey: scoringQueryKeys.score(matchId) });
+      void queryClient.invalidateQueries({ queryKey: scoringQueryKeys.innings.batters(inningsId) });
+      void queryClient.invalidateQueries({ queryKey: scoringQueryKeys.innings.bowlers(inningsId) });
+      void queryClient.invalidateQueries({ queryKey: scoringQueryKeys.innings.overs(inningsId, 10) });
+      void queryClient.invalidateQueries({ queryKey: scoringQueryKeys.innings.events(inningsId) });
     },
   });
 };

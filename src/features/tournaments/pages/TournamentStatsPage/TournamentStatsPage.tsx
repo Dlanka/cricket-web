@@ -418,10 +418,10 @@ const SectionCard = ({
   return (
     <Card className="space-y-3 p-4">
       <div className="flex items-center justify-between gap-2">
-        <h3 className="text-sm font-semibold uppercase tracking-[0.16em] text-primary-20">
+        <h3 className="text-sm font-semibold uppercase tracking-wider text-on-primary-container">
           {config.title}
         </h3>
-        <p className="text-xs text-neutral-40">Top {limit}</p>
+        <p className="text-xs text-on-surface-muted">Top {limit}</p>
       </div>
 
       <Table
@@ -440,12 +440,12 @@ const SectionCard = ({
             className: playerColumnWidthClass(),
             render: (row) => (
               <div className="flex items-center gap-2">
-                <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-primary-95 text-xs font-semibold text-primary-20">
+                <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-primary-container text-xs font-semibold text-on-primary-container">
                   {initials(row.name)}
                 </span>
                 <span className="flex flex-col">
                   <span>{row.name || "-"}</span>
-                  <span className="text-xs text-neutral-40">
+                  <span className="text-xs text-on-surface-muted">
                     {teamLabel(row)}
                   </span>
                 </span>
@@ -464,7 +464,7 @@ const SectionCard = ({
         ]}
         rows={rows}
         rowKey={(row, index) => `${row.playerId ?? row.name}-${index}`}
-        emptyState={<p className="text-sm text-neutral-40">No data yet</p>}
+        emptyState={<p className="text-sm text-on-surface-muted">No data yet</p>}
         tableClassName={
           isAverageSection
             ? "min-w-0"
@@ -528,7 +528,7 @@ export const TournamentStatsPage = () => {
       <div className="space-y-4 ">
         {header}
         <Card className="space-y-4">
-          <div className="rounded-xl border border-error-80 bg-error-95 p-4 text-sm text-error-40">
+          <div className="rounded-xl border border-error/40 bg-error-container p-4 text-sm text-on-error-container">
             {statsQuery.error instanceof Error
               ? statsQuery.error.message
               : "Unable to load tournament stats."}
@@ -576,7 +576,7 @@ export const TournamentStatsPage = () => {
   }
 
   return (
-    <div className="space-y-4 mx-auto w-full max-w-5xl">
+    <div className="mx-auto w-full space-y-12">
       {header}
       <div className="grid grid-cols-1 gap-4 ">
         {visibleSections.map((config) => renderSectionCard(config, stats))}
@@ -584,3 +584,6 @@ export const TournamentStatsPage = () => {
     </div>
   );
 };
+
+
+

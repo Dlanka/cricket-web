@@ -166,7 +166,7 @@ export const TournamentFixturesPage = () => {
   };
 
   return (
-    <div className="mx-auto w-full max-w-5xl space-y-8 px-6">
+    <div className="mx-auto w-full space-y-12">
       <FixturesHeader
         canGenerate={canGenerateFixtures(permissions)}
         isGenerateDisabled={isActionsLocked}
@@ -216,3 +216,4 @@ export const TournamentFixturesPage = () => {
     </div>
   );
 };
+

@@ -195,36 +195,36 @@ export const RosterTeamPanel = ({
   ];
 
   return (
-    <section className="rounded-3xl border border-neutral-90 bg-neutral-99 p-6 shadow-[0_30px_80px_-60px_rgba(15,23,42,0.45)]">
+    <section className="rounded-3xl border border-outline bg-surface-container p-6 shadow-surface-lg">
       <div className="flex items-center justify-between gap-4">
         {showTeamHeader ? (
           <div>
-            <h2 className="text-lg font-semibold text-primary-10">{teamName}</h2>
-            <p className="text-xs text-neutral-40">Select playing XI</p>
+            <h2 className="text-lg font-semibold text-on-surface">{teamName}</h2>
+            <p className="text-xs text-on-surface-variant">Select playing XI</p>
           </div>
         ) : (
-          <p className="text-xs text-neutral-40">Select playing XI</p>
+          <p className="text-xs text-on-surface-variant">Select playing XI</p>
         )}
       </div>
 
       {selectionServerError ? (
-        <div className="mt-4 rounded-2xl border border-error-80 bg-error-95 px-4 py-2 text-xs text-error-40">
+        <div className="mt-4 rounded-2xl border border-error/25 bg-error-container px-4 py-2 text-xs text-on-error-container">
           {selectionServerError}
         </div>
       ) : null}
       {formError ? (
-        <div className="mt-4 rounded-2xl border border-error-80 bg-error-95 px-4 py-2 text-xs text-error-40">
+        <div className="mt-4 rounded-2xl border border-error/25 bg-error-container px-4 py-2 text-xs text-on-error-container">
           {formError}
         </div>
       ) : null}
 
       {isLoading ? (
-        <div className="mt-4 rounded-2xl border border-neutral-90 bg-neutral-99 p-4 text-sm text-neutral-40">
+        <div className="mt-4 rounded-2xl border border-outline bg-surface-container p-4 text-sm text-on-surface-variant">
           Loading players...
         </div>
       ) : (
         <div className="mt-4 space-y-4">
-          <label className="inline-flex items-center gap-2 text-sm text-primary-10">
+          <label className="inline-flex items-center gap-2 text-sm text-on-surface">
             <input
               type="checkbox"
               className="h-4 w-4 accent-primary-40"
@@ -243,7 +243,7 @@ export const RosterTeamPanel = ({
             canEdit={canEdit}
           />
           {selectionError ? (
-            <div className="rounded-2xl border border-error-80 bg-error-95 px-4 py-2 text-xs text-error-40">
+            <div className="rounded-2xl border border-error/25 bg-error-container px-4 py-2 text-xs text-on-error-container">
               {selectionError}
             </div>
           ) : null}
@@ -279,7 +279,7 @@ export const RosterTeamPanel = ({
           </div>
           {canEdit ? (
             <div className="flex items-center justify-between gap-3 pt-2">
-              <p className="text-xs text-neutral-40">
+              <p className="text-xs text-on-surface-variant">
                 {playingIds.length}/{MAX_ROSTER_PLAYERS} selected
               </p>
               <Button
@@ -305,3 +305,4 @@ export const RosterTeamPanel = ({
     </section>
   );
 };
+

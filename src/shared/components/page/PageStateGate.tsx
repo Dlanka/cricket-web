@@ -14,7 +14,7 @@ type PageStateGateProps = {
 };
 
 const DEFAULT_ALERT_CLASSNAME =
-  "rounded-2xl border border-error-80 bg-error-95 p-6 text-sm text-error-40";
+  "rounded-2xl border border-error/25 bg-error-container p-6 text-sm text-on-error-container";
 
 export const PageStateGate = ({
   isLoading,
@@ -62,4 +62,5 @@ export const PageStateGate = ({
 
   return <>{children}</>;
 };
+
 

@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { StatusPill, type StatusPillVariant } from "@/shared/components/badge/StatusPill";
 import type { TournamentBracketResponse } from "../../types/fixtures.types";
 
 type Props = {
@@ -23,12 +24,19 @@ const orderedRounds = (rounds: TournamentBracketResponse["rounds"]) =>
     return ai - bi;
   });
 
+const bracketStatusVariantMap: Record<string, StatusPillVariant> = {
+  SCHEDULED: "warning",
+  LIVE: "info",
+  COMPLETED: "success",
+  TBD: "neutral",
+};
+
 export const BracketView = ({ bracket, tournamentId }: Props) => {
   const rounds = orderedRounds(bracket.rounds);
 
   if (rounds.length === 0) {
     return (
-      <div className="rounded-2xl border border-neutral-90 bg-neutral-99 p-6 text-sm text-neutral-40">
+      <div className="rounded-2xl border border-outline bg-surface-container p-6 text-sm text-on-surface-muted">
         Knockout bracket is not available yet.
       </div>
     );
@@ -42,7 +50,7 @@ export const BracketView = ({ bracket, tournamentId }: Props) => {
             key={`${round.stage}-${round.roundNumber}`}
             className="w-72 shrink-0 space-y-3"
           >
-            <h3 className="text-xs font-semibold uppercase tracking-[0.16em] text-neutral-40">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-on-surface-muted">
               {stageLabels[round.stage] ?? round.stage}
             </h3>
 
@@ -59,17 +67,20 @@ export const BracketView = ({ bracket, tournamentId }: Props) => {
                     key={`${round.stage}-${round.roundNumber}-${fixture.slot}`}
                     className={`rounded-2xl border p-4 text-sm ${
                       isPlaceholder
-                        ? "border-neutral-90 bg-neutral-98 text-neutral-40"
-                        : "border-neutral-90 bg-neutral-99 text-primary-10"
+                        ? "border-outline bg-surface-container text-on-surface-muted"
+                        : "border-outline bg-surface-container text-on-surface"
                     }`}
                   >
                     <div className="mb-2 flex items-center justify-between gap-2">
-                      <span className="text-xs font-semibold uppercase tracking-[0.12em] text-neutral-40">
+                      <span className="text-xs font-semibold uppercase tracking-wider text-on-surface-muted">
                         Slot {fixture.slot}
                       </span>
-                      <span className="rounded-full border border-neutral-90 px-2 py-0.5 text-[11px] font-semibold text-neutral-40">
+                      <StatusPill
+                        variant={bracketStatusVariantMap[fixture.status] ?? "neutral"}
+                        size="xs"
+                      >
                         {fixture.status}
-                      </span>
+                      </StatusPill>
                     </div>
 
                     <div className="space-y-1">
@@ -77,7 +88,7 @@ export const BracketView = ({ bracket, tournamentId }: Props) => {
                         className={`rounded-md px-2 py-1 ${
                           fixture.winnerTeamId &&
                           fixture.teamA?.id === fixture.winnerTeamId
-                            ? "bg-success-95 text-success-30"
+                            ? "bg-success-container text-on-success-container"
                             : ""
                         }`}
                       >
@@ -87,7 +98,7 @@ export const BracketView = ({ bracket, tournamentId }: Props) => {
                         className={`rounded-md px-2 py-1 ${
                           fixture.winnerTeamId &&
                           fixture.teamB?.id === fixture.winnerTeamId
-                            ? "bg-success-95 text-success-30"
+                            ? "bg-success-container text-on-success-container"
                             : ""
                         }`}
                       >
@@ -96,18 +107,18 @@ export const BracketView = ({ bracket, tournamentId }: Props) => {
                     </div>
 
                     {fixture.isBye ? (
-                      <p className="mt-2 inline-flex rounded-full border border-warning-80 bg-warning-95 px-2 py-0.5 text-[11px] font-semibold text-warning-30">
+                      <StatusPill variant="warning" size="xs" className="mt-2">
                         BYE
-                      </p>
+                      </StatusPill>
                     ) : null}
 
                     {!fixture.isBye && fixture.resultType === "TIE" ? (
-                      <p className="mt-2 text-xs font-semibold uppercase tracking-[0.1em] text-primary-40">
+                      <p className="mt-2 text-xs font-semibold uppercase tracking-wide text-primary">
                         Tied
                       </p>
                     ) : null}
                     {!fixture.isBye && fixture.resultType === "NO_RESULT" ? (
-                      <p className="mt-2 text-xs font-semibold uppercase tracking-[0.1em] text-neutral-40">
+                      <p className="mt-2 text-xs font-semibold uppercase tracking-wide text-on-surface-muted">
                         No Result
                       </p>
                     ) : null}
@@ -117,7 +128,7 @@ export const BracketView = ({ bracket, tournamentId }: Props) => {
                         <Link
                           to="/tournaments/$tournamentId/matches/$matchId"
                           params={{ tournamentId, matchId: fixture.matchId }}
-                          className="text-xs font-semibold text-primary-20 hover:text-primary-10"
+                          className="text-xs font-semibold text-on-primary-container hover:text-on-surface"
                         >
                           Open match
                         </Link>
@@ -133,3 +144,6 @@ export const BracketView = ({ bracket, tournamentId }: Props) => {
     </div>
   );
 };
+
+
+

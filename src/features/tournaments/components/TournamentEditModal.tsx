@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "@tanstack/react-router";
@@ -194,7 +194,7 @@ export const TournamentEditModal = ({
         className="space-y-5"
       >
         {formError ? (
-          <div className="rounded-2xl border border-error-80 bg-error-95 p-3 text-xs text-error-40">
+          <div className="rounded-2xl border border-error/40 bg-error-container p-3 text-xs text-on-error-container">
             {formError}
           </div>
         ) : null}
@@ -244,7 +244,7 @@ export const TournamentEditModal = ({
           />
         </FormGroup>
         {isTypeLocked ? (
-          <p className="-mt-2 text-xs text-warning-30">
+          <p className="-mt-2 text-xs text-on-warning-container">
             Tournament type can't be changed after a match has started.
           </p>
         ) : null}
@@ -308,3 +308,4 @@ export const TournamentEditModal = ({
     </RightSideModal>
   );
 };
+

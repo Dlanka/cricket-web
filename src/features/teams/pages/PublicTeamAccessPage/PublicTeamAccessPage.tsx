@@ -95,15 +95,15 @@ export const PublicTeamAccessPage = () => {
 
   if (contextQuery.isLoading) {
     return (
-      <div className="mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 sm:py-8">
-        <Card className="p-6 text-sm text-neutral-40">Loading team context...</Card>
+      <div className="mx-auto w-full px-4 py-6 sm:py-8">
+        <Card className="p-6 text-sm text-on-surface-variant">Loading team context...</Card>
       </div>
     );
   }
 
   if (contextQuery.isError || !contextQuery.data) {
     return (
-      <div className="mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 sm:py-8">
+      <div className="mx-auto w-full px-4 py-6 sm:py-8">
         <EmptyState
           title="Link unavailable"
           description={mapTeamAccessError(contextQuery.error)}
@@ -115,20 +115,20 @@ export const PublicTeamAccessPage = () => {
   const context = contextQuery.data;
 
   return (
-    <div className="mx-auto w-full max-w-5xl space-y-6 px-4 py-6 sm:px-6 sm:py-8">
+    <div className="mx-auto w-full space-y-12 px-4 py-6 sm:py-8">
       <Card className="space-y-3">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-40">
+        <p className="text-xs font-semibold uppercase tracking-widest text-on-surface-variant">
           Team Access
         </p>
-        <h1 className="text-2xl font-semibold text-primary-10">{context.team.name}</h1>
-        <p className="text-sm text-neutral-40">
+        <h1 className="text-2xl font-semibold text-on-surface">{context.team.name}</h1>
+        <p className="text-sm text-on-surface-variant">
           Tournament: {context.tournament.name} | {context.tournament.type} |{" "}
           {context.tournament.status}
         </p>
-        <p className="text-sm text-neutral-40">
+        <p className="text-sm text-on-surface-variant">
           {context.tournament.oversPerInnings} overs / {context.tournament.ballsPerOver} balls
         </p>
-        <p className="text-sm text-neutral-40">
+        <p className="text-sm text-on-surface-variant">
           {formatDate(context.tournament.startDate, "TBD")} -{" "}
           {formatDate(context.tournament.endDate, "TBD")}
         </p>
@@ -147,29 +147,28 @@ export const PublicTeamAccessPage = () => {
       <Card>
         <div className="space-y-3 md:hidden">
           {context.players.length === 0 ? (
-            <div className="rounded-xl border border-neutral-90 px-3 py-3 text-sm text-neutral-40">
+            <div className="rounded-xl border border-outline px-3 py-3 text-sm text-on-surface-variant">
               No players yet.
             </div>
           ) : (
             context.players.map((player) => (
               <div
                 key={player.id}
-                className="rounded-xl border border-neutral-90 px-3 py-3"
+                className="rounded-xl border border-outline px-3 py-3"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <p className="text-sm font-semibold text-primary-20">{player.fullName}</p>
-                    <p className="mt-1 text-xs text-neutral-40">
+                    <p className="text-sm font-semibold text-on-primary-container">{player.fullName}</p>
+                    <p className="mt-1 text-xs text-on-surface-variant">
                       Jersey: {player.jerseyNumber ?? "-"}
                     </p>
                   </div>
                   <Button
                     type="button"
-                    size="sm"
+                    size="xs"
                     appearance="outline"
                     color="neutral"
                     shape="square"
-                    className="h-8 w-8 p-0"
                     onClick={() => {
                       setEditingPlayer(player);
                       editForm.reset({
@@ -191,10 +190,10 @@ export const PublicTeamAccessPage = () => {
           )}
         </div>
 
-        <div className="hidden overflow-x-auto rounded-xl border border-neutral-90 md:block">
+        <div className="hidden overflow-x-auto rounded-xl border border-outline md:block">
           <table className="w-full min-w-90 text-sm">
             <thead>
-              <tr className="bg-neutral-98 text-xs uppercase tracking-[0.12em] text-neutral-40">
+              <tr className="bg-surface text-xs uppercase tracking-wider text-on-surface-variant">
                 <th className="px-3 py-2 text-left">Player</th>
                 <th className="w-20 px-3 py-2 text-left">Jersey</th>
                 <th className="w-20 px-3 py-2 text-right">Action</th>
@@ -202,24 +201,23 @@ export const PublicTeamAccessPage = () => {
             </thead>
             <tbody>
               {context.players.length === 0 ? (
-                <tr className="border-t border-neutral-90">
-                  <td colSpan={3} className="px-3 py-3 text-neutral-40">
+                <tr className="border-t border-outline">
+                  <td colSpan={3} className="px-3 py-3 text-on-surface-variant">
                     No players yet.
                   </td>
                 </tr>
               ) : (
                 context.players.map((player) => (
-                  <tr key={player.id} className="border-t border-neutral-90">
-                    <td className="px-3 py-2 font-medium text-primary-20">{player.fullName}</td>
+                  <tr key={player.id} className="border-t border-outline">
+                    <td className="px-3 py-2 font-medium text-on-primary-container">{player.fullName}</td>
                     <td className="px-3 py-2">{player.jerseyNumber ?? "-"}</td>
                     <td className="px-3 py-2 text-right">
                       <Button
                         type="button"
-                        size="sm"
+                        size="xs"
                         appearance="outline"
                         color="neutral"
                         shape="square"
-                        className="h-8 w-8 p-0"
                         onClick={() => {
                           setEditingPlayer(player);
                           editForm.reset({
@@ -306,7 +304,7 @@ export const PublicTeamAccessPage = () => {
               })}
             />
           </FormGroup>
-          <label className="flex items-center gap-2 text-sm text-neutral-40">
+          <label className="flex items-center gap-2 text-sm text-on-surface-variant">
             <input type="checkbox" {...createForm.register("isWicketKeeper")} />
             Wicket keeper
           </label>
@@ -375,7 +373,7 @@ export const PublicTeamAccessPage = () => {
               })}
             />
           </FormGroup>
-          <label className="flex items-center gap-2 text-sm text-neutral-40">
+          <label className="flex items-center gap-2 text-sm text-on-surface-variant">
             <input type="checkbox" {...editForm.register("isWicketKeeper")} />
             Wicket keeper
           </label>
@@ -384,3 +382,5 @@ export const PublicTeamAccessPage = () => {
     </div>
   );
 };
+
+

@@ -168,13 +168,13 @@ export const StartSecondInningsModal = ({
         </FormGroup>
 
         {errorMessage ? (
-          <div className="rounded-xl border border-error-80 bg-error-95 px-3 py-2 text-sm text-error-40">
+          <div className="rounded-xl border border-error/25 bg-error-container px-3 py-2 text-sm text-on-error-container">
             {errorMessage}
           </div>
         ) : null}
 
         {!canStart ? (
-          <p className="text-sm text-neutral-40">
+          <p className="text-sm text-on-surface-variant">
             You do not have permission to start second innings.
           </p>
         ) : null}
@@ -183,3 +183,4 @@ export const StartSecondInningsModal = ({
     </RightSideModal>
   );
 };
+

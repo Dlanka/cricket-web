@@ -2,11 +2,12 @@ import { Link, Outlet, useLocation, useParams } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 import { useTournament } from "../../features/tournaments/hooks/useTournament";
 import { ButtonLink } from "../../components/ui/button/Button";
+import { TournamentStatusPill } from "@/features/tournament-ui/components/TournamentStatusPill";
+import type { TournamentStatus } from "@/features/tournaments/types/tournamentTypes";
 
 const tabBase =
-  "relative rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-neutral-90 transition";
-const tabActive = "bg-neutral-90 !text-neutral-20 ";
-// const tabActive = "bg-secondary-50 !text-secondary-20 ";
+  "relative rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-widest text-on-surface-muted transition hover:text-on-surface";
+const tabActive = "bg-primary !text-on-primary";
 
 type TabLinkProps = {
   to:
@@ -47,32 +48,36 @@ export const TournamentLayout = () => {
   const isFixturesContext = location.pathname.startsWith(
     `/tournaments/${tournamentId}/matches/`,
   );
+  const isScoreContext = location.pathname.endsWith("/score");
   const showStandingsTab =
     tournament?.type === "LEAGUE" || tournament?.type === "LEAGUE_KNOCKOUT";
   const statusBadgeClass =
-    tournament?.status === "ACTIVE"
-      ? "border-success-70 bg-success-95 text-success-30"
-      : tournament?.status === "COMPLETED"
-        ? "border-error-70 bg-error-95 text-error-30"
-        : "border-warning-70 bg-warning-95 text-warning-30";
+    tournament?.status === "ACTIVE" ||
+    tournament?.status === "COMPLETED" ||
+    tournament?.status === "DRAFT"
+      ? tournament.status
+      : null;
 
   return (
-    <div className="min-h-screen max-h-screen overflow-hidden flex flex-col">
-      <header className="sticky top-0 z-20  bg-primary-40 backdrop-blur ">
-        <div className="mx-auto flex h-13 w-full max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
-          <div className="flex items-center gap-4">
+    <div className="theme-tournament min-h-screen max-h-screen overflow-hidden flex flex-col bg-background">
+      <header className="sticky top-0 z-20 border-b border-outline bg-surface-container backdrop-blur">
+        <div className="mx-auto flex h-13 w-full items-center justify-between gap-4 px-4 sm:px-6">
+          <div className="flex items-center ">
             <ButtonLink
               to="/tournaments"
               appearance="standard"
               color="neutral"
               size="sm"
+              className="px-0"
             >
-              <span className="text-neutral-90 inline-flex items-center gap-3">
+              <span className="flex items-center gap-1">
                 <ArrowLeft className="h-4 w-4" />
+                <span className="block ">Back</span>
               </span>
             </ButtonLink>
 
-            <div className="mx-auto flex w-full flex-wrap items-center gap-4 px-4 sm:px-6">
+            <div className="w-px border-r border-outline h-7 mx-6"></div>
+            <div className="mx-auto flex w-full flex-wrap items-center gap-4 ">
               <TabLink
                 to="/tournaments/$tournamentId"
                 label="Overview"
@@ -111,19 +116,23 @@ export const TournamentLayout = () => {
               ) : null}
             </div>
           </div>
-          {tournament?.status ? (
-            <span
-              className={`rounded-full border px-3 py-1 text-xs font-semibold ${statusBadgeClass}`}
-            >
-              {tournament.status}
-            </span>
+          {statusBadgeClass ? (
+            <TournamentStatusPill
+              status={statusBadgeClass as TournamentStatus}
+            />
           ) : null}
         </div>
       </header>
       <div className="flex-1 overflow-auto">
-        <div className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6">
+        <div
+          className={
+            isScoreContext
+              ? "w-full py-3 pl-3 pr-0 sm:pl-4 sm:pr-0"
+              : "mx-auto w-full max-w-6xl px-4 py-6 sm:px-6"
+          }
+        >
           {isError ? (
-            <div className="rounded-2xl border border-error-80 bg-error-95 p-6 text-sm text-error-40">
+            <div className="rounded-2xl border border-error/40 bg-error-container p-6 text-sm text-on-error-container">
               Tournament not found.{" "}
               <Link to="/tournaments" className="font-semibold underline">
                 Back to tournaments

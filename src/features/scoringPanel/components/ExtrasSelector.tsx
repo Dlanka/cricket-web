@@ -19,23 +19,26 @@ export const ExtrasSelector = ({
   disabled,
   onToggle,
 }: Props) => (
-  <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
+  <div className="grid grid-cols-2 gap-2">
     {OPTIONS.map((option) => {
       const isSelected = selectedExtraType === option.value;
       return (
-      <Button
-        key={option.value}
-        type="button"
-        appearance={isSelected ? "filled" : "outline"}
-        color={isSelected ? "secondary" : "neutral"}
-        size="sm"
-        disabled={disabled}
-        aria-pressed={isSelected}
-        onClick={() => onToggle(option.value)}
-        className="px-2"
-      >
-        {option.label}
-      </Button>
+        <Button
+          key={option.value}
+          type="button"
+          appearance="tonal"
+          color={isSelected ? "warning" : "neutral"}
+          size="sm"
+          uppercase
+          disabled={disabled}
+          aria-pressed={isSelected}
+          onClick={() => onToggle(option.value)}
+          className={`h-10 w-full justify-center border font-display tracking-wider ${
+            isSelected ? "border-warning/40" : "border-outline"
+          }`}
+        >
+          {option.label}
+        </Button>
       );
     })}
   </div>

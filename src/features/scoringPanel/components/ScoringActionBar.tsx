@@ -34,11 +34,13 @@ export const ScoringActionBar = ({
   const renderUndoButton = () => (
     <Button
       type="button"
-      appearance="outline"
+      appearance="tonal"
       color="neutral"
-      size="md"
+      size="sm"
+      uppercase
       disabled={undoDisabled}
       onClick={onUndo}
+      className="h-10 min-w-0 flex-1 justify-center border border-outline font-display tracking-wider"
     >
       Undo
     </Button>
@@ -47,27 +49,39 @@ export const ScoringActionBar = ({
   const renderRightActions = () => {
     if (showStartSecondInningsButton) {
       return (
-        <Button
-          type="button"
-          size="md"
-          disabled={startSecondInningsDisabled}
-          onClick={onStartSecondInnings}
-        >
-          Start second innings
-        </Button>
+        <div className="col-span-2">
+          <Button
+            type="button"
+            appearance="tonal"
+            color="primary"
+            size="sm"
+            uppercase
+            disabled={startSecondInningsDisabled}
+            onClick={onStartSecondInnings}
+            className="h-10 w-full min-w-0 justify-center border border-primary/35 font-display tracking-wider"
+          >
+            Start second innings
+          </Button>
+        </div>
       );
     }
 
     if (showChangeBowlerButton) {
       return (
-        <Button
-          type="button"
-          size="md"
-          disabled={changeBowlerDisabled}
-          onClick={onChangeBowler}
-        >
-          Change bowler
-        </Button>
+        <div className="col-span-2">
+          <Button
+            type="button"
+            appearance="tonal"
+            color="primary"
+            size="sm"
+            uppercase
+            disabled={changeBowlerDisabled}
+            onClick={onChangeBowler}
+            className="h-10 w-full min-w-0 justify-center border border-primary/35 font-display tracking-wider"
+          >
+            Change bowler
+          </Button>
+        </div>
       );
     }
 
@@ -75,21 +89,25 @@ export const ScoringActionBar = ({
       <>
         <Button
           type="button"
-          appearance="outline"
-          color="neutral"
-          size="md"
+          appearance="tonal"
+          color="primary"
+          size="sm"
+          uppercase
           disabled={disabled}
           onClick={onSwap}
+          className="h-10 min-w-0 flex-1 justify-center border border-primary/35 font-display tracking-wider"
         >
           Swap
         </Button>
         <Button
           type="button"
-          appearance="outline"
+          appearance="tonal"
           color="secondary"
-          size="md"
+          size="sm"
+          uppercase
           disabled={disabled}
           onClick={onRetire}
+          className="h-10 min-w-0 flex-1 justify-center border border-secondary/35 font-display tracking-wider"
         >
           Retire
         </Button>
@@ -99,15 +117,16 @@ export const ScoringActionBar = ({
 
   if (showCompletedButton) {
     return (
-      <div className="pt-4 flex justify-end gap-4">
+      <div className="grid grid-cols-2 gap-2 pt-2">
         {renderUndoButton()}
 
         <Button
           type="button"
           appearance="filled"
           color="primary"
-          size="md"
-          className="w-full"
+          size="sm"
+          uppercase
+          className="h-10 w-full justify-center font-display tracking-wider"
           onClick={onCompleted}
         >
           Completed
@@ -117,12 +136,9 @@ export const ScoringActionBar = ({
   }
 
   return (
-    <div className="flex flex-wrap justify-between gap-2 pt-4">
+    <div className="grid grid-cols-3 gap-2 pt-2">
       {renderUndoButton()}
-
-      <div className="flex items-center gap-2">
-        {renderRightActions()}
-      </div>
+      {renderRightActions()}
     </div>
   );
 };

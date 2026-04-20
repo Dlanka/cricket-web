@@ -41,7 +41,7 @@ export const ProtectedTopBar = () => {
   }, [location.pathname]);
 
   return (
-    <header className="fixed max-h-toolbar min-h-toolbar left-0 right-0 top-0 z-20 flex flex-wrap items-center justify-between gap-4 border-b border-neutral-90/99  px-6 py-4  backdrop-blur lg:left-20">
+    <header className="fixed max-h-toolbar min-h-toolbar left-0 right-0 top-0 z-20 flex flex-wrap items-center justify-between gap-4 border-b border-outline/99  px-6 py-4  backdrop-blur lg:left-20">
       <div className="flex items-center gap-3">
         {showBack ? (
           <Button
@@ -55,20 +55,22 @@ export const ProtectedTopBar = () => {
           </Button>
         ) : null}
         <div>
-          <p className="text-xs uppercase tracking-[0.2em] text-neutral-40">
+          <p className="text-xs uppercase tracking-widest text-on-surface-variant">
             Page
           </p>
-          <p className="text-sm font-semibold text-primary-10">{title}</p>
+          <p className="text-sm font-semibold text-on-surface">{title}</p>
         </div>
       </div>
       <div className="flex items-center gap-3">
         <Link to="/user-settings" className="text-right transition hover:opacity-80">
-          <p className="text-sm font-semibold text-primary-10">
+          <p className="text-sm font-semibold text-on-surface">
             {user?.fullName ?? user?.name ?? user?.email ?? "Staff"}
           </p>
-          <p className="text-xs text-neutral-40">{tenant?.name ?? "-"}</p>
+          <p className="text-xs text-on-surface-variant">{tenant?.name ?? "-"}</p>
         </Link>
       </div>
     </header>
   );
 };
+
+

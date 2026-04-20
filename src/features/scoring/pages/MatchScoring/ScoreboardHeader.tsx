@@ -1,16 +1,14 @@
-import { ArrowLeft } from "lucide-react";
-import { Button } from "@/components/ui/button/Button";
 import { Card } from "@/shared/components/card/Card";
+import { StatusPill } from "@/shared/components/badge/StatusPill";
 import { calculateCRR } from "@/shared/utils/calculateCRR";
 import { calculateRRR } from "@/shared/utils/calculateRRR";
 import type { MatchScoreResponse } from "../../types/scoring.types";
 
 type Props = {
   score: MatchScoreResponse;
-  onBack?: () => void;
 };
 
-export const ScoreboardHeader = ({ score, onBack }: Props) => {
+export const ScoreboardHeader = ({ score }: Props) => {
   const crr = calculateCRR(
     score.score.runs,
     score.score.balls,
@@ -60,78 +58,96 @@ export const ScoreboardHeader = ({ score, onBack }: Props) => {
     return null;
   })();
 
+  const inningsBadge =
+    score.phase === "SUPER_OVER"
+      ? "Super over"
+      : isSecondInnings
+        ? "2nd innings"
+        : "1st innings";
+
   return (
-    <Card>
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
+    <Card className="space-y-5 border-outline-variant bg-surface-container p-5">
+      <div className="space-y-4">
+        <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            {onBack ? (
-              <Button
-                type="button"
-                appearance="standard"
-                color="neutral"
-                size="sm"
-                className="-ml-3"
-                onClick={onBack}
-                aria-label="Back to fixtures"
-              >
-                <ArrowLeft className="h-4 w-4" />
-              </Button>
-            ) : null}
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-40">
+            <span className="h-px w-5 bg-outline-strong" />
+            <span className="size-1.5 rounded-full bg-primary" />
+            <p className="font-display text-2xs font-bold tracking-widest uppercase text-on-surface-muted">
               Live score
             </p>
-            {score.phase === "SUPER_OVER" ? (
-              <span className="inline-flex rounded-full border border-warning-80 bg-warning-95 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-warning-30">
-                Super Over
-              </span>
-            ) : null}
           </div>
-          <h2 className="mt-1 text-base font-semibold text-primary-10">
-            {score.battingTeam.name} <span className="opacity-30">vs</span>{" "}
-            {score.bowlingTeam.name}
-          </h2>
-          <p className="mt-1 flex items-center gap-2">
-            <span className="text-3xl font-bold leading-none text-primary-10">
-              {score.score.runs} - {score.score.wickets}
-            </span>
-            <span className="text-xl font-medium leading-none text-primary-50">
-              ({score.score.overs})
-            </span>
-          </p>
-          {isSecondInnings &&
-          activeChase &&
-          runsRemaining != null &&
-          ballsRemaining != null ? (
-            <p className="mt-3 text-base font-semibold text-primary-30">
-              {score.battingTeam.name} need {runsRemaining} off {ballsRemaining}
-            </p>
-          ) : isSecondInnings ? (
-            <p className="mt-3 text-sm font-semibold text-warning-30">
-              Chase data unavailable
-            </p>
-          ) : null}
+          <StatusPill variant="info" size="sm">
+            {inningsBadge}
+          </StatusPill>
         </div>
-        <div className="text-right">
-          {isSecondInnings && activeChase && targetRuns != null ? (
+
+        <p className="font-display text-base font-bold uppercase tracking-wide text-on-surface">
+          {score.battingTeam.name}
+          <span className="px-3 font-body text-xs font-medium uppercase tracking-wider text-on-surface-muted">
+            vs
+          </span>
+          <span className="text-on-surface-muted">
+            {score.bowlingTeam.name}
+          </span>
+        </p>
+
+        <p className="font-display leading-none font-bold text-on-surface">
+          <span className="text-5xl">{score.score.runs}</span>
+          <span className="px-2 text-4xl text-on-surface-variant">/</span>
+          <span className="text-4xl text-on-primary-container">
+            {score.score.wickets}
+          </span>
+          <span className="ml-3 text-2xl font-semibold text-on-surface-muted">
+            ({score.score.overs})
+          </span>
+        </p>
+
+        <div className="flex flex-wrap items-center gap-3 font-display text-sm font-semibold uppercase tracking-wider">
+          <p className="text-on-surface-muted">
+            CRR{" "}
+            <span className="text-on-primary-container">{crr.toFixed(2)}</span>
+          </p>
+          {isSecondInnings ? (
             <>
-              <p className="mb-3 inline-flex items-center text-lg font-bold text-primary-20">
-                Target: {targetRuns}
+              <span className="text-outline-strong">|</span>
+              <p className="text-on-surface-muted">
+                RRR{" "}
+                <span className="text-on-warning-container">{rrrValue}</span>
               </p>
             </>
           ) : null}
-
-          <p className="text-sm font-semibold text-neutral-30">
-            CRR {crr.toFixed(2)}
-            {isSecondInnings ? ` | RRR ${rrrValue}` : ""}
-          </p>
         </div>
-        {score.isMatchCompleted && resultText ? (
-          <div className="w-full rounded-xl border border-success-80 bg-success-95 px-4 py-3 text-sm font-semibold text-success-30">
-            {resultText}
+
+        {isSecondInnings &&
+        activeChase &&
+        runsRemaining != null &&
+        ballsRemaining != null &&
+        targetRuns != null ? (
+          <div className="space-y-3 rounded-xl border border-outline bg-primary-container/30 p-3">
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-base font-thin tracking-wide text-on-primary-container pl-2">
+                {score.battingTeam.name} need{" "}
+                <span className="font-bold text-primary">{runsRemaining}</span>{" "}
+                off{" "}
+                <span className="font-bold text-primary">{ballsRemaining}</span>{" "}
+                balls
+              </p>
+              <span className="inline-flex items-center gap-2 rounded-lg border border-primary/30 bg-surface-container px-3 py-1.5 font-display text-sm font-bold uppercase tracking-wider text-on-surface-muted">
+                Target{" "}
+                <span className="text-xl leading-none text-on-primary-container">
+                  {targetRuns}
+                </span>
+              </span>
+            </div>
           </div>
         ) : null}
       </div>
+
+      {score.isMatchCompleted && resultText ? (
+        <div className="rounded-xl border border-success/35 bg-success-container px-4 py-3 font-display text-sm font-semibold uppercase tracking-wide text-on-success-container">
+          {resultText}
+        </div>
+      ) : null}
     </Card>
   );
 };

@@ -1,5 +1,8 @@
-import { StatusBadge } from "@/shared/components/status/StatusBadge";
 import { MatchActions } from "../../components/MatchActions";
+import {
+  StatusPill,
+  type StatusPillVariant,
+} from "@/shared/components/badge/StatusPill";
 import type {
   MatchItem,
   TournamentBracketResponse,
@@ -22,6 +25,15 @@ const stageLabels: Record<string, string> = {
 
 const stageOrder = ["LEAGUE", "R1", "QF", "SF", "FINAL"];
 
+const statusPillVariantMap: Record<string, StatusPillVariant> = {
+  SCHEDULED: "warning",
+  LIVE: "info",
+  COMPLETED: "success",
+  TBD: "neutral",
+};
+
+const formatStatusLabel = (status: string) => status.replaceAll("_", " ");
+
 const formatWinner = (match: MatchItem) => {
   if (match.status !== "COMPLETED") {
     return null;
@@ -30,8 +42,7 @@ const formatWinner = (match: MatchItem) => {
     return `${match.teamA?.name ?? "TBD"} won (BYE)`;
   }
   const resultType =
-    match.result?.type ??
-    (match.result?.isNoResult ? "NO_RESULT" : null);
+    match.result?.type ?? (match.result?.isNoResult ? "NO_RESULT" : null);
   if (resultType === "TIE") {
     return "Tied";
   }
@@ -89,9 +100,7 @@ export const MatchList = ({
   const renderedMatchStages = new Set(stages);
   const bracketRounds = (bracket?.rounds ?? [])
     .filter(
-      (round) =>
-        round.stage !== "R1" &&
-        !renderedMatchStages.has(round.stage),
+      (round) => round.stage !== "R1" && !renderedMatchStages.has(round.stage),
     )
     .sort((a, b) => {
       const stageDiff = byStageOrder(a.stage, b.stage);
@@ -102,53 +111,67 @@ export const MatchList = ({
   return (
     <div className="space-y-6">
       {stages.length === 0 ? (
-        <p className="text-sm text-neutral-40">No matches yet.</p>
+        <p className="text-sm text-on-surface-muted">No matches yet.</p>
       ) : null}
 
       {stages.map((stage) => (
         <section key={stage} className="space-y-3">
-          <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-neutral-40">
-            {stageLabels[stage] ?? stage}
-          </h3>
+          <div className="flex items-center justify-between gap-3  pb-3">
+            <h3 className="font-display text-xs font-bold uppercase tracking-widest text-on-surface-subtle">
+              {stageLabels[stage] ?? stage}
+            </h3>
+            <span className="flex-1 border-b border-outline-variant block"></span>
+            <StatusPill variant="warning" size="sm">
+              {grouped[stage].length}{" "}
+              {grouped[stage].length === 1 ? "match" : "matches"}
+            </StatusPill>
+          </div>
           <div className="space-y-3">
             {grouped[stage].map((match) => (
               <div
                 key={match.id}
-                className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-neutral-90 bg-neutral-99 p-4 shadow-[0_20px_60px_-50px_rgba(15,23,42,0.4)]"
+                className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-outline bg-surface-container px-4 py-3 shadow-surface-lg"
               >
                 <div>
                   <div className="flex items-center gap-2">
-                    <p className="text-base font-bold text-primary-10">
-                      {match.teamA?.name ?? "TBD"}
-                      <span className=" font-normal px-1.5">vs</span>
+                    <p className="font-display text-md tracking-wide font-bold text-on-surface">
+                      {match.teamA?.name ?? "TBD"}{" "}
+                      <span className="px-1.5 font-body text-sm font-medium text-on-surface-subtle">
+                        vs
+                      </span>{" "}
                       {match.teamB?.name ?? "BYE"}
                     </p>
                     {match.teamBId == null ? (
-                      <span className="inline-flex rounded-full border border-warning-80 bg-warning-95 px-2 py-0.5 text-[11px] font-semibold text-warning-30">
+                      <StatusPill variant="warning" size="xs">
                         BYE
-                      </span>
+                      </StatusPill>
                     ) : null}
-                    {(match.phase === "SUPER_OVER" ||
+                    {match.phase === "SUPER_OVER" ||
                     match.hasSuperOver ||
-                    Boolean(match.superOverStatus)) ? (
-                      <span className="inline-flex rounded-full border border-primary-80 bg-primary-95 px-2 py-0.5 text-[11px] font-semibold text-primary-30">
+                    Boolean(match.superOverStatus) ? (
+                      <StatusPill variant="info" size="xs">
                         {match.superOverStatus
                           ? `Super Over ${match.superOverStatus}`
                           : "Super Over"}
-                      </span>
+                      </StatusPill>
                     ) : null}
                   </div>
-                  {/* <p className="text-xs text-neutral-40">
+                  {/* <p className="text-xs text-on-surface-muted">
                     {formatDateTime(match.scheduledAt)}
                   </p> */}
                   {formatWinner(match) ? (
-                    <p className="mt-2 text-sm font-medium text-primary-50">
+                    <p className="mt-1 text-xs font-display tracking-wider font-medium text-on-primary-container">
                       {formatWinner(match)}
                     </p>
                   ) : null}
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
-                  <StatusBadge status={match.status} />
+                  <StatusPill
+                    variant={statusPillVariantMap[match.status] ?? "warning"}
+                    size="sm"
+                  >
+                    {formatStatusLabel(match.status)}
+                  </StatusPill>
                   <MatchActions
                     match={match}
                     tournamentId={match.tournamentId}
@@ -170,41 +193,61 @@ export const MatchList = ({
                 key={`${round.stage}-${round.roundNumber}`}
                 className="space-y-3"
               >
-                <h4 className="text-sm font-semibold uppercase tracking-[0.2em] text-neutral-40">
-                  {stageLabels[round.stage] ?? round.stage}
-                </h4>
+                <div className="flex items-center justify-between gap-3  pb-3">
+                  <h4 className="font-display text-xs font-bold uppercase tracking-widest text-on-surface-subtle">
+                    {stageLabels[round.stage] ?? round.stage}
+                  </h4>
+                  <span className="flex-1 border-b border-outline-variant block"></span>
+                  <StatusPill variant="neutral" size="sm">
+                    {round.fixtures.length}{" "}
+                    {round.fixtures.length === 1 ? "match" : "matches"}
+                  </StatusPill>
+                </div>
                 <div className="space-y-3">
                   {round.fixtures.map((fixture) => (
                     <div
                       key={`${round.stage}-${round.roundNumber}-${fixture.slot}`}
-                      className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-neutral-90 bg-neutral-99 p-4 shadow-[0_20px_60px_-50px_rgba(15,23,42,0.4)]"
+                      className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-outline bg-surface-container px-4 py-3 shadow-surface-lg"
                     >
                       <div>
                         <div className="flex items-center gap-2">
-                          <p className="text-base font-semibold text-primary-10">
-                            {`${fixture.teamA?.name ?? "TBD"} vs ${fixture.teamB?.name ?? "TBD"}`}
+                          <p className="font-display text-md font-semibold tracking-wide text-on-surface">
+                            {fixture.teamA?.name ?? "TBD"}{" "}
+                            <span className="px-1.5 font-body text-sm font-medium text-on-surface-subtle">
+                              vs
+                            </span>{" "}
+                            {fixture.teamB?.name ?? "TBD"}
                           </p>
                           {fixture.isBye ? (
-                            <span className="inline-flex rounded-full border border-warning-80 bg-warning-95 px-2 py-0.5 text-[11px] font-semibold text-warning-30">
+                            <StatusPill variant="warning" size="xs">
                               BYE
-                            </span>
+                            </StatusPill>
                           ) : null}
                         </div>
                         {fixture.winnerTeamId ? (
-                          <p className="mt-2 text-sm font-medium text-success-40">
+                          <p className="mt-2 text-sm font-medium text-on-success-container">
                             {(fixture.winnerTeamId === fixture.teamA?.id
                               ? fixture.teamA?.name
                               : fixture.teamB?.name) ?? "Winner decided"}{" "}
                             won
                           </p>
                         ) : fixture.resultType === "TIE" ? (
-                          <p className="mt-2 text-sm font-medium text-primary-50">Tied</p>
+                          <p className="mt-2 text-sm font-medium text-on-primary-container">
+                            Tied
+                          </p>
                         ) : fixture.resultType === "NO_RESULT" ? (
-                          <p className="mt-2 text-sm font-medium text-neutral-50">No Result</p>
+                          <p className="mt-2 text-sm font-medium text-on-surface-subtle">
+                            No Result
+                          </p>
                         ) : null}
                       </div>
                       <div className="flex items-center gap-2">
-                        <StatusBadge status={fixture.status} />
+                        <StatusPill
+                          variant={statusPillVariantMap[fixture.status] ?? "neutral"}
+                          size="sm"
+                        >
+                          {formatStatusLabel(fixture.status)}
+                        </StatusPill>
                       </div>
                     </div>
                   ))}
