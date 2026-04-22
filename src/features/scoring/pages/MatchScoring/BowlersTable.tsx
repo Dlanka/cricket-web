@@ -48,7 +48,7 @@ export const BowlersTable = ({
   const columns: TableColumn<BowlerRow>[] = [
     {
       key: "bowler",
-      header: "Bowler",
+      header: "Bowlers",
       className: "w-col-batter px-5",
       headerClassName: tableHeaderClassName,
       cellClassName: "py-4 font-semibold",
@@ -131,11 +131,6 @@ export const BowlersTable = ({
 
   return (
     <Card className="overflow-hidden border-outline bg-surface-container p-0!">
-      <div className="px-5 py-4 border-b border-outline">
-        <p className="font-display text-xs font-bold uppercase tracking-widest text-on-surface-muted">
-          Bowlers
-        </p>
-      </div>
       {isLoading ? (
         <p className="px-5 py-3 text-sm text-on-surface-variant">
           Loading bowlers...

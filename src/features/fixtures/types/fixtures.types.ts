@@ -38,6 +38,11 @@ export type GenerateFixturesResponse = {
   createdCount: number;
 };
 
+export type GenerateFixturesInput = {
+  regenerate?: boolean;
+  orderedTeamIds?: string[];
+};
+
 export type BracketStage = "R1" | "QF" | "SF" | "FINAL";
 
 export type BracketFixture = {

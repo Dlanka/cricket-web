@@ -130,6 +130,15 @@ export type TournamentDeleteResponse = {
   deleted?: TournamentDeleteCounts;
 };
 
+export type TournamentDuplicateResponse = {
+  id: string;
+  tournamentId?: string;
+  copied?: {
+    teams: number;
+    players: number;
+  };
+};
+
 export type TeamBrief = {
   id: string;
   name: string;

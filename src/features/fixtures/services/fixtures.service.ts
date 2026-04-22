@@ -4,6 +4,7 @@ import type {
   BracketRound,
   BracketStage,
   FixturesViewResponse,
+  GenerateFixturesInput,
   GenerateFixturesResponse,
   ListMatchesResponse,
   MatchItem,
@@ -129,7 +130,7 @@ export const listByTournament = async (
 
 export const generate = async (
   tournamentId: string,
-  payload?: { regenerate?: boolean },
+  payload?: GenerateFixturesInput,
 ): Promise<GenerateFixturesResponse> => {
   const response = await api.post<ApiWrapped<GenerateFixturesResponse>>(
     `/tournaments/${tournamentId}/generate-fixtures`,

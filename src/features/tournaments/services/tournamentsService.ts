@@ -6,6 +6,7 @@ import type {
   ListResponse,
   TournamentDeleteResponse,
   TournamentCreateInput,
+  TournamentDuplicateResponse,
   TournamentDetails,
   TournamentSummary,
   TournamentUpdateInput,
@@ -91,5 +92,18 @@ export const deleteTournament = async (
   return {
     id: payload.id,
     deleted: payload.deleted,
+  };
+};
+
+export const duplicateTournament = async (
+  id: string,
+): Promise<TournamentDuplicateResponse> => {
+  const response = await api.post<
+    ApiResponse<TournamentDuplicateResponse> | TournamentDuplicateResponse
+  >(`/tournaments/${id}/duplicate`, {});
+  const payload = "data" in response.data ? response.data.data : response.data;
+  return {
+    ...payload,
+    id: payload.id || payload.tournamentId || "",
   };
 };

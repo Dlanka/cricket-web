@@ -69,6 +69,24 @@ export const updateTeam = async (
   return normalizeTeam(response.data.data);
 };
 
+export const reorderTeams = async (
+  tournamentId: string,
+  orderedTeamIds: string[],
+): Promise<{ updated: number }> => {
+  const response = await axiosClient.patch<ApiResponse<{ updated: number }>>(
+    `/tournaments/${tournamentId}/teams/order`,
+    { orderedTeamIds },
+  );
+  return response.data.data;
+};
+
+export const deleteTeam = async (id: string): Promise<{ id: string }> => {
+  const response = await axiosClient.delete<ApiResponse<{ id: string }> | { id: string }>(
+    `/teams/${id}`,
+  );
+  return "data" in response.data ? response.data.data : response.data;
+};
+
 export const createTeamAccessLink = async (
   teamId: string,
   payload?: { expiresInHours?: number },

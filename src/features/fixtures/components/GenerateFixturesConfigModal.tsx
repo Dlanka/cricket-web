@@ -115,7 +115,6 @@ export const GenerateFixturesConfigModal = ({
     ],
     [teamsCountValue],
   );
-
   const submit = form.handleSubmit(async (values) => {
     if (isLocked) {
       return;
@@ -259,6 +258,15 @@ export const GenerateFixturesConfigModal = ({
         form.setError("root.serverError", {
           type: "server",
           message: "Fixtures already generated.",
+        });
+        return;
+      }
+      if (normalized.code === "match.invalid_team_order") {
+        form.setError("root.serverError", {
+          type: "server",
+          message:
+            normalized.message ||
+            "Invalid knockout team order. Please reorder all teams and try again.",
         });
         return;
       }

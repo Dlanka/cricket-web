@@ -10,6 +10,7 @@ import { TournamentDeleteModal } from "../../components/TournamentDeleteModal";
 import { BackgroundDecor } from "@/shared/components/layout/BackgroundDecor";
 import { useAuthorization } from "@/features/authz/hooks/useAuthorization";
 import { useDeleteTournamentMutation } from "../../hooks/useDeleteTournamentMutation";
+import { useDuplicateTournamentMutation } from "../../hooks/useDuplicateTournamentMutation";
 import type { TournamentSummary } from "../../types/tournamentTypes";
 import { normalizeApiError } from "@/shared/utils/apiErrors";
 
@@ -26,6 +27,7 @@ export const TournamentsListPage = () => {
   const deleteMutation = useDeleteTournamentMutation(
     deletingTournament?.id ?? "",
   );
+  const duplicateMutation = useDuplicateTournamentMutation();
   const { can } = useAuthorization();
   const canManageTournament = can("tournament.manage");
 
@@ -101,6 +103,18 @@ export const TournamentsListPage = () => {
         <TournamentsList
           tournaments={data}
           canManage={canManageTournament}
+          onDuplicate={(tournament) => {
+            void duplicateMutation
+              .mutateAsync(tournament.id)
+              .then(() => {
+                toast.success("Tournament duplicated.");
+              })
+              .catch((err) => {
+                const message =
+                  normalizeApiError(err).message || "Unable to duplicate tournament.";
+                toast.error(message);
+              });
+          }}
           onDelete={(tournament) => {
             setDeletingTournament(tournament);
             openDelete();

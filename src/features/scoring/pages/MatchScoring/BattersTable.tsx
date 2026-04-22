@@ -83,7 +83,7 @@ export const BattersTable = ({
   const columns: TableColumn<BatterRow>[] = [
     {
       key: "batter",
-      header: "Batter",
+      header: "Batters",
       className: "w-col-batter px-5",
       headerClassName: tableHeaderClassName,
       cellClassName: "py-4 font-semibold text-on-surface",
@@ -177,12 +177,6 @@ export const BattersTable = ({
 
   return (
     <Card className="overflow-hidden border-outline bg-surface-container p-0!">
-      <div className="px-5 py-4 border-b  border-outline ">
-        <p className="font-display text-xs font-bold uppercase tracking-widest text-on-surface-muted">
-          Batters
-        </p>
-      </div>
-
       {isLoading ? (
         <p className="px-5 py-3 text-sm text-on-surface-variant">
           Loading batters...
@@ -239,24 +233,24 @@ export const BattersTable = ({
       ) : null}
       {!isLoading && !isError ? (
         <div className="text-xs text-on-surface-variant">
-          <div className="border-t border-outline-variant px-5 py-3">
+          <div className="border-t border-outline-variant bg-surface-container-high/50 px-5 py-3">
             <div className="flex items-center justify-between">
-              <span className="font-body text-xs text-on-surface-muted">
+              <span className="font-display font-medium text-sm tracking-wider text-on-surface-muted">
                 Extras
               </span>
-              <span className="text-right font-mono text-base text-on-surface-variant">
+              <span className="text-right font-semibold font-display text-base text-on-surface-variant">
                 <span>{extrasTotal}</span>
                 <span className="text-on-surface-muted">{extrasDetails}</span>
               </span>
             </div>
           </div>
 
-          <div className="border-t border-outline-variant px-5 py-3">
+          <div className="border-t border-outline-variant bg-surface-container-high/50 px-5 py-3">
             <div className="flex items-center justify-between">
-              <span className="font-body text-sm text-on-surface-muted">
+              <span className="font-display font-medium text-sm tracking-wider text-on-surface-muted">
                 Total runs
               </span>
-              <span className="text-right font-mono text-sm font-semibold text-on-primary-container">
+              <span className="text-right font-display text-lg font-bold text-success">
                 {resolvedTotalRuns}
               </span>
             </div>

@@ -8,12 +8,14 @@ type Props = {
   tournaments: TournamentSummary[];
   canManage?: boolean;
   onDelete?: (tournament: TournamentSummary) => void;
+  onDuplicate?: (tournament: TournamentSummary) => void;
 };
 
 export const TournamentsList = ({
   tournaments,
   canManage = false,
   onDelete,
+  onDuplicate,
 }: Props) => (
   <section className="grid gap-4">
     {tournaments.map((tournament) => (
@@ -37,6 +39,22 @@ export const TournamentsList = ({
             </div>
             <div className="flex items-center gap-3">
               <StatusBadge status={tournament.status} />
+
+              {canManage && onDuplicate ? (
+                <Button
+                  type="button"
+                  appearance="outline"
+                  color="neutral"
+                  size="sm"
+                  onClick={(event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    onDuplicate(tournament);
+                  }}
+                >
+                  Duplicate
+                </Button>
+              ) : null}
 
               {canManage && onDelete ? (
                 <Button

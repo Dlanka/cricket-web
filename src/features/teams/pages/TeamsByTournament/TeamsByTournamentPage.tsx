@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { useParams } from "@tanstack/react-router";
+import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
 import { useTeamsByTournamentQuery } from "../../hooks/useTeamsByTournamentQuery";
+import { useDeleteTeamMutation } from "../../hooks/useDeleteTeamMutation";
+import { useReorderTeamsMutation } from "../../hooks/useReorderTeamsMutation";
 import { TeamsByTournamentPageSkeleton } from "./TeamsByTournamentPage.skeleton";
 import { TeamsList } from "./TeamsList";
 import { Button } from "@/components/ui/button/Button";
@@ -13,6 +17,8 @@ import { TeamAccessLinksModal } from "@/features/teams/components/TeamAccessLink
 import { TournamentCard } from "@/features/tournament-ui/components/TournamentCard";
 import { PageHeader } from "@/shared/components/page/PageHeader";
 import { Plus } from "lucide-react";
+import { normalizeApiError } from "@/shared/utils/apiErrors";
+import { useTournament } from "@/features/tournaments/hooks/useTournament";
 
 export const TeamsByTournamentPage = () => {
   const { tournamentId } = useParams({
@@ -20,9 +26,13 @@ export const TeamsByTournamentPage = () => {
   });
   const { data, isLoading, isError, error } =
     useTeamsByTournamentQuery(tournamentId);
+  const tournamentQuery = useTournament(tournamentId);
+  const queryClient = useQueryClient();
   const { isOpen, open, close } = useDisclosure();
   const { can } = useAuthorization();
   const canEdit = can("tournament.manage");
+  const deleteMutation = useDeleteTeamMutation(tournamentId);
+  const reorderMutation = useReorderTeamsMutation(tournamentId);
   const {
     isOpen: isEditOpen,
     open: openEdit,
@@ -47,6 +57,35 @@ export const TeamsByTournamentPage = () => {
   if (isLoading) {
     return <TeamsByTournamentPageSkeleton />;
   }
+
+  const canReorderTeams =
+    canEdit &&
+    (tournamentQuery.data?.type === "KNOCKOUT" ||
+      tournamentQuery.data?.type === "LEAGUE_KNOCKOUT");
+
+  const handleDeleteTeam = async (team: Team) => {
+    if (!window.confirm(`Delete team "${team.name}"? This action cannot be undone.`)) {
+      return;
+    }
+
+    try {
+      await deleteMutation.mutateAsync(team.id);
+      toast.success("Team deleted.");
+    } catch (error) {
+      toast.error(normalizeApiError(error).message || "Unable to delete team.");
+    }
+  };
+
+  const commitTeamOrder = async () => {
+    const teams = (queryClient.getQueryData(["teams", tournamentId]) as Team[] | undefined) ?? data ?? [];
+    if (!canReorderTeams || teams.length === 0) return;
+    try {
+      await reorderMutation.mutateAsync(teams.map((team) => team.id));
+      toast.success("Team order updated.");
+    } catch (error) {
+      toast.error(normalizeApiError(error).message || "Unable to update team order.");
+    }
+  };
 
   return (
     <div className="mx-auto w-full space-y-12">
@@ -88,6 +127,15 @@ export const TeamsByTournamentPage = () => {
             onAccessLinks={(team) => {
               setLinksTeam(team);
               openLinks();
+            }}
+            onDelete={handleDeleteTeam}
+            deletingTeamId={deleteMutation.isPending ? deleteMutation.variables : null}
+            canReorder={canReorderTeams}
+            onReorder={(nextTeams) => {
+              queryClient.setQueryData(["teams", tournamentId], nextTeams);
+            }}
+            onReorderEnd={() => {
+              void commitTeamOrder();
             }}
           />
         ) : (

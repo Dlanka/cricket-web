@@ -5,6 +5,7 @@ export type Team = {
   shortName?: string | null;
   contactPerson?: string | null;
   contactNumber?: string | null;
+  sortOrder?: number;
   createdAt: string;
 };
 

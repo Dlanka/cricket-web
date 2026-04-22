@@ -182,15 +182,15 @@
 }
 
 @utility w-col-batter {
-  width: 44%;
+  width: 58%;
 }
 
 @utility w-col-stat {
-  width: 11%;
+  width: 6%;
 }
 
 @utility w-col-sr {
-  width: 13%;
+  width: 6%;
 }
 
 :root {
