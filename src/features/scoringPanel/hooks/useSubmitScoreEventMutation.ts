@@ -64,11 +64,19 @@ export const useSubmitScoreEventMutation = (
         return;
       }
 
-      // Keep delivery submit snappy: don't block mutation resolution with large refetch chains.
-      // MatchScoringPage already refreshes innings sections when score seq changes.
-      void queryClient.invalidateQueries({
-        queryKey: scoringQueryKeys.availableNextBatters(matchId),
-      });
+      // Keep delivery submit snappy:
+      // available-next-batters changes mainly on wicket/retire/undo or innings transitions.
+      const shouldRefreshNextBatters =
+        data.event.type === "wicket" ||
+        data.event.type === "retire" ||
+        data.event.type === "undo" ||
+        Boolean(data.inningsCompleted) ||
+        Boolean(data.isMatchCompleted);
+      if (shouldRefreshNextBatters) {
+        void queryClient.invalidateQueries({
+          queryKey: scoringQueryKeys.availableNextBatters(matchId),
+        });
+      }
 
       // Refresh broader tournament/match contexts only when state likely changes beyond current ball.
       const shouldRefreshGlobalViews =
