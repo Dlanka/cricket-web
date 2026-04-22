@@ -12,6 +12,7 @@ import { ScoringPanel } from "@/features/scoringPanel/components/ScoringPanel";
 import { Card } from "@/shared/components/card/Card";
 import { usePlayersByTeamQuery } from "@/features/players/hooks/usePlayersByTeamQuery";
 import { scoringQueryKeys } from "../../constants/scoringQueryKeys";
+import { useMatchScoreLiveSync } from "../../hooks/useMatchScoreLiveSync";
 
 type MatchScoringPageProps = {
   matchId: string;
@@ -27,7 +28,15 @@ export const MatchScoringPage = ({
   const [resolvedOverBoundaryBalls, setResolvedOverBoundaryBalls] = useState<
     number | null
   >(null);
-  const scoreQuery = useMatchScoreQuery(matchId, true, "adaptive");
+  const { isConnected: isLiveSocketConnected } = useMatchScoreLiveSync(
+    matchId,
+    true,
+  );
+  const scoreQuery = useMatchScoreQuery(
+    matchId,
+    true,
+    isLiveSocketConnected ? 30000 : "adaptive",
+  );
 
   useEffect(() => {
     const inningsId = scoreQuery.data?.inningsId;
