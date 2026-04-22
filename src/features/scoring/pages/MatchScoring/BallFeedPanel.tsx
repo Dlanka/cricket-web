@@ -17,7 +17,7 @@ export const BallFeedPanel = ({ inningsId }: Props) => {
     hasNextPage,
     fetchNextPage,
     isFetchingNextPage,
-  } = useInningsEventsInfiniteQuery(inningsId);
+  } = useInningsEventsInfiniteQuery(inningsId, isExpanded);
 
   const items = data?.pages.flatMap((page) => page.items) ?? [];
 

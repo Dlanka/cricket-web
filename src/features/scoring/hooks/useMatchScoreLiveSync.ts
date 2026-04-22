@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { io, type Socket } from "socket.io-client";
 import { scoringQueryKeys } from "../constants/scoringQueryKeys";
@@ -35,6 +35,7 @@ export const useMatchScoreLiveSync = (matchId: string, enabled = true) => {
   const queryClient = useQueryClient();
   const socketUrl = useMemo(() => resolveSocketUrl(), []);
   const [isConnected, setIsConnected] = useState(false);
+  const lastUpdateAtRef = useRef(0);
 
   useEffect(() => {
     if (!enabled || !matchId) {
@@ -73,6 +74,9 @@ export const useMatchScoreLiveSync = (matchId: string, enabled = true) => {
       if (!event?.matchId || event.matchId !== matchId) {
         return;
       }
+      if (Date.now() - lastUpdateAtRef.current < 1200) {
+        return;
+      }
       void queryClient.invalidateQueries({
         queryKey: scoringQueryKeys.score(matchId),
       });
@@ -82,6 +86,7 @@ export const useMatchScoreLiveSync = (matchId: string, enabled = true) => {
       if (!event?.matchId || event.matchId !== matchId || !event.score) {
         return;
       }
+      lastUpdateAtRef.current = Date.now();
       queryClient.setQueryData(scoringQueryKeys.score(matchId), event.score);
     };
 

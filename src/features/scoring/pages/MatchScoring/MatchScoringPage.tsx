@@ -35,7 +35,7 @@ export const MatchScoringPage = ({
   const scoreQuery = useMatchScoreQuery(
     matchId,
     true,
-    isLiveSocketConnected ? 30000 : "adaptive",
+    isLiveSocketConnected ? false : "adaptive",
   );
 
   useEffect(() => {
@@ -61,9 +61,6 @@ export const MatchScoringPage = ({
       }),
       queryClient.invalidateQueries({
         queryKey: scoringQueryKeys.innings.overs(inningsId, 10),
-      }),
-      queryClient.invalidateQueries({
-        queryKey: scoringQueryKeys.innings.events(inningsId),
       }),
     ]);
   }, [
