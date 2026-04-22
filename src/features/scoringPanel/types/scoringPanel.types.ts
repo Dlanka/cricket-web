@@ -75,7 +75,7 @@ export type ScoreEventResponse = {
   inningsId: string;
   inningsCompleted: boolean;
   isMatchCompleted?: boolean;
-  score: {
+  score?: {
     runs: number;
     wickets: number;
     balls: number;
@@ -86,12 +86,12 @@ export type ScoreEventResponse = {
     byes: number;
     legByes: number;
   };
-  current: {
+  current?: {
     strikerId: string;
     nonStrikerId: string;
     bowlerId: string;
   };
-  currentOver: {
+  currentOver?: {
     overNumber: number;
     balls: { seq?: number; display: string; isLegal: boolean }[];
   };

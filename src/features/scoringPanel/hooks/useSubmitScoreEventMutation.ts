@@ -12,8 +12,8 @@ export const mergeScoreSnapshot = (
     inningsId: string;
     inningsCompleted: boolean;
     isMatchCompleted?: boolean;
-    score: MatchScoreResponse["score"];
-    current: MatchScoreResponse["current"];
+    score?: MatchScoreResponse["score"];
+    current?: MatchScoreResponse["current"];
     event: { id: string; seq: number; type: string };
   },
 ): MatchScoreResponse | undefined => {
@@ -26,8 +26,8 @@ export const mergeScoreSnapshot = (
     inningsId: data.inningsId ?? previous.inningsId,
     inningsCompleted: data.inningsCompleted ?? previous.inningsCompleted,
     isMatchCompleted: data.isMatchCompleted ?? previous.isMatchCompleted,
-    score: data.score ?? previous.score,
-    current: data.current ?? previous.current,
+    score: data.score ? data.score : previous.score,
+    current: data.current ? data.current : previous.current,
     lastEvent: data.event
       ? {
           id: data.event.id,
@@ -48,10 +48,12 @@ export const useSubmitScoreEventMutation = (
   return useMutation({
     mutationFn: (payload: ScoreEventRequest) => submitScoreEvent(matchId, payload),
     onSuccess: (data) => {
-      queryClient.setQueryData<MatchScoreResponse | undefined>(
-        scoringQueryKeys.score(matchId),
-        (previous) => mergeScoreSnapshot(previous, data),
-      );
+      if (data.score || data.current) {
+        queryClient.setQueryData<MatchScoreResponse | undefined>(
+          scoringQueryKeys.score(matchId),
+          (previous) => mergeScoreSnapshot(previous, data),
+        );
+      }
 
       const cachedScore = queryClient.getQueryData<MatchScoreResponse>(
         scoringQueryKeys.score(matchId),
