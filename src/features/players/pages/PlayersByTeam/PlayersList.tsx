@@ -25,11 +25,13 @@ export const PlayersList = ({
     {players.map((player, index) => (
       <div
         key={player.id}
-        className="surface-muted flex items-center justify-between gap-3 rounded-xl border border-outline px-4 py-3 transition hover:border-outline-strong"
+        className="bg-surface-container flex items-center justify-between gap-3 rounded-xl border border-outline px-4 py-4 transition hover:border-outline-strong"
       >
         <div className="flex items-center gap-3">
-          <p className="w-9 text-right text-xs text-on-surface-subtle font-mono">
-            {player.jerseyNumber != null ? `#${player.jerseyNumber}` : `#${index + 1}`}
+          <p className=" text-right text-lg font-semibold text-on-surface-muted font-display mr-3">
+            {player.jerseyNumber != null
+              ? `#${player.jerseyNumber}`
+              : `#${index + 1}`}
           </p>
           <div>
             <div className="flex items-center gap-2">
@@ -87,4 +89,3 @@ export const PlayersList = ({
     ))}
   </div>
 );
-
