@@ -65,14 +65,14 @@ export type BracketRound = {
 
 export type TournamentBracketResponse = {
   tournamentId: string;
-  tournamentType: "LEAGUE" | "KNOCKOUT" | "LEAGUE_KNOCKOUT";
+  tournamentType: "LEAGUE" | "KNOCKOUT" | "LEAGUE_KNOCKOUT" | "SERIES";
   rounds: BracketRound[];
 };
 
 export type FixturesViewResponse = {
   version: number;
   tournamentId: string;
-  tournamentType: "LEAGUE" | "KNOCKOUT" | "LEAGUE_KNOCKOUT";
+  tournamentType: "LEAGUE" | "KNOCKOUT" | "LEAGUE_KNOCKOUT" | "SERIES";
   stageStatus: {
     league: "PENDING" | "ACTIVE" | "COMPLETED" | string;
     knockout: "PENDING" | "ACTIVE" | "COMPLETED" | string;
@@ -84,10 +84,14 @@ export type FixturesViewResponse = {
 };
 
 export type TournamentConfigInput = {
-  type: "LEAGUE" | "KNOCKOUT" | "LEAGUE_KNOCKOUT";
+  type: "LEAGUE" | "KNOCKOUT" | "LEAGUE_KNOCKOUT" | "SERIES";
   oversPerInnings: number;
   ballsPerOver: number;
   rules?: {
-    qualificationCount: number;
+    qualificationCount?: number;
+    series?: {
+      totalMatches: number;
+      winsToClinch: number;
+    };
   };
 };

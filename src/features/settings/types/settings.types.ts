@@ -1,4 +1,4 @@
-export type TournamentType = "LEAGUE" | "KNOCKOUT" | "LEAGUE_KNOCKOUT";
+export type TournamentType = "LEAGUE" | "KNOCKOUT" | "LEAGUE_KNOCKOUT" | "SERIES";
 
 export type PermissionCode =
   | "*"

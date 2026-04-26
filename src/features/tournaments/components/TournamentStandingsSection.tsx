@@ -1,5 +1,8 @@
 import { TournamentStandingsActions } from "./TournamentStandingsActions";
-import type { TournamentStandingsResponse } from "../types/tournamentTypes";
+import type {
+  TournamentStandingsResponse,
+  TournamentType,
+} from "../types/tournamentTypes";
 
 type Props = {
   standings?: TournamentStandingsResponse;
@@ -13,6 +16,7 @@ type Props = {
   isRecomputing: boolean;
   isGenerating: boolean;
   qualificationSlots?: number;
+  tournamentType?: TournamentType;
   onRecompute: () => void;
   onGenerate: () => void;
 };
@@ -44,12 +48,18 @@ export const TournamentStandingsSection = ({
   isRecomputing,
   isGenerating,
   qualificationSlots = 2,
+  tournamentType,
   onRecompute,
   onGenerate,
 }: Props) => {
   const rows = standings?.items ?? [];
-  const completed = standings?.completedLeagueMatches ?? 0;
-  const total = standings?.totalLeagueMatches ?? 0;
+  const isSeries = standings?.stage === "SERIES" || tournamentType === "SERIES";
+  const completed = isSeries
+    ? (standings?.completedSeriesMatches ?? 0)
+    : (standings?.completedLeagueMatches ?? 0);
+  const total = isSeries
+    ? (standings?.totalSeriesMatches ?? 0)
+    : (standings?.totalLeagueMatches ?? 0);
   const slots = Math.max(1, qualificationSlots);
   const qualifiedCount = Math.min(slots, rows.length || slots);
 
@@ -63,7 +73,7 @@ export const TournamentStandingsSection = ({
         <div className="flex flex-wrap items-start justify-between gap-3 border-b border-outline-variant px-5 py-4">
           <div>
             <h3 className="font-display text-2xl font-bold text-on-surface">
-              League standings
+              {isSeries ? "Series standings" : "League standings"}
             </h3>
             <p className="mt-1 text-sm text-on-surface-muted">
               {completed} / {total} completed
@@ -185,6 +195,12 @@ export const TournamentStandingsSection = ({
           <div className="border-t border-outline-variant bg-surface-container-high px-5 py-3 text-sm text-on-surface-muted">
             <span className="mr-2 inline-block h-2.5 w-2.5 rounded-full bg-primary align-middle" />
             Top {qualifiedCount} {qualifiedCount === 1 ? "team" : "teams"} qualify for the knockout stage
+          </div>
+        ) : null}
+        {!isLoading && !isError && rows.length > 0 && isSeries ? (
+          <div className="border-t border-outline-variant bg-surface-container-high px-5 py-3 text-sm text-on-surface-muted">
+            <span className="mr-2 inline-block h-2.5 w-2.5 rounded-full bg-primary align-middle" />
+            First team to {standings?.winsToClinch ?? 0} wins the series
           </div>
         ) : null}
       </div>

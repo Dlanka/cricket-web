@@ -1,4 +1,4 @@
-export type TournamentType = "LEAGUE" | "KNOCKOUT" | "LEAGUE_KNOCKOUT";
+export type TournamentType = "LEAGUE" | "KNOCKOUT" | "LEAGUE_KNOCKOUT" | "SERIES";
 export type TournamentStatus = "DRAFT" | "ACTIVE" | "COMPLETED";
 export type TournamentStageStatus = "PENDING" | "ACTIVE" | "COMPLETED";
 export type TournamentTiePolicy =
@@ -40,6 +40,12 @@ export type TournamentOverview = {
           loss: number;
         }
       | null;
+    series:
+      | {
+          totalMatches: number;
+          winsToClinch: number;
+        }
+      | null;
   };
   tiePolicy: TournamentTiePolicy;
 };
@@ -54,6 +60,10 @@ export type TournamentCreateInput = {
   ballsPerOver?: number;
   rules?: {
     qualificationCount?: number;
+    series?: {
+      totalMatches?: number;
+      winsToClinch?: number;
+    };
   };
 };
 
@@ -68,6 +78,10 @@ export type TournamentUpdateInput = {
   status?: TournamentStatus;
   rules?: {
     qualificationCount?: number;
+    series?: {
+      totalMatches?: number;
+      winsToClinch?: number;
+    };
   };
 };
 
@@ -94,6 +108,10 @@ export type TournamentDetails = TournamentSummary & {
   venues?: string[];
   rules?: {
     qualificationCount?: number;
+    series?: {
+      totalMatches?: number;
+      winsToClinch?: number;
+    };
   };
   overviewDescription?: string;
   overview?: TournamentOverview;
@@ -159,10 +177,14 @@ export type StandingItem = {
 
 export type TournamentStandingsResponse = {
   tournamentId: string;
-  stage: "LEAGUE";
-  leagueCompleted: boolean;
-  totalLeagueMatches: number;
-  completedLeagueMatches: number;
+  stage: "LEAGUE" | "SERIES";
+  leagueCompleted?: boolean;
+  totalLeagueMatches?: number;
+  completedLeagueMatches?: number;
+  seriesCompleted?: boolean;
+  totalSeriesMatches?: number;
+  completedSeriesMatches?: number;
+  winsToClinch?: number;
   items: StandingItem[];
 };
 

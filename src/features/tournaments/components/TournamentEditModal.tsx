@@ -43,6 +43,26 @@ const normalizeTournamentPatch = (
     }
   }
 
+  const hasSeriesFields =
+    "seriesTotalMatches" in next || "seriesWinsToClinch" in next;
+  if (hasSeriesFields) {
+    const totalMatches = next.seriesTotalMatches;
+    const winsToClinch = next.seriesWinsToClinch;
+    delete next.seriesTotalMatches;
+    delete next.seriesWinsToClinch;
+    next.rules = {
+      ...(typeof next.rules === "object" && next.rules ? next.rules : {}),
+      series: {
+        ...(typeof totalMatches === "number" && Number.isFinite(totalMatches)
+          ? { totalMatches }
+          : {}),
+        ...(typeof winsToClinch === "number" && Number.isFinite(winsToClinch)
+          ? { winsToClinch }
+          : {}),
+      },
+    };
+  }
+
   return next as TournamentUpdateInput;
 };
 
@@ -73,6 +93,8 @@ export const TournamentEditModal = ({
       oversPerInnings: tournament.oversPerInnings ?? 20,
       ballsPerOver: tournament.ballsPerOver ?? 6,
       qualificationCount: tournament.rules?.qualificationCount ?? 4,
+      seriesTotalMatches: tournament.rules?.series?.totalMatches ?? 5,
+      seriesWinsToClinch: tournament.rules?.series?.winsToClinch ?? 3,
       status: tournament.status ?? "DRAFT",
     }),
     [tournament],
@@ -98,11 +120,14 @@ export const TournamentEditModal = ({
       "Matches are direct elimination rounds. Winners move forward until the final.",
     LEAGUE_KNOCKOUT:
       "League stage is played first, then top teams advance to knockout and final.",
+    SERIES:
+      "Two teams play multiple matches until one side reaches the wins-to-clinch target.",
   };
   const tournamentTypeOptions = [
     { value: "LEAGUE", label: "League" },
     { value: "KNOCKOUT", label: "Knockout" },
     { value: "LEAGUE_KNOCKOUT", label: "League + Knockout" },
+    { value: "SERIES", label: "Series (Best of)" },
   ];
   const tournamentStatusOptions = [
     { value: "DRAFT", label: "Draft" },
@@ -263,6 +288,38 @@ export const TournamentEditModal = ({
               })}
             />
           </FormGroup>
+        ) : null}
+        {selectedType === "SERIES" ? (
+          <div className="grid gap-4 sm:grid-cols-2">
+            <FormGroup
+              label="Total matches"
+              hint="Maximum number of matches in the series."
+              error={errors.seriesTotalMatches?.message}
+            >
+              <InputField
+                type="number"
+                min={1}
+                {...register("seriesTotalMatches", {
+                  setValueAs: (value) =>
+                    value === "" || value === null ? undefined : Number(value),
+                })}
+              />
+            </FormGroup>
+            <FormGroup
+              label="Wins to clinch"
+              hint="First team to this many wins becomes champion."
+              error={errors.seriesWinsToClinch?.message}
+            >
+              <InputField
+                type="number"
+                min={1}
+                {...register("seriesWinsToClinch", {
+                  setValueAs: (value) =>
+                    value === "" || value === null ? undefined : Number(value),
+                })}
+              />
+            </FormGroup>
+          </div>
         ) : null}
         <FormGroup
           label="Overs per innings"

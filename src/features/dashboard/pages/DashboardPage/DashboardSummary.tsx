@@ -42,7 +42,7 @@ const getStageStatusLabel = (value?: string) => {
 };
 
 const isLeagueType = (type?: TournamentType) =>
-  type === "LEAGUE" || type === "LEAGUE_KNOCKOUT";
+  type === "LEAGUE" || type === "LEAGUE_KNOCKOUT" || type === "SERIES";
 
 const isKnockoutType = (type?: TournamentType) =>
   type === "KNOCKOUT" || type === "LEAGUE_KNOCKOUT";

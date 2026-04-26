@@ -14,7 +14,7 @@ export const organizationSettingsSchema = z.object({
 });
 
 export const tournamentDefaultsSettingsSchema = z.object({
-  defaultType: z.enum(["LEAGUE", "KNOCKOUT", "LEAGUE_KNOCKOUT"]),
+  defaultType: z.enum(["LEAGUE", "KNOCKOUT", "LEAGUE_KNOCKOUT", "SERIES"]),
   defaultOversPerInnings: z
     .number()
     .int("Overs must be a whole number.")

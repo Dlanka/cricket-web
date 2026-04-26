@@ -16,6 +16,7 @@ const typeLabelMap: Record<TournamentType, string> = {
   LEAGUE: "League",
   KNOCKOUT: "Knockout",
   LEAGUE_KNOCKOUT: "League + Knockout",
+  SERIES: "Series (Best of)",
 };
 const tiePolicyLabelMap: Record<TournamentTiePolicy, string> = {
   LEAGUE_TIE_SHARED: "League tie: shared points",
@@ -25,6 +26,7 @@ const tiePolicyLabelMap: Record<TournamentTiePolicy, string> = {
 const humanizeOverviewText = (text: string) =>
   text
     .replaceAll("LEAGUE_KNOCKOUT", "League Knockout")
+    .replaceAll("SERIES", "Series")
     .replaceAll("LEAGUE", "League")
     .replaceAll("KNOCKOUT", "Knockout");
 

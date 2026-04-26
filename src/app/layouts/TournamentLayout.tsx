@@ -50,7 +50,9 @@ export const TournamentLayout = () => {
   );
   const isScoreContext = location.pathname.endsWith("/score");
   const showStandingsTab =
-    tournament?.type === "LEAGUE" || tournament?.type === "LEAGUE_KNOCKOUT";
+    tournament?.type === "LEAGUE" ||
+    tournament?.type === "LEAGUE_KNOCKOUT" ||
+    tournament?.type === "SERIES";
   const statusBadgeClass =
     tournament?.status === "ACTIVE" ||
     tournament?.status === "COMPLETED" ||

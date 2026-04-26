@@ -45,7 +45,8 @@ export const TournamentStandingsPage = () => {
 
   const isLeagueType =
     tournamentQuery.data?.type === "LEAGUE" ||
-    tournamentQuery.data?.type === "LEAGUE_KNOCKOUT";
+    tournamentQuery.data?.type === "LEAGUE_KNOCKOUT" ||
+    tournamentQuery.data?.type === "SERIES";
   const hasKnockoutRoundsStarted = (matchesQuery.data ?? []).some(
     (match) => match.stage && match.stage !== "LEAGUE",
   );
@@ -79,7 +80,7 @@ export const TournamentStandingsPage = () => {
     return (
       <EmptyState
         title="Standings unavailable"
-        description="Points table is available only for League and League + Knockout tournaments."
+        description="Points table is available for League, League + Knockout, and Series tournaments."
       />
     );
   }
@@ -108,6 +109,7 @@ export const TournamentStandingsPage = () => {
         isRecomputing={recomputeMutation.isPending}
         isGenerating={generateKnockoutMutation.isPending}
         qualificationSlots={tournamentQuery.data?.rules?.qualificationCount ?? 2}
+        tournamentType={tournamentQuery.data?.type}
         onRecompute={handleRecompute}
         onGenerate={handleGenerateKnockout}
       />

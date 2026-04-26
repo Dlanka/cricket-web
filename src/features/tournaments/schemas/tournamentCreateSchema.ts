@@ -31,7 +31,7 @@ export const tournamentCreateSchema = z.object({
   location: optionalLocation,
   startDate: optionalDate,
   endDate: optionalDate,
-  type: z.enum(["LEAGUE", "KNOCKOUT", "LEAGUE_KNOCKOUT"]) as z.ZodType<
+  type: z.enum(["LEAGUE", "KNOCKOUT", "LEAGUE_KNOCKOUT", "SERIES"]) as z.ZodType<
     TournamentType
   >,
   oversPerInnings: z
@@ -51,6 +51,20 @@ export const tournamentCreateSchema = z.object({
         : value,
     z.coerce.number().int().min(2, "Qualification count must be at least 2"),
   ).optional(),
+  seriesTotalMatches: z.preprocess(
+    (value) =>
+      value === "" || value == null || (typeof value === "number" && Number.isNaN(value))
+        ? undefined
+        : value,
+    z.coerce.number().int().min(1, "Total matches must be at least 1"),
+  ).optional(),
+  seriesWinsToClinch: z.preprocess(
+    (value) =>
+      value === "" || value == null || (typeof value === "number" && Number.isNaN(value))
+        ? undefined
+        : value,
+    z.coerce.number().int().min(1, "Wins to clinch must be at least 1"),
+  ).optional(),
   status: z.enum(["DRAFT", "ACTIVE", "COMPLETED"]).optional() as z.ZodType<
     TournamentStatus | undefined
   >,
@@ -61,6 +75,33 @@ export const tournamentCreateSchema = z.object({
       path: ["endDate"],
       message: "End date must be on or after start date.",
     });
+  }
+  if (values.type === "SERIES") {
+    if (!values.seriesTotalMatches) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["seriesTotalMatches"],
+        message: "Total matches is required for Series.",
+      });
+    }
+    if (!values.seriesWinsToClinch) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["seriesWinsToClinch"],
+        message: "Wins to clinch is required for Series.",
+      });
+    }
+    if (
+      values.seriesTotalMatches !== undefined &&
+      values.seriesWinsToClinch !== undefined &&
+      values.seriesWinsToClinch > values.seriesTotalMatches
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["seriesWinsToClinch"],
+        message: "Wins to clinch cannot exceed total matches.",
+      });
+    }
   }
 });
 

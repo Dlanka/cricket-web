@@ -33,7 +33,7 @@ export const tournamentUpdateSchema = z
     startDate: optionalDate,
     endDate: optionalDate,
     type: z
-      .enum(["LEAGUE", "KNOCKOUT", "LEAGUE_KNOCKOUT"])
+      .enum(["LEAGUE", "KNOCKOUT", "LEAGUE_KNOCKOUT", "SERIES"])
       .optional() as z.ZodType<TournamentType | undefined>,
     oversPerInnings: optionalNumber,
     ballsPerOver: optionalNumber,
@@ -43,6 +43,20 @@ export const tournamentUpdateSchema = z
           ? undefined
           : value,
       z.coerce.number().int().min(2, "Qualification count must be at least 2"),
+    ).optional(),
+    seriesTotalMatches: z.preprocess(
+      (value) =>
+        value === "" || value == null || (typeof value === "number" && Number.isNaN(value))
+          ? undefined
+          : value,
+      z.coerce.number().int().min(1, "Total matches must be at least 1"),
+    ).optional(),
+    seriesWinsToClinch: z.preprocess(
+      (value) =>
+        value === "" || value == null || (typeof value === "number" && Number.isNaN(value))
+          ? undefined
+          : value,
+      z.coerce.number().int().min(1, "Wins to clinch must be at least 1"),
     ).optional(),
     status: z
       .enum(["DRAFT", "ACTIVE", "COMPLETED"])
@@ -55,6 +69,19 @@ export const tournamentUpdateSchema = z
         path: ["endDate"],
         message: "End date must be on or after start date.",
       });
+    }
+    if (values.type === "SERIES") {
+      if (
+        values.seriesTotalMatches !== undefined &&
+        values.seriesWinsToClinch !== undefined &&
+        values.seriesWinsToClinch > values.seriesTotalMatches
+      ) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["seriesWinsToClinch"],
+          message: "Wins to clinch cannot exceed total matches.",
+        });
+      }
     }
   })
   .refine((values) => Object.values(values).some((value) => value !== undefined), {

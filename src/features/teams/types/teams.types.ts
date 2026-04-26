@@ -65,7 +65,7 @@ export type TeamAccessContext = {
   tournament: {
     id: string;
     name: string;
-    type: "LEAGUE" | "KNOCKOUT" | "LEAGUE_KNOCKOUT";
+    type: "LEAGUE" | "KNOCKOUT" | "LEAGUE_KNOCKOUT" | "SERIES";
     status: "DRAFT" | "ACTIVE" | "COMPLETED";
     oversPerInnings: number;
     ballsPerOver: number;

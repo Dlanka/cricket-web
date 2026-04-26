@@ -179,14 +179,14 @@ type RawBracketRound = {
 
 type RawBracketResponse = {
   tournamentId?: string;
-  tournamentType?: "LEAGUE" | "KNOCKOUT" | "LEAGUE_KNOCKOUT";
+  tournamentType?: "LEAGUE" | "KNOCKOUT" | "LEAGUE_KNOCKOUT" | "SERIES";
   rounds?: RawBracketRound[];
 };
 
 type RawFixturesViewResponse = {
   version?: number;
   tournamentId?: string;
-  tournamentType?: "LEAGUE" | "KNOCKOUT" | "LEAGUE_KNOCKOUT";
+  tournamentType?: "LEAGUE" | "KNOCKOUT" | "LEAGUE_KNOCKOUT" | "SERIES";
   stageStatus?: {
     league?: "PENDING" | "ACTIVE" | "COMPLETED" | string;
     knockout?: "PENDING" | "ACTIVE" | "COMPLETED" | string;

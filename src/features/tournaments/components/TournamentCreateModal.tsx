@@ -40,6 +40,8 @@ export const TournamentCreateModal = ({ isOpen, onClose }: Props) => {
       oversPerInnings: 20,
       ballsPerOver: 6,
       qualificationCount: 4,
+      seriesTotalMatches: 5,
+      seriesWinsToClinch: 3,
     },
   });
   const selectedType = watch("type") as TournamentType | undefined;
@@ -50,11 +52,14 @@ export const TournamentCreateModal = ({ isOpen, onClose }: Props) => {
       "Matches are direct elimination rounds. Winners move forward until the final.",
     LEAGUE_KNOCKOUT:
       "League stage is played first, then top teams advance to knockout and final.",
+    SERIES:
+      "Two teams play multiple matches until one side reaches the wins-to-clinch target.",
   };
   const tournamentTypeOptions = [
     { value: "LEAGUE", label: "League" },
     { value: "KNOCKOUT", label: "Knockout" },
     { value: "LEAGUE_KNOCKOUT", label: "League + Knockout" },
+    { value: "SERIES", label: "Series (Best of)" },
   ];
   const qualificationOptions = [
     { value: "2", label: "Top 2 teams" },
@@ -77,6 +82,15 @@ export const TournamentCreateModal = ({ isOpen, onClose }: Props) => {
       parsed.qualificationCount !== undefined
     ) {
       payload.rules = { qualificationCount: parsed.qualificationCount };
+    }
+
+    if (parsed.type === "SERIES") {
+      payload.rules = {
+        series: {
+          totalMatches: parsed.seriesTotalMatches ?? 5,
+          winsToClinch: parsed.seriesWinsToClinch ?? 3,
+        },
+      };
     }
 
     try {
@@ -197,6 +211,33 @@ export const TournamentCreateModal = ({ isOpen, onClose }: Props) => {
               })}
             />
           </FormGroup>
+        ) : null}
+
+        {selectedType === "SERIES" ? (
+          <div className="grid gap-4 sm:grid-cols-2">
+            <FormGroup
+              label="Total matches"
+              hint="Maximum number of matches in the series."
+              error={errors.seriesTotalMatches?.message}
+            >
+              <InputField
+                type="number"
+                min={1}
+                {...register("seriesTotalMatches", { valueAsNumber: true })}
+              />
+            </FormGroup>
+            <FormGroup
+              label="Wins to clinch"
+              hint="First team to this many wins becomes champion."
+              error={errors.seriesWinsToClinch?.message}
+            >
+              <InputField
+                type="number"
+                min={1}
+                {...register("seriesWinsToClinch", { valueAsNumber: true })}
+              />
+            </FormGroup>
+          </div>
         ) : null}
 
         <FormGroup

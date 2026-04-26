@@ -19,6 +19,7 @@ const typeLabelMap: Record<TournamentType, string> = {
   LEAGUE: "League",
   KNOCKOUT: "Knockout",
   LEAGUE_KNOCKOUT: "League + Knockout",
+  SERIES: "Series (Best of)",
 };
 
 const formatDeleteSummary = (

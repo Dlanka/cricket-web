@@ -61,7 +61,8 @@ export const TeamsByTournamentPage = () => {
   const canReorderTeams =
     canEdit &&
     (tournamentQuery.data?.type === "KNOCKOUT" ||
-      tournamentQuery.data?.type === "LEAGUE_KNOCKOUT");
+      tournamentQuery.data?.type === "LEAGUE_KNOCKOUT" ||
+      tournamentQuery.data?.type === "SERIES");
 
   const handleDeleteTeam = async (team: Team) => {
     if (!window.confirm(`Delete team "${team.name}"? This action cannot be undone.`)) {

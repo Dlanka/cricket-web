@@ -142,6 +142,7 @@ export const TournamentDefaultsSettingsSection = () => {
               { label: "League", value: "LEAGUE" },
               { label: "Knockout", value: "KNOCKOUT" },
               { label: "League + Knockout", value: "LEAGUE_KNOCKOUT" },
+              { label: "Series (Best of)", value: "SERIES" },
             ]}
           />
         </FormGroup>

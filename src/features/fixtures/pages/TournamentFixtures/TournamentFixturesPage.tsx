@@ -208,6 +208,8 @@ export const TournamentFixturesPage = () => {
             oversPerInnings: tournamentQuery.data?.oversPerInnings,
             ballsPerOver: tournamentQuery.data?.ballsPerOver,
             qualificationCount: tournamentQuery.data?.rules?.qualificationCount,
+            seriesTotalMatches: tournamentQuery.data?.rules?.series?.totalMatches,
+            seriesWinsToClinch: tournamentQuery.data?.rules?.series?.winsToClinch,
           }}
           onClose={() => setIsConfigModalOpen(false)}
           onSubmit={handleGenerateWithConfig}

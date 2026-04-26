@@ -22,6 +22,8 @@ type Props = {
     oversPerInnings?: number;
     ballsPerOver?: number;
     qualificationCount?: number;
+    seriesTotalMatches?: number;
+    seriesWinsToClinch?: number;
   };
   onClose: () => void;
   onSubmit: (payload: TournamentConfigInput) => Promise<void>;
@@ -31,7 +33,7 @@ const defaultType: TournamentType = "LEAGUE";
 
 const schema = z
   .object({
-    type: z.enum(["LEAGUE", "KNOCKOUT", "LEAGUE_KNOCKOUT"]),
+    type: z.enum(["LEAGUE", "KNOCKOUT", "LEAGUE_KNOCKOUT", "SERIES"]),
     oversPerInnings: z.coerce
       .number()
       .int()
@@ -41,6 +43,8 @@ const schema = z
       .int()
       .positive("Balls per over must be greater than 0."),
     qualificationCount: z.enum(["2", "4"]).optional(),
+    seriesTotalMatches: z.coerce.number().int().min(1).optional(),
+    seriesWinsToClinch: z.coerce.number().int().min(1).optional(),
   })
   .superRefine((value, ctx) => {
     if (value.type === "LEAGUE_KNOCKOUT" && !value.qualificationCount) {
@@ -57,6 +61,34 @@ const schema = z
         path: ["qualificationCount"],
         message: "Qualification count is only valid for League + Knockout.",
       });
+    }
+
+    if (value.type === "SERIES") {
+      if (!value.seriesTotalMatches) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["seriesTotalMatches"],
+          message: "Total matches is required for Series.",
+        });
+      }
+      if (!value.seriesWinsToClinch) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["seriesWinsToClinch"],
+          message: "Wins to clinch is required for Series.",
+        });
+      }
+      if (
+        value.seriesTotalMatches !== undefined &&
+        value.seriesWinsToClinch !== undefined &&
+        value.seriesWinsToClinch > value.seriesTotalMatches
+      ) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["seriesWinsToClinch"],
+          message: "Wins to clinch cannot exceed total matches.",
+        });
+      }
     }
   });
 
@@ -86,6 +118,8 @@ export const GenerateFixturesConfigModal = ({
         initialValues.qualificationCount === 4
           ? String(initialValues.qualificationCount) as "2" | "4"
           : "4",
+      seriesTotalMatches: initialValues.seriesTotalMatches ?? 5,
+      seriesWinsToClinch: initialValues.seriesWinsToClinch ?? 3,
     },
   });
 
@@ -100,11 +134,13 @@ export const GenerateFixturesConfigModal = ({
   );
   const teamsCountValue = teamsCount ?? 0;
   const isTeamsInsufficient = teamsCountValue < 2;
+  const isSeriesTeamsInvalid = type === "SERIES" && teamsCountValue !== 2;
   const tournamentTypeOptions = useMemo(
     () => [
       { value: "LEAGUE", label: "League" },
       { value: "KNOCKOUT", label: "Knockout" },
       { value: "LEAGUE_KNOCKOUT", label: "League + Knockout" },
+      { value: "SERIES", label: "Series (Best of)" },
     ],
     [],
   );
@@ -132,6 +168,25 @@ export const GenerateFixturesConfigModal = ({
       form.setError("qualificationCount", {
         type: "manual",
         message: "Qualification count is only valid for League + Knockout.",
+      });
+      return;
+    }
+    if (
+      values.type === "SERIES" &&
+      values.seriesTotalMatches &&
+      values.seriesWinsToClinch &&
+      values.seriesWinsToClinch > values.seriesTotalMatches
+    ) {
+      form.setError("seriesWinsToClinch", {
+        type: "manual",
+        message: "Wins to clinch cannot exceed total matches.",
+      });
+      return;
+    }
+    if (values.type === "SERIES" && teamsCountValue !== 2) {
+      form.setError("root.serverError", {
+        type: "manual",
+        message: "Series requires exactly 2 teams.",
       });
       return;
     }
@@ -170,6 +225,16 @@ export const GenerateFixturesConfigModal = ({
         ? {
             rules: {
               qualificationCount: qualificationCount ?? 2,
+            },
+          }
+        : {}),
+      ...(values.type === "SERIES"
+        ? {
+            rules: {
+              series: {
+                totalMatches: values.seriesTotalMatches ?? 5,
+                winsToClinch: values.seriesWinsToClinch ?? 3,
+              },
             },
           }
         : {}),
@@ -300,7 +365,7 @@ export const GenerateFixturesConfigModal = ({
             type="submit"
             form={formId}
             size="sm"
-            disabled={isSubmitting || isLocked || isTeamsInsufficient}
+            disabled={isSubmitting || isLocked || isTeamsInsufficient || isSeriesTeamsInvalid}
           >
             {isSubmitting ? "Generating..." : "Save & generate"}
           </Button>
@@ -322,6 +387,11 @@ export const GenerateFixturesConfigModal = ({
         {isTeamsInsufficient ? (
           <div className="rounded-xl border border-warning/35 bg-warning-container px-3 py-2 text-sm text-on-warning-container">
             At least 2 teams are required to generate fixtures.
+          </div>
+        ) : null}
+        {isSeriesTeamsInvalid ? (
+          <div className="rounded-xl border border-warning/35 bg-warning-container px-3 py-2 text-sm text-on-warning-container">
+            Series format requires exactly 2 teams.
           </div>
         ) : null}
 
@@ -354,6 +424,35 @@ export const GenerateFixturesConfigModal = ({
               {...form.register("qualificationCount")}
             />
           </FormGroup>
+        ) : null}
+
+        {type === "SERIES" ? (
+          <div className="grid gap-4 sm:grid-cols-2">
+            <FormGroup
+              label="Total matches"
+              hint="Maximum number of matches in the series."
+              error={form.formState.errors.seriesTotalMatches?.message}
+            >
+              <InputField
+                type="number"
+                min={1}
+                disabled={isSubmitting || isLocked}
+                {...form.register("seriesTotalMatches", { valueAsNumber: true })}
+              />
+            </FormGroup>
+            <FormGroup
+              label="Wins to clinch"
+              hint="First team to this many wins becomes champion."
+              error={form.formState.errors.seriesWinsToClinch?.message}
+            >
+              <InputField
+                type="number"
+                min={1}
+                disabled={isSubmitting || isLocked}
+                {...form.register("seriesWinsToClinch", { valueAsNumber: true })}
+              />
+            </FormGroup>
+          </div>
         ) : null}
 
         <FormGroup
