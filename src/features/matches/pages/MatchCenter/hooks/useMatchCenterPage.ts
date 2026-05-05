@@ -11,6 +11,7 @@ import { useMatchScoreQuery } from "@/features/scoring/hooks/useMatchScoreQuery"
 import { useMatchQuery } from "@/features/matches/hooks/useMatchQuery";
 import { useStartMatchMutation } from "@/features/matches/hooks/useStartMatchMutation";
 import { useUpdateMatchConfigMutation } from "@/features/matches/hooks/useUpdateMatchConfigMutation";
+import { useUpdateMatchTimeConfigMutation } from "@/features/matches/hooks/useUpdateMatchTimeConfigMutation";
 import { useSetMatchTossMutation } from "@/features/matches/hooks/useSetMatchTossMutation";
 import { useResolveMatchTieMutation } from "@/features/matches/hooks/useResolveMatchTieMutation";
 import { useStartSuperOverMutation } from "@/features/matches/hooks/useStartSuperOverMutation";
@@ -87,6 +88,12 @@ export const useMatchCenterPage = ({
   const [ballsPerOverDraft, setBallsPerOverDraft] = useState<string | null>(
     null,
   );
+  const [totalMatchMinutesDraft, setTotalMatchMinutesDraft] = useState<
+    string | null
+  >(null);
+  const [splitByInningsDraft, setSplitByInningsDraft] = useState<
+    boolean | null
+  >(null);
 
   const matchQuery = useMatchQuery(matchId);
   const rosterQuery = useMatchRosterQuery(matchId);
@@ -99,6 +106,10 @@ export const useMatchCenterPage = ({
   const tournamentId = tournamentIdParam ?? match?.tournamentId ?? "";
 
   const updateConfigMutation = useUpdateMatchConfigMutation(matchId, tournamentId);
+  const updateTimeConfigMutation = useUpdateMatchTimeConfigMutation(
+    matchId,
+    tournamentId,
+  );
   const setTossMutation = useSetMatchTossMutation(matchId, tournamentId);
   const resolveTieMutation = useResolveMatchTieMutation(matchId, tournamentId);
   const startSuperOverMutation = useStartSuperOverMutation(matchId, tournamentId);
@@ -118,15 +129,27 @@ export const useMatchCenterPage = ({
     oversPerInningsDraft ?? String(match?.oversPerInnings ?? "");
   const ballsPerOverInput =
     ballsPerOverDraft ?? String(match?.ballsPerOver ?? "");
+  const totalMatchMinutesInput =
+    totalMatchMinutesDraft ??
+    String(match?.timeConfig?.totalMatchMinutes ?? 90);
+  const splitByInningsInput =
+    splitByInningsDraft ?? Boolean(match?.timeConfig?.splitByInnings);
   const setOversPerInningsInput = (value: string) =>
     setOversPerInningsDraft(value);
   const setBallsPerOverInput = (value: string) => setBallsPerOverDraft(value);
+  const setTotalMatchMinutesInput = (value: string) =>
+    setTotalMatchMinutesDraft(value);
+  const setSplitByInningsInput = (value: boolean) =>
+    setSplitByInningsDraft(value);
 
   const isScheduled = match?.status === "SCHEDULED";
   const hasConfigChanges = Boolean(
     match &&
       (Number(oversPerInningsInput) !== match.oversPerInnings ||
-        Number(ballsPerOverInput) !== match.ballsPerOver),
+        Number(ballsPerOverInput) !== match.ballsPerOver ||
+        Number(totalMatchMinutesInput) !==
+          (match.timeConfig?.totalMatchMinutes ?? 90) ||
+        splitByInningsInput !== Boolean(match.timeConfig?.splitByInnings)),
   );
   const isConfigInputDisabled =
     !canEditConfig ||
@@ -160,21 +183,32 @@ export const useMatchCenterPage = ({
       if (canEditConfig && hasConfigChanges) {
         const nextOvers = Number(oversPerInningsInput);
         const nextBalls = Number(ballsPerOverInput);
+        const nextTotalMatchMinutes = Number(totalMatchMinutesInput);
 
         if (
           !Number.isInteger(nextOvers) ||
           nextOvers <= 0 ||
           !Number.isInteger(nextBalls) ||
-          nextBalls <= 0
+          nextBalls <= 0 ||
+          !Number.isInteger(nextTotalMatchMinutes) ||
+          nextTotalMatchMinutes <= 0
         ) {
-          setConfigError("Overs per innings and balls per over must be positive integers.");
+          setConfigError(
+            "Overs per innings, balls per over and total match minutes must be positive integers.",
+          );
           return;
         }
 
-        await updateConfigMutation.mutateAsync({
-          oversPerInnings: nextOvers,
-          ballsPerOver: nextBalls,
-        });
+        await Promise.all([
+          updateConfigMutation.mutateAsync({
+            oversPerInnings: nextOvers,
+            ballsPerOver: nextBalls,
+          }),
+          updateTimeConfigMutation.mutateAsync({
+            totalMatchMinutes: nextTotalMatchMinutes,
+            splitByInnings: splitByInningsInput,
+          }),
+        ]);
       }
 
       await startMutation.mutateAsync(payload);
@@ -342,8 +376,8 @@ export const useMatchCenterPage = ({
           ) {
             const fallbackMessage =
               normalizedPath === "teamA.bowlerId" || normalizedPath === "teamB.bowlerId"
-                ? "Selected bowler must belong to opposition Playing XI."
-                : "Player not in Playing XI for this team.";
+                ? "Selected bowler must belong to opposition Playing Squad."
+                : "Player not in Playing Squad for this team.";
             nextFieldErrors[normalizedPath] = issue.message || fallbackMessage;
           }
         }
@@ -351,14 +385,14 @@ export const useMatchCenterPage = ({
           setStartSuperOverFieldErrors(nextFieldErrors);
         } else {
           setStartSuperOverError(
-            "One or more selected players are invalid for Super Over. Re-select from Playing XI.",
+            "One or more selected players are invalid for Super Over. Re-select from Playing Squad.",
           );
         }
         return false;
       }
       if (normalized.code === "match.bowler_invalid") {
         setStartSuperOverError(
-          "Selected bowler must belong to opposition Playing XI for that batting side.",
+          "Selected bowler must belong to opposition Playing Squad for that batting side.",
         );
         return false;
       }
@@ -415,15 +449,22 @@ export const useMatchCenterPage = ({
     isConfigInputDisabled,
     oversPerInningsInput,
     ballsPerOverInput,
+    totalMatchMinutesInput,
+    splitByInningsInput,
     setOversPerInningsInput,
     setBallsPerOverInput,
+    setTotalMatchMinutesInput,
+    setSplitByInningsInput,
     handleSaveToss,
     handleResolveTie,
     handleStartSuperOver,
     refreshRosterData,
     handleStart,
     isStartSubmitting:
-      startMutation.isPending || updateConfigMutation.isPending || setTossMutation.isPending,
+      startMutation.isPending ||
+      updateConfigMutation.isPending ||
+      updateTimeConfigMutation.isPending ||
+      setTossMutation.isPending,
     isTossSubmitting: setTossMutation.isPending,
     isResolveTieSubmitting: resolveTieMutation.isPending,
     isStartSuperOverSubmitting: startSuperOverMutation.isPending,

@@ -39,7 +39,20 @@ const normalizeTournamentPatch = (
     const rawValue = next.qualificationCount;
     delete next.qualificationCount;
     if (typeof rawValue === "number" && Number.isFinite(rawValue)) {
-      next.rules = { qualificationCount: rawValue };
+      next.rules = {
+        ...(typeof next.rules === "object" && next.rules ? next.rules : {}),
+        qualificationCount: rawValue,
+      };
+    }
+  }
+  if ("includeThirdPlaceMatch" in next) {
+    const rawValue = next.includeThirdPlaceMatch;
+    delete next.includeThirdPlaceMatch;
+    if (typeof rawValue === "boolean") {
+      next.rules = {
+        ...(typeof next.rules === "object" && next.rules ? next.rules : {}),
+        includeThirdPlaceMatch: rawValue,
+      };
     }
   }
 
@@ -93,6 +106,7 @@ export const TournamentEditModal = ({
       oversPerInnings: tournament.oversPerInnings ?? 20,
       ballsPerOver: tournament.ballsPerOver ?? 6,
       qualificationCount: tournament.rules?.qualificationCount ?? 4,
+      includeThirdPlaceMatch: tournament.rules?.includeThirdPlaceMatch ?? false,
       seriesTotalMatches: tournament.rules?.series?.totalMatches ?? 5,
       seriesWinsToClinch: tournament.rules?.series?.winsToClinch ?? 3,
       status: tournament.status ?? "DRAFT",
@@ -275,19 +289,35 @@ export const TournamentEditModal = ({
         ) : null}
 
         {selectedType === "LEAGUE_KNOCKOUT" ? (
-          <FormGroup
-            label="Teams advancing to knockout"
-            hint="Used only for League + Knockout format."
-            error={errors.qualificationCount?.message}
-          >
-            <SelectField
-              options={qualificationOptions}
-              {...register("qualificationCount", {
-                setValueAs: (value) =>
-                  value === "" || value === null ? undefined : Number(value),
-              })}
-            />
-          </FormGroup>
+          <div className="space-y-4">
+            <FormGroup
+              label="Teams advancing to knockout"
+              hint="Used only for League + Knockout format."
+              error={errors.qualificationCount?.message}
+            >
+              <SelectField
+                options={qualificationOptions}
+                {...register("qualificationCount", {
+                  setValueAs: (value) =>
+                    value === "" || value === null ? undefined : Number(value),
+                })}
+              />
+            </FormGroup>
+            <FormGroup
+              label="3rd-place playoff"
+              hint="If exactly 4 teams: direct Final (1 vs 2) + Third-place (3 vs 4). If more than 4 teams: Third-place is between semifinal losers."
+              error={errors.includeThirdPlaceMatch?.message}
+            >
+              <label className="inline-flex items-center gap-2 text-sm text-on-surface">
+                <input
+                  type="checkbox"
+                  className="h-4 w-4 cursor-pointer"
+                  {...register("includeThirdPlaceMatch")}
+                />
+                Enable 2nd runners-up match
+              </label>
+            </FormGroup>
+          </div>
         ) : null}
         {selectedType === "SERIES" ? (
           <div className="grid gap-4 sm:grid-cols-2">

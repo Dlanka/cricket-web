@@ -88,7 +88,7 @@ describe("roster.service", () => {
         ok: false,
         error: {
           code: "match.roster_size_invalid",
-          message: "At most 11 players can be selected.",
+          message: "At least 1 player must be selected.",
         },
       },
     });
@@ -96,10 +96,10 @@ describe("roster.service", () => {
     await expect(
       setRoster("match-1", {
         teamId: "team-a",
-        playingPlayerIds: Array.from({ length: 12 }, (_, index) => `p${index}`),
+        playingPlayerIds: [],
       }),
     ).rejects.toMatchObject({
-      message: "At most 11 players can be selected.",
+      message: "At least 1 player must be selected.",
       details: {
         error: {
           code: "match.roster_size_invalid",

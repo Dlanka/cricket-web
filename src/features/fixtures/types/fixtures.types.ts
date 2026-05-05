@@ -17,7 +17,7 @@ export type MatchItem = {
   tournamentId: string;
   teamAId?: string | null;
   teamBId?: string | null;
-  stage: "LEAGUE" | "R1" | "QF" | "SF" | "FINAL";
+  stage: "LEAGUE" | "R1" | "QF" | "SF" | "THIRD_PLACE" | "FINAL";
   roundNumber?: number | null;
   teamA: TeamBrief;
   teamB: TeamBrief | null;
@@ -43,7 +43,7 @@ export type GenerateFixturesInput = {
   orderedTeamIds?: string[];
 };
 
-export type BracketStage = "R1" | "QF" | "SF" | "FINAL";
+export type BracketStage = "R1" | "QF" | "SF" | "THIRD_PLACE" | "FINAL";
 
 export type BracketFixture = {
   slot: number;

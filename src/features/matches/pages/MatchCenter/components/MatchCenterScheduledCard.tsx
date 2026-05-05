@@ -16,8 +16,12 @@ type Props = {
   isConfigInputDisabled: boolean;
   oversPerInningsInput: string;
   ballsPerOverInput: string;
+  totalMatchMinutesInput: string;
+  splitByInningsInput: boolean;
   setOversPerInningsInput: (value: string) => void;
   setBallsPerOverInput: (value: string) => void;
+  setTotalMatchMinutesInput: (value: string) => void;
+  setSplitByInningsInput: (value: boolean) => void;
   configError: string | null;
   submitError: string | null;
   teamAPlaying: PlayerOption[];
@@ -34,8 +38,12 @@ export const MatchCenterScheduledCard = ({
   isConfigInputDisabled,
   oversPerInningsInput,
   ballsPerOverInput,
+  totalMatchMinutesInput,
+  splitByInningsInput,
   setOversPerInningsInput,
   setBallsPerOverInput,
+  setTotalMatchMinutesInput,
+  setSplitByInningsInput,
   configError,
   submitError,
   teamAPlaying,
@@ -105,6 +113,53 @@ export const MatchCenterScheduledCard = ({
                     <p className="text-xs uppercase tracking-widest">Balls per over</p>
                     <p className="mt-1 text-base font-semibold text-on-surface">
                       {match.ballsPerOver}
+                    </p>
+                  </>
+                )}
+              </div>
+              <div>
+                {canEditConfig ? (
+                  <FormGroup label="Total match minutes">
+                    <div className="mt-1 flex items-center gap-2">
+                      <InputField
+                        type="number"
+                        min={1}
+                        value={totalMatchMinutesInput}
+                        disabled={isConfigInputDisabled}
+                        onChange={(event) => setTotalMatchMinutesInput(event.target.value)}
+                        className="mt-0 w-24"
+                      />
+                      <span className="text-base font-semibold text-on-surface">minutes</span>
+                    </div>
+                  </FormGroup>
+                ) : (
+                  <>
+                    <p className="text-xs uppercase tracking-widest">Total match minutes</p>
+                    <p className="mt-1 text-base font-semibold text-on-surface">
+                      {match.timeConfig?.totalMatchMinutes ?? 90}
+                    </p>
+                  </>
+                )}
+              </div>
+              <div>
+                {canEditConfig ? (
+                  <FormGroup label="Timer target">
+                    <label className="mt-1 flex cursor-pointer items-center gap-2 text-on-surface">
+                      <input
+                        type="checkbox"
+                        className="size-4 accent-primary"
+                        checked={splitByInningsInput}
+                        disabled={isConfigInputDisabled}
+                        onChange={(event) => setSplitByInningsInput(event.target.checked)}
+                      />
+                      Split by innings
+                    </label>
+                  </FormGroup>
+                ) : (
+                  <>
+                    <p className="text-xs uppercase tracking-widest">Timer target</p>
+                    <p className="mt-1 text-base font-semibold text-on-surface">
+                      {match.timeConfig?.splitByInnings ? "Split by innings" : "Full match"}
                     </p>
                   </>
                 )}

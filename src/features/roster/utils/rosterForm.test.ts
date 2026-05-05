@@ -3,7 +3,6 @@ import {
   applyRosterToggle,
   getSelectionError,
   mapRosterErrorMessage,
-  MAX_ROSTER_PLAYERS,
   uniqueIds,
 } from "@/features/roster/utils/rosterForm";
 
@@ -12,23 +11,17 @@ describe("rosterForm helpers", () => {
     expect(getSelectionError(0)).toBe("Select at least 1 player.");
   });
 
-  it("returns validation error when selected count exceeds 11", () => {
-    expect(getSelectionError(MAX_ROSTER_PLAYERS + 1)).toBe(
-      "You can select up to 11 players only.",
-    );
-  });
-
-  it("prevents selecting 12th player", () => {
-    const playingIds = Array.from({ length: MAX_ROSTER_PLAYERS }, (_, index) => `p${index}`);
+  it("allows selecting more than 11 players", () => {
     const state = {
-      playingIds,
+      playingIds: Array.from({ length: 12 }, (_, index) => `p${index}`),
       captainId: "p0",
       keeperId: "p1",
     };
 
-    const next = applyRosterToggle(state, "p11");
+    const next = applyRosterToggle(state, "p12");
 
-    expect(next.playingIds).toEqual(playingIds);
+    expect(next.playingIds).toHaveLength(13);
+    expect(next.playingIds).toContain("p12");
   });
 
   it("auto-clears captain/keeper when unselected", () => {
@@ -52,7 +45,7 @@ describe("rosterForm helpers", () => {
     };
 
     expect(mapRosterErrorMessage(error, "fallback")).toBe(
-      "Roster must contain between 1 and 11 players.",
+      "Roster must contain at least 1 player.",
     );
   });
 

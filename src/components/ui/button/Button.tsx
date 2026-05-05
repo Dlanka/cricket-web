@@ -4,7 +4,7 @@ import { Link } from "@tanstack/react-router";
 import * as LucideIcons from "lucide-react";
 
 const buttonStyles = tv({
-  base: "font-display inline-flex cursor-pointer items-center justify-center gap-2 text-sm font-semibold transition duration-200 disabled:cursor-not-allowed disabled:opacity-70",
+  base: "font-display inline-flex cursor-pointer items-center justify-center gap-2 text-sm font-semibold transition duration-200 disabled:cursor-not-allowed disabled:opacity-55",
   variants: {
     shape: {
       square: "rounded-lg",
@@ -12,9 +12,9 @@ const buttonStyles = tv({
     },
     appearance: {
       filled: "shadow-lg transition hover:-translate-y-0.5",
-      tonal: "shadow-sm",
-      soft: "border",
-      outline: "border",
+      tonal: "border shadow-sm hover:-translate-y-px",
+      soft: "border shadow-sm hover:-translate-y-px",
+      outline: "border hover:-translate-y-px",
       standard: "bg-transparent",
     },
     color: {
@@ -80,32 +80,38 @@ const buttonStyles = tv({
     {
       appearance: "tonal",
       color: "primary",
-      className: "bg-primary-container text-on-primary-container",
+      className:
+        "border-primary/45 bg-primary-container text-on-primary-container hover:border-primary/65 hover:shadow-primary/20",
     },
     {
       appearance: "tonal",
       color: "secondary",
-      className: "bg-secondary-container text-on-secondary-container",
+      className:
+        "border-secondary/45 bg-secondary-container text-on-secondary-container hover:border-secondary/65 hover:shadow-secondary/20",
     },
     {
       appearance: "tonal",
       color: "neutral",
-      className: "bg-surface-container-high text-on-surface",
+      className:
+        "border-outline bg-surface-container-high text-on-surface hover:border-outline-strong",
     },
     {
       appearance: "tonal",
       color: "error",
-      className: "bg-error-container text-on-error-container",
+      className:
+        "border-error/45 bg-error-container text-on-error-container hover:border-error/65 hover:shadow-error/20",
     },
     {
       appearance: "tonal",
       color: "success",
-      className: "bg-success-container text-on-success-container",
+      className:
+        "border-success/45 bg-success-container text-on-success-container hover:border-success/65 hover:shadow-success/20",
     },
     {
       appearance: "tonal",
       color: "warning",
-      className: "bg-warning-container text-on-warning-container",
+      className:
+        "border-warning/45 bg-warning-container text-on-warning-container hover:border-warning/65 hover:shadow-warning/20",
     },
     {
       appearance: "soft",

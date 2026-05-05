@@ -149,42 +149,42 @@ export const StartSuperOverModal = ({
                 if (!teamAIds.has(values.teamAStrikerId)) {
                   form.setError("teamAStrikerId", {
                     type: "validate",
-                    message: "Player not in Playing XI for this team.",
+                    message: "Player not in Playing Squad for this team.",
                   });
                   return;
                 }
                 if (!teamAIds.has(values.teamANonStrikerId)) {
                   form.setError("teamANonStrikerId", {
                     type: "validate",
-                    message: "Player not in Playing XI for this team.",
+                    message: "Player not in Playing Squad for this team.",
                   });
                   return;
                 }
                 if (!teamBIds.has(values.teamABowlerId)) {
                   form.setError("teamABowlerId", {
                     type: "validate",
-                    message: "Selected bowler must belong to opposition Playing XI.",
+                    message: "Selected bowler must belong to opposition Playing Squad.",
                   });
                   return;
                 }
                 if (!teamBIds.has(values.teamBStrikerId)) {
                   form.setError("teamBStrikerId", {
                     type: "validate",
-                    message: "Player not in Playing XI for this team.",
+                    message: "Player not in Playing Squad for this team.",
                   });
                   return;
                 }
                 if (!teamBIds.has(values.teamBNonStrikerId)) {
                   form.setError("teamBNonStrikerId", {
                     type: "validate",
-                    message: "Player not in Playing XI for this team.",
+                    message: "Player not in Playing Squad for this team.",
                   });
                   return;
                 }
                 if (!teamAIds.has(values.teamBBowlerId)) {
                   form.setError("teamBBowlerId", {
                     type: "validate",
-                    message: "Selected bowler must belong to opposition Playing XI.",
+                    message: "Selected bowler must belong to opposition Playing Squad.",
                   });
                   return;
                 }
@@ -245,7 +245,7 @@ export const StartSuperOverModal = ({
           </FormGroup>
           <FormGroup
             label={`${teamA.name} bowler`}
-            hint="Bowler (from opposition XI)"
+            hint="Bowler (from opposition Playing Squad)"
             error={form.formState.errors.teamABowlerId?.message}
           >
             <SelectField options={teamAOptions.bowler} {...form.register("teamABowlerId")} />
@@ -259,7 +259,7 @@ export const StartSuperOverModal = ({
           </FormGroup>
           <FormGroup
             label={`${teamB.name} bowler`}
-            hint="Bowler (from opposition XI)"
+            hint="Bowler (from opposition Playing Squad)"
             error={form.formState.errors.teamBBowlerId?.message}
           >
             <SelectField options={teamBOptions.bowler} {...form.register("teamBBowlerId")} />

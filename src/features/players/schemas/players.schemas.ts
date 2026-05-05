@@ -26,6 +26,7 @@ export const playerCreateSchema = z.object({
   battingStyle: optionalBattingStyle,
   bowlingStyle: optionalBowlingStyle,
   isWicketKeeper: z.boolean().optional(),
+  defaultInSquad: z.boolean().optional(),
 });
 
 export const playerUpdateSchema = z
@@ -35,6 +36,7 @@ export const playerUpdateSchema = z
     battingStyle: optionalBattingStyle,
     bowlingStyle: optionalBowlingStyle,
     isWicketKeeper: z.boolean().optional(),
+    defaultInSquad: z.boolean().optional(),
   })
   .refine((values) => Object.values(values).some((value) => value !== undefined), {
     message: "Update at least one field.",

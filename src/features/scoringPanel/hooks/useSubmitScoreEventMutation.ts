@@ -5,6 +5,7 @@ import type { MatchScoreResponse } from "../../scoring/types/scoring.types";
 import { scoringQueryKeys } from "../../scoring/constants/scoringQueryKeys";
 import { fixturesQueryKeys } from "../../fixtures/constants/fixturesQueryKeys";
 import { tournamentQueryKeys } from "../../tournaments/constants/tournamentQueryKeys";
+import { resumeMatchTimer } from "../../scoring/services/scoring.service";
 
 export const mergeScoreSnapshot = (
   previous: MatchScoreResponse | undefined,
@@ -46,7 +47,33 @@ export const useSubmitScoreEventMutation = (
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (payload: ScoreEventRequest) => submitScoreEvent(matchId, payload),
+    mutationFn: async (payload: ScoreEventRequest) => {
+      const cachedScore = queryClient.getQueryData<MatchScoreResponse>(
+        scoringQueryKeys.score(matchId),
+      );
+      const shouldAutoResumeTimer = cachedScore?.timer?.status === "PAUSED";
+
+      if (shouldAutoResumeTimer) {
+        try {
+          const timerResponse = await resumeMatchTimer(matchId);
+          queryClient.setQueryData<MatchScoreResponse | undefined>(
+            scoringQueryKeys.score(matchId),
+            (previous) =>
+              previous
+                ? {
+                    ...previous,
+                    timer: timerResponse.timer,
+                  }
+                : previous,
+          );
+        } catch {
+          // Do not block scoring actions if timer resume fails.
+        }
+      }
+
+      const data = await submitScoreEvent(matchId, payload);
+      return data;
+    },
     onSuccess: (data) => {
       if (data.score || data.current) {
         queryClient.setQueryData<MatchScoreResponse | undefined>(
@@ -70,6 +97,7 @@ export const useSubmitScoreEventMutation = (
         data.event.type === "wicket" ||
         data.event.type === "retire" ||
         data.event.type === "undo" ||
+        data.event.type === "correctBall" ||
         Boolean(data.inningsCompleted) ||
         Boolean(data.isMatchCompleted);
       if (shouldRefreshNextBatters) {

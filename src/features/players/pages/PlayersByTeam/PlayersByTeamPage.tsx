@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate, useParams } from "@tanstack/react-router";
 import { usePlayersByTeamQuery } from "../../hooks/usePlayersByTeamQuery";
 import { PlayersByTeamPageSkeleton } from "./PlayersByTeamPage.skeleton";
@@ -15,6 +16,7 @@ import { useAuthorization } from "@/features/authz/hooks/useAuthorization";
 import { TeamAccessLinksModal } from "@/features/teams/components/TeamAccessLinksModal";
 import { TournamentCard } from "@/features/tournament-ui/components/TournamentCard";
 import { PageHeader } from "@/shared/components/page/PageHeader";
+import { updatePlayer } from "../../services/players.service";
 
 export const PlayersByTeamPage = () => {
   const { tournamentId, teamId } = useParams({
@@ -22,8 +24,10 @@ export const PlayersByTeamPage = () => {
   });
   const navigate = useNavigate();
   const { data, isLoading, isError, error } = usePlayersByTeamQuery(teamId);
+  const queryClient = useQueryClient();
   const { data: team } = useTeamQuery(teamId);
   const deleteMutation = useDeletePlayerMutation(teamId);
+  const [isTogglingDefault, setIsTogglingDefault] = useState(false);
   const { isOpen, open, close } = useDisclosure();
   const {
     isOpen: isEditOpen,
@@ -59,6 +63,27 @@ export const PlayersByTeamPage = () => {
       const message =
         err instanceof Error ? err.message : "Unable to delete player.";
       toast.error(message);
+    }
+  };
+
+  const handleToggleDefaultSquad = async (player: Player) => {
+    try {
+      setIsTogglingDefault(true);
+      await updatePlayer(player.id, {
+        defaultInSquad: !Boolean(player.defaultInSquad),
+      });
+      queryClient.invalidateQueries({ queryKey: ["players", teamId] });
+      toast.success(
+        !player.defaultInSquad
+          ? "Added to default squad."
+          : "Removed from default squad.",
+      );
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Unable to update default squad.";
+      toast.error(message);
+    } finally {
+      setIsTogglingDefault(false);
     }
   };
 
@@ -117,6 +142,8 @@ export const PlayersByTeamPage = () => {
               setEditingPlayer(player);
               openEdit();
             }}
+            onToggleDefaultSquad={handleToggleDefaultSquad}
+            isTogglingDefault={isTogglingDefault}
           />
         ) : (
           <TournamentCard muted>

@@ -6,6 +6,8 @@ type Props = {
   currentBalls: number;
   ballsPerOver: number;
   resolvedOverBoundaryBalls?: number | null;
+  selectedBallSeq?: number | null;
+  onSelectBall?: (seq: number) => void;
   embedded?: boolean;
 };
 
@@ -14,6 +16,8 @@ export const OverHistoryPanel = ({
   currentBalls,
   ballsPerOver,
   resolvedOverBoundaryBalls,
+  selectedBallSeq = null,
+  onSelectBall,
   embedded = false,
 }: Props) => {
   const { data, isLoading, isError, error } = useInningsOversQuery(
@@ -33,10 +37,16 @@ export const OverHistoryPanel = ({
 
   const isBallDisplay = (display: string) => {
     const token = display.trim().toLowerCase();
+    const isPenalty =
+      token === "penalty" ||
+      token.startsWith("p+") ||
+      /^p-\d+$/i.test(token) ||
+      /^p\d+$/i.test(token);
     return (
       token !== "undo" &&
       token !== "retire" &&
-      !token.includes("swap")
+      !token.includes("swap") &&
+      !isPenalty
     );
   };
 
@@ -56,6 +66,10 @@ export const OverHistoryPanel = ({
   const effectiveOverBalls = effectiveOver
     ? effectiveOver.balls.filter((ball) => isBallDisplay(ball.display))
     : [];
+  const canSelectBalls =
+    !isResolvedBoundary &&
+    !isAwaitingBowlerChange &&
+    effectiveOver?.overNumber === latestOver?.overNumber;
 
   const getChipClassName = (display: string) => {
     const token = display.trim().toLowerCase();
@@ -123,12 +137,22 @@ export const OverHistoryPanel = ({
               <div className="flex flex-wrap gap-3">
                 {!isResolvedBoundary
                   ? effectiveOverBalls.map((ball) => (
-                      <span
+                      <button
+                        type="button"
                         key={ball.seq}
-                        className={`inline-flex h-9 w-9 items-center justify-center rounded-full border font-mono text-sm font-semibold ${getChipClassName(ball.display)}`}
+                        className={`inline-flex h-9 min-w-9 px-2 items-center justify-center rounded-full border font-mono text-sm font-semibold transition ${canSelectBalls ? "cursor-pointer" : "cursor-not-allowed opacity-70"} ${getChipClassName(ball.display)} ${
+                          selectedBallSeq === ball.seq
+                            ? "ring-2 ring-primary ring-offset-2 ring-offset-surface shadow-[0_0_0_2px_rgba(0,229,160,0.22)]"
+                            : ""
+                        }`}
+                        disabled={!canSelectBalls}
+                        onClick={() => {
+                          if (!canSelectBalls) return;
+                          onSelectBall?.(ball.seq);
+                        }}
                       >
                         {ball.display}
-                      </span>
+                      </button>
                     ))
                   : null}
                 {!isResolvedBoundary && !effectiveOverBalls.length ? (

@@ -40,6 +40,7 @@ export const TournamentCreateModal = ({ isOpen, onClose }: Props) => {
       oversPerInnings: 20,
       ballsPerOver: 6,
       qualificationCount: 4,
+      includeThirdPlaceMatch: false,
       seriesTotalMatches: 5,
       seriesWinsToClinch: 3,
     },
@@ -81,7 +82,10 @@ export const TournamentCreateModal = ({ isOpen, onClose }: Props) => {
       parsed.type === "LEAGUE_KNOCKOUT" &&
       parsed.qualificationCount !== undefined
     ) {
-      payload.rules = { qualificationCount: parsed.qualificationCount };
+      payload.rules = {
+        qualificationCount: parsed.qualificationCount,
+        includeThirdPlaceMatch: Boolean(parsed.includeThirdPlaceMatch),
+      };
     }
 
     if (parsed.type === "SERIES") {
@@ -198,19 +202,35 @@ export const TournamentCreateModal = ({ isOpen, onClose }: Props) => {
         </FormGroup>
 
         {selectedType === "LEAGUE_KNOCKOUT" ? (
-          <FormGroup
-            label="Teams advancing to knockout"
-            hint="Used only for League + Knockout format."
-            error={errors.qualificationCount?.message}
-          >
-            <SelectField
-              options={qualificationOptions}
-              {...register("qualificationCount", {
-                setValueAs: (value) =>
-                  value === "" || value == null ? undefined : Number(value),
-              })}
-            />
-          </FormGroup>
+          <div className="space-y-4">
+            <FormGroup
+              label="Teams advancing to knockout"
+              hint="Used only for League + Knockout format."
+              error={errors.qualificationCount?.message}
+            >
+              <SelectField
+                options={qualificationOptions}
+                {...register("qualificationCount", {
+                  setValueAs: (value) =>
+                    value === "" || value == null ? undefined : Number(value),
+                })}
+              />
+            </FormGroup>
+            <FormGroup
+              label="3rd-place playoff"
+              hint="If exactly 4 teams: direct Final (1 vs 2) + Third-place (3 vs 4). If more than 4 teams: Third-place is between semifinal losers."
+              error={errors.includeThirdPlaceMatch?.message}
+            >
+              <label className="inline-flex items-center gap-2 text-sm text-on-surface">
+                <input
+                  type="checkbox"
+                  className="h-4 w-4 cursor-pointer"
+                  {...register("includeThirdPlaceMatch")}
+                />
+                Enable 2nd runners-up match
+              </label>
+            </FormGroup>
+          </div>
         ) : null}
 
         {selectedType === "SERIES" ? (

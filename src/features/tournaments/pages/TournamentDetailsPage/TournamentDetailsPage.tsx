@@ -14,6 +14,8 @@ import { PageHeader } from "@/shared/components/page/PageHeader";
 import { TournamentStatusPill } from "@/features/tournament-ui/components/TournamentStatusPill";
 import { TournamentHeaderActions } from "../../components/TournamentHeaderActions";
 import type { TournamentType } from "../../types/tournamentTypes";
+import { useTournamentPlayerOfSeriesQuery } from "../../hooks/useTournamentPlayerOfSeriesQuery";
+import { useTournamentMatchesQuery } from "@/features/fixtures/hooks/useTournamentMatchesQuery";
 
 const typeLabelMap: Record<TournamentType, string> = {
   LEAGUE: "League",
@@ -56,6 +58,11 @@ export const TournamentDetailsPage = () => {
   const { tournamentId } = useParams({ from: "/tournaments/$tournamentId/" });
   const id = tournamentId;
   const { data, isLoading, isError, error } = useTournament(id);
+  const isCompleted = (data?.overview?.status ?? data?.status) === "COMPLETED";
+  const matchesQuery = useTournamentMatchesQuery(id, {
+    enabled: isCompleted,
+  });
+  const awardsQuery = useTournamentPlayerOfSeriesQuery(id, isCompleted);
   const teamsQuery = useTeamsByTournamentQuery(id);
   const {
     isOpen: isEditOpen,
@@ -97,6 +104,25 @@ export const TournamentDetailsPage = () => {
     }
   };
 
+  const finalMatch = matchesQuery.data?.find((match) => match.stage === "FINAL");
+  const finalWinnerTeamName = (() => {
+    if (
+      !finalMatch ||
+      finalMatch.status !== "COMPLETED" ||
+      !finalMatch.result?.winnerTeamId
+    ) {
+      return null;
+    }
+    const winnerTeamId = finalMatch.result.winnerTeamId;
+    const teamAId = finalMatch.teamAId ?? finalMatch.teamA?.id ?? null;
+    const teamBId = finalMatch.teamBId ?? finalMatch.teamB?.id ?? null;
+
+    if (winnerTeamId === teamAId) return finalMatch.teamA?.name ?? null;
+    if (winnerTeamId === teamBId) return finalMatch.teamB?.name ?? null;
+    return null;
+  })();
+  const canShowTournamentHonors = isCompleted && Boolean(finalWinnerTeamName);
+
   return (
     <div className="mx-auto w-full space-y-12">
       {isError ? (
@@ -133,6 +159,39 @@ export const TournamentDetailsPage = () => {
               </div>
             }
           />
+          {canShowTournamentHonors ? (
+            <section className="rounded-2xl border border-success/35 bg-success-container/50 px-6 py-5 shadow-surface-lg">
+              <p className="font-display text-xs font-bold uppercase tracking-[0.2em] text-on-success-container">
+                Tournament Honors
+              </p>
+              <div className="mt-3 grid gap-4 md:grid-cols-2">
+                <div className="rounded-xl border border-success/30 bg-surface/60 p-4">
+                  <p className="font-display text-xs font-bold uppercase tracking-widest text-on-surface-muted">
+                    Champions
+                  </p>
+                  <p className="mt-2 font-display text-2xl font-bold text-on-surface">
+                    {finalWinnerTeamName}
+                  </p>
+                </div>
+                <div className="rounded-xl border border-success/30 bg-surface/60 p-4">
+                  <p className="font-display text-xs font-bold uppercase tracking-widest text-on-surface-muted">
+                    Player of the Series
+                  </p>
+                  <p className="mt-2 font-display text-2xl font-bold text-on-surface">
+                    {awardsQuery.data?.winner
+                      ? `${awardsQuery.data.winner.name}${
+                          awardsQuery.data.winner.team
+                            ? ` (${awardsQuery.data.winner.team.shortName ?? awardsQuery.data.winner.team.name})`
+                            : ""
+                        }`
+                      : awardsQuery.isLoading
+                        ? "Loading..."
+                        : "TBD"}
+                  </p>
+                </div>
+              </div>
+            </section>
+          ) : null}
           <TournamentDetailsCard
             tournament={data}
             teamCount={teamsQuery.data?.length}

@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { RightSideModal } from "@/shared/components/modals/RightSideModal";
+import { CenterModal } from "@/shared/components/modals/CenterModal";
 import { Button } from "@/components/ui/button/Button";
 import { FormGroup } from "@/components/ui/form/FormGroup";
 import { SelectField } from "@/components/ui/form/SelectField";
@@ -43,7 +43,7 @@ export const NextBowlerModal = ({
   );
 
   return (
-    <RightSideModal
+    <CenterModal
       isOpen={isOpen}
       onClose={isSubmitting ? () => undefined : onClose}
       title="Select next bowler"
@@ -85,6 +85,6 @@ export const NextBowlerModal = ({
           />
         </FormGroup>
       </form>
-    </RightSideModal>
+    </CenterModal>
   );
 };

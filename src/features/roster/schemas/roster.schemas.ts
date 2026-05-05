@@ -5,8 +5,7 @@ export const setRosterSchema = z
     teamId: z.string().min(1),
     playingPlayerIds: z
       .array(z.string().min(1))
-      .min(1, "Select at least 1 player.")
-      .max(11, "You can select up to 11 players only."),
+      .min(1, "Select at least 1 player."),
     captainId: z.string().optional(),
     keeperId: z.string().optional(),
   })
@@ -17,7 +16,7 @@ export const setRosterSchema = z
     ) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: "Captain must be in playing XI.",
+        message: "Captain must be in playing squad.",
         path: ["captainId"],
       });
     }
@@ -27,7 +26,7 @@ export const setRosterSchema = z
     ) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: "Keeper must be in playing XI.",
+        message: "Keeper must be in playing squad.",
         path: ["keeperId"],
       });
     }

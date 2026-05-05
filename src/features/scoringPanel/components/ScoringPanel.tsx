@@ -1,16 +1,22 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
+import { Settings } from "lucide-react";
 import { Card } from "@/shared/components/card/Card";
+import { Button } from "@/components/ui/button/Button";
 import { normalizeApiError } from "@/shared/utils/apiErrors";
 import { useSubmitScoreEventMutation } from "../hooks/useSubmitScoreEventMutation";
 import { useMatchRosterQuery } from "../../roster/hooks/useMatchRosterQuery";
 import { usePlayersByTeamQuery } from "../../players/hooks/usePlayersByTeamQuery";
 import { useChangeCurrentBowlerMutation } from "../../scoring/hooks/useChangeCurrentBowlerMutation";
 import { useStartSecondInningsMutation } from "../../scoring/hooks/useStartSecondInningsMutation";
+import { useUpdateLiveMatchConfigMutation } from "../../scoring/hooks/useUpdateLiveMatchConfigMutation";
+import { useUpdateMatchTimeConfigMutation } from "../../scoring/hooks/useUpdateMatchTimeConfigMutation";
 import { useAvailableNextBattersQuery } from "../hooks/useAvailableNextBattersQuery";
 import type {
+  CorrectBallRequest,
   ExtraType,
+  PenaltyRequest,
   RetireRequest,
   RunValue,
   WicketEventRequest,
@@ -27,6 +33,8 @@ import { WicketToggle } from "./WicketToggle";
 import { applyExtraSelection, applyWicketToggle } from "./validation";
 import { NextBowlerModal } from "./NextBowlerModal";
 import { StartSecondInningsModal } from "./StartSecondInningsModal";
+import { MatchSettingsModal } from "./MatchSettingsModal";
+import { PenaltyRunsModal } from "./PenaltyRunsModal";
 
 type Props = {
   matchId: string;
@@ -40,6 +48,8 @@ type Props = {
   inningsNumber?: number;
   totalBallsPerOver: number;
   totalOvers: number;
+  totalMatchMinutes?: number | null;
+  splitByInnings?: boolean;
   currentBalls: number;
   inningsCompleted?: boolean;
   isMatchCompleted?: boolean;
@@ -47,6 +57,8 @@ type Props = {
   embedded?: boolean;
   showChangeBowlerButton?: boolean;
   onBowlerChangedAtBoundary?: (balls: number) => void;
+  selectedBallSeq?: number | null;
+  onClearSelectedBall?: () => void;
 };
 
 export const ScoringPanel = ({
@@ -61,6 +73,8 @@ export const ScoringPanel = ({
   inningsNumber,
   totalBallsPerOver,
   totalOvers,
+  totalMatchMinutes = null,
+  splitByInnings = false,
   currentBalls,
   inningsCompleted = false,
   isMatchCompleted = false,
@@ -68,13 +82,19 @@ export const ScoringPanel = ({
   embedded = false,
   showChangeBowlerButton = false,
   onBowlerChangedAtBoundary,
+  selectedBallSeq = null,
+  onClearSelectedBall,
 }: Props) => {
   const navigate = useNavigate();
   const { can } = useAuthorization();
   const canWriteScore = can("score.write");
   const canStartSecondInnings = can("match.start");
   const canChangeBowler = can("bowler.change");
-  const mutation = useSubmitScoreEventMutation(matchId, inningsId, tournamentId);
+  const mutation = useSubmitScoreEventMutation(
+    matchId,
+    inningsId,
+    tournamentId,
+  );
   const rosterQuery = useMatchRosterQuery(matchId);
   const currentBowlingTeamPlayersQuery = usePlayersByTeamQuery(bowlingTeamId);
   const currentBattingTeamPlayersQuery = usePlayersByTeamQuery(battingTeamId);
@@ -87,20 +107,41 @@ export const ScoringPanel = ({
   const [wicketModalOpen, setWicketModalOpen] = useState(false);
   const [retireModalOpen, setRetireModalOpen] = useState(false);
   const [nextBowlerModalOpen, setNextBowlerModalOpen] = useState(false);
-  const [startSecondInningsModalOpen, setStartSecondInningsModalOpen] = useState(false);
-  const [startSecondInningsError, setStartSecondInningsError] = useState<string | null>(null);
-  const [undoUnavailableReason, setUndoUnavailableReason] = useState<string | null>(null);
+  const [startSecondInningsModalOpen, setStartSecondInningsModalOpen] =
+    useState(false);
+  const [startSecondInningsError, setStartSecondInningsError] = useState<
+    string | null
+  >(null);
+  const [undoUnavailableReason, setUndoUnavailableReason] = useState<
+    string | null
+  >(null);
   const [nextBowlerId, setNextBowlerId] = useState<string>("");
   const [requiresNextBowler, setRequiresNextBowler] = useState(false);
   const [oversCompletedByServer, setOversCompletedByServer] = useState(false);
   const [resolvedOverBoundaryBalls, setResolvedOverBoundaryBalls] = useState<
     number | null
   >(null);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [penaltyOpen, setPenaltyOpen] = useState(false);
+  const [oversInput, setOversInput] = useState(String(totalOvers));
+  const [ballsPerOverInput, setBallsPerOverInput] = useState(
+    String(totalBallsPerOver),
+  );
+  const [totalMatchMinutesInput, setTotalMatchMinutesInput] = useState(
+    String(totalMatchMinutes ?? 90),
+  );
+  const [splitByInningsInput, setSplitByInningsInput] =
+    useState<boolean>(splitByInnings);
   const [runsWithWicket, setRunsWithWicket] = useState<RunValue>(0);
   const changeBowlerMutation = useChangeCurrentBowlerMutation(
     matchId,
     inningsId,
   );
+  const updateConfigMutation = useUpdateLiveMatchConfigMutation(
+    matchId,
+    inningsId,
+  );
+  const updateMatchTimeConfigMutation = useUpdateMatchTimeConfigMutation(matchId);
 
   const getChangeBowlerErrorMessage = (code?: string, fallback?: string) => {
     switch (code) {
@@ -157,6 +198,16 @@ export const ScoringPanel = ({
     resolvedOverBoundaryBalls,
   ]);
 
+  useEffect(() => {
+    setOversInput(String(totalOvers));
+    setBallsPerOverInput(String(totalBallsPerOver));
+  }, [totalOvers, totalBallsPerOver]);
+
+  useEffect(() => {
+    setTotalMatchMinutesInput(String(totalMatchMinutes ?? 90));
+    setSplitByInningsInput(splitByInnings);
+  }, [totalMatchMinutes, splitByInnings]);
+
   const getTeamPlayingIds = (teamId: string) =>
     rosterQuery.data?.teams
       .find((team) => team.teamId === teamId)
@@ -166,15 +217,18 @@ export const ScoringPanel = ({
   const currentBowlingPlayingIds = getTeamPlayingIds(bowlingTeamId);
   const currentBattingPlayingIds = getTeamPlayingIds(battingTeamId);
 
-  const bowlingPlayers = (currentBowlingTeamPlayersQuery.data ?? []).filter((player) =>
-    currentBowlingPlayingIds.includes(player.id),
+  const bowlingPlayers = (currentBowlingTeamPlayersQuery.data ?? []).filter(
+    (player) => currentBowlingPlayingIds.includes(player.id),
   );
-
-  const secondInningsBattingPlayers = (currentBowlingTeamPlayersQuery.data ?? [])
+  const secondInningsBattingPlayers = (
+    currentBowlingTeamPlayersQuery.data ?? []
+  )
     .filter((player) => currentBowlingPlayingIds.includes(player.id))
     .map((player) => ({ id: player.id, name: player.fullName }));
 
-  const secondInningsBowlingPlayers = (currentBattingTeamPlayersQuery.data ?? [])
+  const secondInningsBowlingPlayers = (
+    currentBattingTeamPlayersQuery.data ?? []
+  )
     .filter((player) => currentBattingPlayingIds.includes(player.id))
     .map((player) => ({ id: player.id, name: player.fullName }));
   const normalizeId = (value: string) => value.trim();
@@ -192,7 +246,11 @@ export const ScoringPanel = ({
     { id: string; name: string }[]
   >((acc, player) => {
     const id = normalizeId(player.playerId);
-    if (!id || currentActiveBatterIds.has(id) || acc.some((option) => option.id === id)) {
+    if (
+      !id ||
+      currentActiveBatterIds.has(id) ||
+      acc.some((option) => option.id === id)
+    ) {
       return acc;
     }
     acc.push({ id, name: player.fullName });
@@ -222,8 +280,30 @@ export const ScoringPanel = ({
       | { type: "swap" }
       | { type: "undo" }
       | RetireRequest
-      | WicketEventRequest,
+      | WicketEventRequest
+      | PenaltyRequest
+      | CorrectBallRequest,
   ) => {
+    const isCorrectBall = payload.type === "correctBall";
+    const correctionTargetSeq = isCorrectBall ? payload.targetSeq : null;
+    const correctionSummary = (() => {
+      if (!isCorrectBall) return null;
+      const replacement = payload.replacement;
+      if (!replacement) return null;
+      if (replacement.type === "run") return `${replacement.runs}`;
+      if (replacement.type === "extra") {
+        const label =
+          replacement.extraType === "wide"
+            ? "Wd"
+            : replacement.extraType === "noBall"
+              ? "Nb"
+              : replacement.extraType === "byes"
+                ? "B"
+                : "Lb";
+        return `${label}${replacement.additionalRuns ? `+${replacement.additionalRuns}` : ""}`;
+      }
+      return "W";
+    })();
     try {
       const result = await mutation.mutateAsync(payload);
       setUndoUnavailableReason(null);
@@ -244,6 +324,15 @@ export const ScoringPanel = ({
       ) {
         setRequiresNextBowler(true);
       }
+      if (
+        isCorrectBall &&
+        correctionTargetSeq != null &&
+        typeof correctionSummary === "string"
+      ) {
+        toast.success(
+          `Ball #${correctionTargetSeq} corrected to ${correctionSummary}.`,
+        );
+      }
       resetPanelState();
       return result;
     } catch (error) {
@@ -257,7 +346,8 @@ export const ScoringPanel = ({
         throw error;
       }
       if (normalized.code === "score.undo_blocked") {
-        const message = "Undo is blocked because next knockout round has already started.";
+        const message =
+          "Undo is blocked because next knockout round has already started.";
         if (payload.type === "undo") {
           setUndoUnavailableReason(message);
         }
@@ -274,6 +364,9 @@ export const ScoringPanel = ({
       }
       if (normalized.code === "match.overs_completed") {
         setOversCompletedByServer(true);
+      }
+      if (normalized.code === "score.correction_target_invalid") {
+        onClearSelectedBall?.();
       }
       toast.error(normalized.message || "Unable to submit event.");
       throw error;
@@ -294,14 +387,53 @@ export const ScoringPanel = ({
       return;
     }
     if (selectedExtraType) {
+      if (selectedBallSeq != null) {
+        await submitEvent({
+          type: "correctBall",
+          targetSeq: selectedBallSeq,
+          replacement: {
+            type: "extra",
+            extraType: selectedExtraType,
+            additionalRuns: runs,
+          },
+        });
+        onClearSelectedBall?.();
+      } else {
+        await submitEvent({
+          type: "extra",
+          extraType: selectedExtraType,
+          additionalRuns: runs,
+        });
+      }
+      return;
+    }
+    if (selectedBallSeq != null) {
       await submitEvent({
-        type: "extra",
-        extraType: selectedExtraType,
-        additionalRuns: runs,
+        type: "correctBall",
+        targetSeq: selectedBallSeq,
+        replacement: { type: "run", runs },
       });
+      onClearSelectedBall?.();
       return;
     }
     await submitEvent({ type: "run", runs });
+  };
+
+  const handleAddPenalty = async (payload: {
+    runs: number;
+    reason?: string;
+  }) => {
+    const runs = payload.runs;
+    if (!Number.isInteger(runs) || runs === 0) {
+      toast.error("Penalty runs must be a non-zero whole number.");
+      return;
+    }
+    await submitEvent({
+      type: "penalty",
+      runs,
+      reason: payload.reason,
+    });
+    setPenaltyOpen(false);
   };
 
   const handleExtraToggle = (extraType: ExtraType) => {
@@ -335,6 +467,47 @@ export const ScoringPanel = ({
     await submitEvent({ type: "swap" });
   };
 
+  const handleApplySettings = async () => {
+    const overs = Number(oversInput);
+    const ballsPerOver = Number(ballsPerOverInput);
+    const totalMatchMinutes = Number(totalMatchMinutesInput);
+    if (
+      !Number.isInteger(overs) ||
+      overs < 1 ||
+      !Number.isInteger(ballsPerOver) ||
+      ballsPerOver < 1 ||
+      !Number.isInteger(totalMatchMinutes) ||
+      totalMatchMinutes < 1
+    ) {
+      toast.error(
+        "Overs, balls per over, and total match minutes must be positive whole numbers.",
+      );
+      return;
+    }
+    const isBallsPerOverLocked = currentBalls > 0;
+    try {
+      await Promise.all([
+        updateConfigMutation.mutateAsync(
+          isBallsPerOverLocked
+            ? { oversPerInnings: overs }
+            : {
+                oversPerInnings: overs,
+                ballsPerOver,
+              },
+        ),
+        updateMatchTimeConfigMutation.mutateAsync({
+          totalMatchMinutes,
+          splitByInnings: splitByInningsInput,
+        }),
+      ]);
+      toast.success("Match settings updated.");
+      setSettingsOpen(false);
+    } catch (error) {
+      const normalized = normalizeApiError(error);
+      toast.error(normalized.message || "Unable to update match settings.");
+    }
+  };
+
   const wicketExtraType: WicketExtraType =
     selectedExtraType === "wide" || selectedExtraType === "noBall"
       ? selectedExtraType
@@ -344,9 +517,23 @@ export const ScoringPanel = ({
     <>
       <div className="space-y-6">
         <div>
-          <p className="font-display text-xs font-bold uppercase tracking-widest text-on-surface-muted">
-            Scoring panel
-          </p>
+          <div className="flex items-center justify-between gap-2">
+            <p className="font-display text-xs font-bold uppercase tracking-widest text-on-surface-muted">
+              Scoring panel
+            </p>
+            <button
+              type="button"
+              className="inline-flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg border border-outline text-on-surface-muted transition hover:border-outline-strong hover:text-on-surface disabled:cursor-not-allowed"
+              disabled={
+                mutation.isPending || inningsCompleted || isMatchCompleted
+              }
+              onClick={() => setSettingsOpen(true)}
+              aria-label="Open match settings"
+              title="Match settings"
+            >
+              <Settings className="h-4 w-4" />
+            </button>
+          </div>
         </div>
 
         {isOversCompleted ? (
@@ -387,17 +574,40 @@ export const ScoringPanel = ({
           <p className="font-display text-xs font-bold uppercase tracking-widest text-on-surface-muted">
             Runs
           </p>
-        <RunButtons
-          disabled={
-            mutation.isPending || controlsLocked
-          }
-          onRunClick={handleRunClick}
-        />
+          <RunButtons
+            disabled={mutation.isPending || controlsLocked}
+            onRunClick={handleRunClick}
+          />
         </div>
+
+        {selectedBallSeq != null ? (
+          <div className="rounded-lg border border-primary/35 bg-primary-container/60 px-3 py-2.5 text-xs text-on-primary-container">
+            <div className="flex items-center justify-between gap-2">
+              <p>
+                Editing ball <span className="font-semibold">#{selectedBallSeq}</span>.
+                Pick a new run/extra/wicket value.
+              </p>
+              <Button
+                type="button"
+                appearance="standard"
+                color="neutral"
+                size="xs"
+                uppercase
+                onClick={onClearSelectedBall}
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        ) : null}
 
         <ActionButtons
           showCompletedButton={isMatchCompleted}
-          undoDisabled={mutation.isPending || !canWriteScore || Boolean(undoUnavailableReason)}
+          undoDisabled={
+            mutation.isPending ||
+            !canWriteScore ||
+            Boolean(undoUnavailableReason)
+          }
           disabled={mutation.isPending || controlsLocked || !canWriteScore}
           showStartSecondInningsButton={showStartSecondInningsButton}
           startSecondInningsDisabled={
@@ -439,8 +649,26 @@ export const ScoringPanel = ({
             window.history.back();
           }}
         />
+        {inningsCompleted || isOversCompleted ? (
+          <div className="">
+            <Button
+              type="button"
+              appearance="outline"
+              color="warning"
+              size="sm"
+              uppercase
+              className="w-full justify-center"
+              disabled={mutation.isPending || isMatchCompleted}
+              onClick={() => setPenaltyOpen(true)}
+            >
+              Add Penalty Runs
+            </Button>
+          </div>
+        ) : null}
         {undoUnavailableReason ? (
-          <p className="text-xs text-on-warning-container">{undoUnavailableReason}</p>
+          <p className="text-xs text-on-warning-container">
+            {undoUnavailableReason}
+          </p>
         ) : null}
       </div>
 
@@ -456,7 +684,16 @@ export const ScoringPanel = ({
         }))}
         onClose={() => setWicketModalOpen(false)}
         onSubmit={async (payload) => {
-          await submitEvent(payload);
+          if (selectedBallSeq != null) {
+            await submitEvent({
+              type: "correctBall",
+              targetSeq: selectedBallSeq,
+              replacement: payload,
+            });
+            onClearSelectedBall?.();
+          } else {
+            await submitEvent(payload);
+          }
           setWicketModalOpen(false);
         }}
       />
@@ -518,6 +755,35 @@ export const ScoringPanel = ({
         onClose={() => setStartSecondInningsModalOpen(false)}
         onSubmit={handleStartSecondInnings}
       />
+
+      <MatchSettingsModal
+        isOpen={settingsOpen}
+        isSubmitting={
+          updateConfigMutation.isPending || updateMatchTimeConfigMutation.isPending
+        }
+        isBallsPerOverLocked={currentBalls > 0}
+        overs={oversInput}
+        ballsPerOver={ballsPerOverInput}
+        totalMatchMinutes={totalMatchMinutesInput}
+        splitByInnings={splitByInningsInput}
+        onChangeOvers={setOversInput}
+        onChangeBallsPerOver={setBallsPerOverInput}
+        onChangeTotalMatchMinutes={setTotalMatchMinutesInput}
+        onChangeSplitByInnings={setSplitByInningsInput}
+        onClose={() => setSettingsOpen(false)}
+        onConfirm={() => {
+          void handleApplySettings();
+        }}
+      />
+
+      <PenaltyRunsModal
+        isOpen={penaltyOpen}
+        isSubmitting={mutation.isPending}
+        onClose={() => setPenaltyOpen(false)}
+        onConfirm={(payload) => {
+          void handleAddPenalty(payload);
+        }}
+      />
     </>
   );
 
@@ -531,6 +797,3 @@ export const ScoringPanel = ({
     </Card>
   );
 };
-
-
-

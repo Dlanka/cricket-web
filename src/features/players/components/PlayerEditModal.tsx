@@ -42,6 +42,7 @@ export const PlayerEditModal = ({ teamId, player, isOpen, onClose }: Props) => {
       battingStyle: player.battingStyle ?? undefined,
       bowlingStyle: player.bowlingStyle ?? undefined,
       isWicketKeeper: player.isWicketKeeper ?? false,
+      defaultInSquad: player.defaultInSquad ?? false,
     },
   });
 
@@ -54,6 +55,7 @@ export const PlayerEditModal = ({ teamId, player, isOpen, onClose }: Props) => {
           battingStyle: player.battingStyle ?? undefined,
           bowlingStyle: player.bowlingStyle ?? undefined,
           isWicketKeeper: player.isWicketKeeper ?? false,
+          defaultInSquad: player.defaultInSquad ?? false,
         },
         { keepDirty: false },
       );
@@ -175,6 +177,10 @@ export const PlayerEditModal = ({ teamId, player, isOpen, onClose }: Props) => {
         <label className="flex items-center gap-2 text-sm text-on-surface-variant">
           <input type="checkbox" className="h-4 w-4" {...register("isWicketKeeper")} />
           Wicket keeper
+        </label>
+        <label className="flex items-center gap-2 text-sm text-on-surface-variant">
+          <input type="checkbox" className="h-4 w-4" {...register("defaultInSquad")} />
+          Default squad selection
         </label>
       </form>
     </RightSideModal>

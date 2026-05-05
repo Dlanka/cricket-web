@@ -1,5 +1,7 @@
 export const scoringQueryKeys = {
   score: (matchId: string) => ["score", matchId] as const,
+  playerOfMatch: (matchId: string) =>
+    ["matches", matchId, "awards", "player-of-match"] as const,
   availableNextBatters: (matchId: string) =>
     ["matches", matchId, "available-next-batters"] as const,
   innings: {

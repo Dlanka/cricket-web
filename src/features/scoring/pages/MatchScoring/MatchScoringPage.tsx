@@ -28,6 +28,7 @@ export const MatchScoringPage = ({
   const [resolvedOverBoundaryBalls, setResolvedOverBoundaryBalls] = useState<
     number | null
   >(null);
+  const [selectedBallSeq, setSelectedBallSeq] = useState<number | null>(null);
   const { isConnected: isLiveSocketConnected } = useMatchScoreLiveSync(
     matchId,
     true,
@@ -84,6 +85,29 @@ export const MatchScoringPage = ({
   }, [battingPlayersQuery.data, bowlingPlayersQuery.data]);
 
   const transientScoreError = normalizeApiError(scoreQuery.failureReason);
+  const showChangeBowlerButtonByState = (() => {
+    const data = scoreQuery.data;
+    if (!data) {
+      return false;
+    }
+    const totalBallsLimit =
+      data.settings.oversPerInnings * data.settings.ballsPerOver;
+    const isOverBoundary =
+      data.score.balls > 0 &&
+      data.score.balls < totalBallsLimit &&
+      data.score.balls % data.settings.ballsPerOver === 0;
+    return (
+      !data.inningsCompleted &&
+      isOverBoundary &&
+      resolvedOverBoundaryBalls !== data.score.balls
+    );
+  })();
+
+  useEffect(() => {
+    if (showChangeBowlerButtonByState && selectedBallSeq != null) {
+      setSelectedBallSeq(null);
+    }
+  }, [showChangeBowlerButtonByState, selectedBallSeq]);
 
   if (scoreQuery.isLoading) {
     if (transientScoreError.code === "match.starting_in_progress") {
@@ -216,14 +240,18 @@ export const MatchScoringPage = ({
         <div className="grid grid-cols-12 gap-4">
           <div className="col-span-12 xl:col-span-9">
             <div className="space-y-4 mx-auto">
-              <ScoreboardHeader score={score} />
+              <ScoreboardHeader matchId={matchId} score={score} />
               <OverHistoryPanel
                 inningsId={inningsId}
                 currentBalls={score.score.balls}
                 ballsPerOver={score.settings.ballsPerOver}
                 resolvedOverBoundaryBalls={resolvedOverBoundaryBalls}
+                selectedBallSeq={selectedBallSeq}
+                onSelectBall={setSelectedBallSeq}
               />
               <BattersTable
+                matchId={matchId}
+                battingTeamId={score.battingTeam.id}
                 inningsId={inningsId}
                 strikerId={score.current.strikerId}
                 nonStrikerId={score.current.nonStrikerId}
@@ -245,8 +273,13 @@ export const MatchScoringPage = ({
                 }}
               />
               <BowlersTable
+                matchId={matchId}
+                bowlingTeamId={score.bowlingTeam.id}
                 inningsId={inningsId}
                 currentBowlerId={score.current.bowlerId}
+                currentBalls={score.score.balls}
+                ballsPerOver={score.settings.ballsPerOver}
+                isChangeBowlerState={showChangeBowlerButton}
                 playerNameById={playerNameById}
               />
             </div>
@@ -266,6 +299,8 @@ export const MatchScoringPage = ({
                   inningsNumber={score.inningsNumber}
                   totalBallsPerOver={score.settings.ballsPerOver}
                   totalOvers={score.settings.oversPerInnings}
+                  totalMatchMinutes={score.timeConfig?.totalMatchMinutes}
+                  splitByInnings={score.timeConfig?.splitByInnings}
                   currentBalls={score.score.balls}
                   inningsCompleted={score.inningsCompleted}
                   isMatchCompleted={score.isMatchCompleted}
@@ -273,6 +308,8 @@ export const MatchScoringPage = ({
                   embedded
                   showChangeBowlerButton={showChangeBowlerButton}
                   onBowlerChangedAtBoundary={setResolvedOverBoundaryBalls}
+                  selectedBallSeq={selectedBallSeq}
+                  onClearSelectedBall={() => setSelectedBallSeq(null)}
                 />
               </Card>
             </div>

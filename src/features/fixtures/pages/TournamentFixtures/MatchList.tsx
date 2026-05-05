@@ -3,6 +3,7 @@ import {
   StatusPill,
   type StatusPillVariant,
 } from "@/shared/components/badge/StatusPill";
+import { useMatchPlayerOfMatch } from "@/features/matches/hooks/useMatchPlayerOfMatch";
 import type {
   MatchItem,
   TournamentBracketResponse,
@@ -20,10 +21,11 @@ const stageLabels: Record<string, string> = {
   R1: "Round 1",
   QF: "Quarter-final",
   SF: "Semi-final",
+  THIRD_PLACE: "3rd-place playoff",
   FINAL: "Final",
 };
 
-const stageOrder = ["LEAGUE", "R1", "QF", "SF", "FINAL"];
+const stageOrder = ["LEAGUE", "R1", "QF", "SF", "THIRD_PLACE", "FINAL"];
 
 const statusPillVariantMap: Record<string, StatusPillVariant> = {
   SCHEDULED: "warning",
@@ -76,6 +78,22 @@ const byStageOrder = (left: string, right: string) => {
   if (l === -1) return 1;
   if (r === -1) return -1;
   return l - r;
+};
+
+const MatchPlayerOfMatchMeta = ({ matchId }: { matchId: string }) => {
+  const playerOfMatchQuery = useMatchPlayerOfMatch(matchId, true);
+  const winner = playerOfMatchQuery.data?.winner;
+  if (!winner) return null;
+  const teamLabel = winner.team?.shortName ?? winner.team?.name ?? "Unknown Team";
+
+  return (
+    <p className="mt-1 text-xs font-display tracking-wider font-medium text-on-surface-muted">
+      POM:{" "}
+      <span className="text-on-surface">{winner.name}</span>{" "}
+      <span className="text-on-surface-muted">({teamLabel})</span> -{" "}
+      <span className="text-on-primary-container">{winner.points} pts</span>
+    </p>
+  );
 };
 
 export const MatchList = ({
@@ -163,6 +181,9 @@ export const MatchList = ({
                     <p className="mt-1 text-xs font-display tracking-wider font-medium text-on-primary-container">
                       {formatWinner(match)}
                     </p>
+                  ) : null}
+                  {match.status === "COMPLETED" ? (
+                    <MatchPlayerOfMatchMeta matchId={match.id} />
                   ) : null}
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
@@ -260,3 +281,5 @@ export const MatchList = ({
     </div>
   );
 };
+
+

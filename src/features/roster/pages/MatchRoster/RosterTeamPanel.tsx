@@ -10,7 +10,6 @@ import {
   applyRosterToggle,
   getSelectionError,
   mapRosterErrorMessage,
-  MAX_ROSTER_PLAYERS,
   uniqueIds,
 } from "@/features/roster/utils/rosterForm";
 
@@ -30,7 +29,21 @@ type Props = {
   ) => void;
 };
 
-const buildRosterState = (rosterTeam?: RosterTeamEntry) => {
+const buildRosterState = (players: Player[], rosterTeam?: RosterTeamEntry) => {
+  const hasSavedRoster = Boolean(rosterTeam?.players?.length);
+  if (!hasSavedRoster) {
+    const defaultIds = uniqueIds(
+      players
+        .filter((player) => Boolean(player.defaultInSquad))
+        .map((player) => player.id),
+    );
+    return {
+      playingIds: defaultIds,
+      captainId: undefined,
+      keeperId: undefined,
+    };
+  }
+
   const playingIds = uniqueIds(
     rosterTeam?.players
       .filter((player) => player.isPlaying)
@@ -57,7 +70,10 @@ export const RosterTeamPanel = ({
   onSave,
   onStatusChange,
 }: Props) => {
-  const initial = useMemo(() => buildRosterState(rosterTeam), [rosterTeam]);
+  const initial = useMemo(
+    () => buildRosterState(players, rosterTeam),
+    [players, rosterTeam],
+  );
   const [playingIds, setPlayingIds] = useState<string[]>(initial.playingIds);
   const [captainId, setCaptainId] = useState<string | undefined>(initial.captainId);
   const [keeperId, setKeeperId] = useState<string | undefined>(initial.keeperId);
@@ -78,10 +94,7 @@ export const RosterTeamPanel = ({
     setCaptainServerError(null);
     setKeeperServerError(null);
   };
-  const maxSelectablePlayers = Math.min(MAX_ROSTER_PLAYERS, players.length);
-  const selectAllPlayerIds = players
-    .slice(0, maxSelectablePlayers)
-    .map((player) => player.id);
+  const selectAllPlayerIds = players.map((player) => player.id);
   const isSelectAllChecked =
     selectAllPlayerIds.length > 0 &&
     selectAllPlayerIds.every((playerId) => playingIds.includes(playerId));
@@ -200,10 +213,10 @@ export const RosterTeamPanel = ({
         {showTeamHeader ? (
           <div>
             <h2 className="text-lg font-semibold text-on-surface">{teamName}</h2>
-            <p className="text-xs text-on-surface-variant">Select playing XI</p>
+            <p className="text-xs text-on-surface-variant">Select playing squad</p>
           </div>
         ) : (
-          <p className="text-xs text-on-surface-variant">Select playing XI</p>
+          <p className="text-xs text-on-surface-variant">Select playing squad</p>
         )}
       </div>
 
@@ -232,7 +245,7 @@ export const RosterTeamPanel = ({
               onChange={(event) => handleSelectAll(event.target.checked)}
               disabled={!canEdit || players.length === 0}
             />
-            <span>Select all (max {MAX_ROSTER_PLAYERS})</span>
+            <span>Select all</span>
           </label>
           <PlayerPickList
             players={players}
@@ -280,7 +293,7 @@ export const RosterTeamPanel = ({
           {canEdit ? (
             <div className="flex items-center justify-between gap-3 pt-2">
               <p className="text-xs text-on-surface-variant">
-                {playingIds.length}/{MAX_ROSTER_PLAYERS} selected
+                {playingIds.length} selected
               </p>
               <Button
                 type="button"

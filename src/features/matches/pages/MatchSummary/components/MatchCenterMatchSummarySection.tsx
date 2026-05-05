@@ -33,10 +33,28 @@ const formatDismissal = (row: BattingRowSummary) => {
   if (!row.isOut) return "not out";
   if (row.dismissalText) return row.dismissalText;
   if (row.dismissalKind) {
-    const extras = [row.bowlerName, row.fielderName]
-      .filter(Boolean)
-      .join(" / ");
-    return extras ? `${row.dismissalKind} (${extras})` : row.dismissalKind;
+    const kind = row.dismissalKind;
+    const bowler = row.bowlerName ?? "";
+    const fielder = row.fielderName ?? "";
+
+    if (kind === "caught") {
+      if (bowler && fielder) return `b ${bowler} c ${fielder}`;
+      if (fielder) return `c ${fielder}`;
+      if (bowler) return `b ${bowler}`;
+      return "caught";
+    }
+    if (kind === "bowled") return bowler ? `b ${bowler}` : "bowled";
+    if (kind === "lbw") return bowler ? `lbw b ${bowler}` : "lbw";
+    if (kind === "stumping") {
+      if (fielder && bowler) return `st ${fielder} b ${bowler}`;
+      if (fielder) return `st ${fielder}`;
+      if (bowler) return `b ${bowler}`;
+      return "stumped";
+    }
+    if (kind === "runOut") return fielder ? `run out (${fielder})` : "run out";
+    if (kind === "hitWicket") return bowler ? `hit wicket b ${bowler}` : "hit wicket";
+    if (kind === "obstructingField") return "obstructing the field";
+    return kind;
   }
   return "out";
 };
@@ -53,6 +71,11 @@ const formatTeamScoreLine = (innings: InningsSummary | undefined) =>
         "0.0",
       )})`
     : "-/- (-)";
+
+const formatPenalty = (value: number | null | undefined) => {
+  const runs = value ?? 0;
+  return `${runs > 0 ? "+" : ""}${runs}`;
+};
 
 const resultPillVariant = (badge: string) => {
   if (badge === "WIN") return "success" as const;
@@ -183,7 +206,8 @@ const InningsCard = ({ innings }: { innings: InningsSummary }) => (
             {fallback(innings.extras.wides, "0")}, Nb{" "}
             {fallback(innings.extras.noBalls, "0")}, B{" "}
             {fallback(innings.extras.byes, "0")}, LB{" "}
-            {fallback(innings.extras.legByes, "0")})
+            {fallback(innings.extras.legByes, "0")}, P{" "}
+            {fallback(innings.extras.penalties, "0")})
           </p>
         </div>
       </div>
@@ -197,6 +221,11 @@ const InningsCard = ({ innings }: { innings: InningsSummary }) => (
           {fallback(innings.overs, "0.0")} ov)
         </p>
       </div>
+      {(innings.extras.penalties ?? 0) !== 0 ? (
+        <p className="mt-2 text-right text-xs text-on-warning-container">
+          Includes penalty {formatPenalty(innings.extras.penalties)}
+        </p>
+      ) : null}
     </div>
 
     <div className="border-t border-outline pt-4">

@@ -123,10 +123,9 @@ export const TournamentAwardsPage = () => {
     from: "/tournaments/$tournamentId/awards",
   });
   const tournamentQuery = useTournament(tournamentId);
-  const isTournamentCompleted = tournamentQuery.data?.status === "COMPLETED";
   const awardsQuery = useTournamentPlayerOfSeriesQuery(
     tournamentId,
-    isTournamentCompleted,
+    true,
   );
   const header = (
     <PageHeader
@@ -141,18 +140,6 @@ export const TournamentAwardsPage = () => {
       <div className="space-y-4">
         {header}
         <AwardsSkeleton />
-      </div>
-    );
-  }
-
-  if (!isTournamentCompleted) {
-    return (
-      <div className="space-y-4">
-        {header}
-        <EmptyState
-          title="Awards available after completion"
-          description="Player of the Series is shown after all matches are completed."
-        />
       </div>
     );
   }

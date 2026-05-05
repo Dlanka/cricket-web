@@ -101,7 +101,7 @@ export const MatchActions = ({
         </ButtonLink>
       ) : null}
 
-      {canEditRoster && match.status === "SCHEDULED" ? (
+      {canEditRoster && (match.status === "SCHEDULED" || match.status === "LIVE") ? (
         <ButtonLink
           to="/tournaments/$tournamentId/matches/$matchId/roster"
           params={{

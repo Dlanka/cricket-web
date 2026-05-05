@@ -42,16 +42,16 @@ describe("setRosterSchema", () => {
     expect(result.success).toBe(false);
   });
 
-  it("rejects more than 11 playing players", () => {
+  it("accepts more than 11 playing players", () => {
     const result = setRosterSchema.safeParse({
       teamId: "team-3",
       playingPlayerIds: Array.from({ length: 12 }, (_, index) => `p${index}`),
     });
 
-    expect(result.success).toBe(false);
+    expect(result.success).toBe(true);
   });
 
-  it("accepts valid player count between 1 and 11", () => {
+  it("accepts valid player count when at least 1", () => {
     const result = setRosterSchema.safeParse({
       teamId: "team-4",
       playingPlayerIds: ["p1"],

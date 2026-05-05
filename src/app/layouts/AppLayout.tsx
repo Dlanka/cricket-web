@@ -9,9 +9,11 @@ import { ProtectedSidebar } from "../../components/ProtectedSidebar";
 import { ProtectedTopBar } from "../../components/ProtectedTopBar";
 import { useAuth } from "../../features/auth/hooks/useAuth";
 import { BackgroundDecor } from "../../shared/components/layout/BackgroundDecor";
+import { useThemePreference } from "../../shared/theme/useThemePreference";
 
 export const AppLayout = () => {
   const { status } = useAuth();
+  useThemePreference();
   const matches = useMatches();
   const location = useRouterState({ select: (state) => state.location });
   const hideChrome =

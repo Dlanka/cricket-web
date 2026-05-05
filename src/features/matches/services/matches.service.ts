@@ -16,6 +16,9 @@ import type {
   SetMatchTossResponse,
   UpdateMatchConfigRequest,
   UpdateMatchConfigResponse,
+  UpdateMatchTimeConfigRequest,
+  UpdateMatchTimeConfigResponse,
+  MatchPlayerOfMatchResponse,
 } from "@/features/matches/types/matches.types";
 import type {
   BattingRowSummary,
@@ -106,6 +109,10 @@ type RawMatchDetail = {
   } | null;
   oversPerInnings?: number;
   ballsPerOver?: number;
+  timeConfig?: {
+    totalMatchMinutes?: number | null;
+    splitByInnings?: boolean | null;
+  } | null;
   toss?: {
     wonByTeamId?: string;
     decision?: "BAT" | "BOWL";
@@ -176,11 +183,13 @@ const normalizeExtras = (extras: unknown): InningsExtrasSummary => {
     noBalls: toNullableNumber(raw.noBalls ?? raw.nb),
     byes: toNullableNumber(raw.byes ?? raw.b),
     legByes: toNullableNumber(raw.legByes ?? raw.lb),
+    penalties: toNullableNumber(raw.penalties ?? raw.penalty),
   };
 };
 
 const normalizeBattingRow = (row: unknown): BattingRowSummary => {
   const raw = (row ?? {}) as Record<string, unknown>;
+  const out = ((raw.out ?? {}) as Record<string, unknown>) ?? {};
   return {
     playerId: toText(raw.playerId ?? raw.id) || null,
     name: toText(raw.name, "-"),
@@ -191,9 +200,9 @@ const normalizeBattingRow = (row: unknown): BattingRowSummary => {
     strikeRate: toNullableNumber(raw.strikeRate ?? raw.sr),
     isOut: Boolean(raw.isOut),
     dismissalText: toText(raw.dismissalText) || null,
-    dismissalKind: toText(raw.dismissalKind ?? raw.kind) || null,
-    bowlerName: toText(raw.bowlerName) || null,
-    fielderName: toText(raw.fielderName) || null,
+    dismissalKind: toText(raw.dismissalKind ?? raw.kind ?? out.kind) || null,
+    bowlerName: toText(raw.bowlerName ?? out.bowlerName) || null,
+    fielderName: toText(raw.fielderName ?? out.fielderName) || null,
   };
 };
 
@@ -217,9 +226,9 @@ const normalizeBowlingRow = (row: unknown): BowlingRowSummary => {
 const normalizeFallOfWicketRow = (row: unknown): FallOfWicketSummary => {
   const raw = (row ?? {}) as Record<string, unknown>;
   return {
-    wicket: toNullableNumber(raw.wicket),
-    runs: toNullableNumber(raw.runs),
-    over: toText(raw.over) || null,
+    wicket: toNullableNumber(raw.wicket ?? raw.wicketNumber),
+    runs: toNullableNumber(raw.runs ?? raw.score),
+    over: toText(raw.over ?? raw.overs) || null,
     batterName: toText(raw.batterName ?? raw.name) || null,
     kind: toText(raw.kind) || null,
   };
@@ -257,6 +266,10 @@ const normalizeMatchDetail = (match: RawMatchDetail): MatchDetail => ({
   },
   oversPerInnings: match.oversPerInnings ?? 0,
   ballsPerOver: match.ballsPerOver ?? 0,
+  timeConfig: {
+    totalMatchMinutes: match.timeConfig?.totalMatchMinutes ?? null,
+    splitByInnings: Boolean(match.timeConfig?.splitByInnings),
+  },
   status: (match.status as MatchDetail["status"]) ?? "SCHEDULED",
   stage: (match.stage as MatchDetail["stage"]) ?? "LEAGUE",
   scheduledAt: match.scheduledAt ?? null,
@@ -313,6 +326,16 @@ export const updateMatchConfig = async (
   const response = await api.patch<
     ApiEnvelope<UpdateMatchConfigResponse> | UpdateMatchConfigResponse
   >(`/matches/${matchId}/config`, payload);
+  return unwrapEnvelope(response.data);
+};
+
+export const updateMatchTimeConfig = async (
+  matchId: string,
+  payload: UpdateMatchTimeConfigRequest,
+): Promise<UpdateMatchTimeConfigResponse> => {
+  const response = await api.patch<
+    ApiEnvelope<UpdateMatchTimeConfigResponse> | UpdateMatchTimeConfigResponse
+  >(`/matches/${matchId}/time-config`, payload);
   return unwrapEnvelope(response.data);
 };
 
@@ -422,4 +445,13 @@ export const getMatchSummary = async (
       details: apiError.details,
     } satisfies ApiError;
   }
+};
+
+export const getMatchPlayerOfMatch = async (
+  matchId: string,
+): Promise<MatchPlayerOfMatchResponse> => {
+  const response = await api.get<
+    SuccessEnvelope<MatchPlayerOfMatchResponse> | MatchPlayerOfMatchResponse
+  >(`/matches/${matchId}/awards/player-of-match`);
+  return unwrapSummaryEnvelope(response.data);
 };

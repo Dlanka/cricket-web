@@ -41,7 +41,7 @@ export const ProtectedTopBar = () => {
   }, [location.pathname]);
 
   return (
-    <header className="fixed max-h-toolbar min-h-toolbar left-0 right-0 top-0 z-20 flex flex-wrap items-center justify-between gap-4 border-b border-outline/99  px-6 py-4  backdrop-blur lg:left-20">
+    <header className="app-chrome-bar fixed max-h-toolbar min-h-toolbar left-0 right-0 top-0 z-20 flex flex-wrap items-center justify-between gap-4 border-b border-outline bg-surface/95 px-6 py-4 backdrop-blur lg:left-20">
       <div className="flex items-center gap-3">
         {showBack ? (
           <Button

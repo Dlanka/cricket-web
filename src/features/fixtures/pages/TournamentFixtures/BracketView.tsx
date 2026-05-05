@@ -11,10 +11,11 @@ const stageLabels: Record<string, string> = {
   R1: "Round 1",
   QF: "Quarter-final",
   SF: "Semi-final",
+  THIRD_PLACE: "3rd-place playoff",
   FINAL: "Final",
 };
 
-const stageOrder = ["R1", "QF", "SF", "FINAL"];
+const stageOrder = ["R1", "QF", "SF", "THIRD_PLACE", "FINAL"];
 
 const orderedRounds = (rounds: TournamentBracketResponse["rounds"]) =>
   [...rounds].sort((a, b) => {

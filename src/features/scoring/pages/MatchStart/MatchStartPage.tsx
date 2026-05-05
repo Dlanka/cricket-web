@@ -134,7 +134,7 @@ export const MatchStartPage = () => {
           />
         ) : teamAPlaying.length === 0 || teamBPlaying.length === 0 ? (
           <EmptyState
-            title="Playing XI not set"
+            title="Playing Squad not set"
             description="Set roster before starting the match."
             action={
               <Link

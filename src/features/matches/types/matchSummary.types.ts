@@ -39,6 +39,7 @@ export interface InningsExtrasSummary {
   noBalls: number | null;
   byes: number | null;
   legByes: number | null;
+  penalties: number | null;
 }
 
 export interface BattingRowSummary {

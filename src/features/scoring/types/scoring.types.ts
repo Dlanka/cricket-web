@@ -66,6 +66,7 @@ export type MatchScoreResponse = {
     noBalls?: number;
     byes?: number;
     legByes?: number;
+    penalties?: number;
   };
   chase?: ChaseInfo | null;
   superOverChase?: SuperOverChaseInfo | null;
@@ -75,10 +76,22 @@ export type MatchScoreResponse = {
   current: { strikerId: string; nonStrikerId: string; bowlerId: string };
   lastEvent: { id: string; seq: number; type: string } | null;
   settings: { ballsPerOver: number; oversPerInnings: number };
+  timeConfig?: {
+    totalMatchMinutes: number | null;
+    splitByInnings: boolean;
+  };
+  timer?: {
+    status: "IDLE" | "RUNNING" | "PAUSED";
+    elapsedMs: number;
+    targetMs: number | null;
+    remainingMs: number | null;
+    isOvertime: boolean;
+  };
 };
 
 export type BatterRow = {
   batterId: string;
+  playerId?: string | null;
   name: string;
   runs: number;
   balls: number;
@@ -138,6 +151,98 @@ export type ChangeBowlerResponse = {
   inningsId: string;
   bowlerId: string;
   overNumber: number;
+};
+
+export type ChangeCurrentBattersRequest = {
+  strikerId: string;
+  nonStrikerId: string;
+  transferStats?: boolean;
+};
+
+export type ChangeCurrentBattersResponse = {
+  matchId: string;
+  inningsId: string;
+  strikerId: string;
+  nonStrikerId: string;
+};
+
+export type UpdateLiveMatchConfigRequest = {
+  oversPerInnings?: number;
+  ballsPerOver?: number;
+};
+
+export type UpdateLiveMatchConfigResponse = {
+  matchId: string;
+  oversPerInnings: number;
+  ballsPerOver: number;
+  status: "SCHEDULED" | "LIVE" | "COMPLETED";
+};
+
+export type UpdateMatchTimeConfigRequest = {
+  totalMatchMinutes?: number;
+  splitByInnings?: boolean;
+};
+
+export type UpdateMatchTimeConfigResponse = {
+  matchId: string;
+  timeConfig: {
+    totalMatchMinutes: number | null;
+    splitByInnings: boolean;
+  };
+};
+
+export type MatchTimerResponse = {
+  matchId: string;
+  timer: {
+    status: "IDLE" | "RUNNING" | "PAUSED";
+    elapsedMs: number;
+    targetMs: number | null;
+    remainingMs: number | null;
+    isOvertime: boolean;
+    totalMatchMinutes?: number | null;
+    splitByInnings?: boolean;
+  };
+};
+
+export type MatchPlayerAwardRow = {
+  rank: number;
+  playerId: string | null;
+  name: string;
+  team: {
+    id: string;
+    name: string | null;
+    shortName: string | null;
+  } | null;
+  matches: number;
+  runs: number;
+  wickets: number;
+  fours: number;
+  sixes: number;
+  fifties: number;
+  hundreds: number;
+  fiveWicketHauls: number;
+  catches: number;
+  runOuts: number;
+  strikeRate: number;
+  economy: number;
+  points: number;
+};
+
+export type MatchPlayerOfMatchResponse = {
+  matchId: string;
+  winner: MatchPlayerAwardRow | null;
+  leaderboard: MatchPlayerAwardRow[];
+  scoring: {
+    run: number;
+    wicket: number;
+    four: number;
+    six: number;
+    fiftyBonus: number;
+    hundredBonus: number;
+    fiveWicketBonus: number;
+    catch: number;
+    runOut: number;
+  };
 };
 
 export type StartSecondInningsRequest = {

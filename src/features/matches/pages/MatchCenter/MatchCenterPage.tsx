@@ -163,7 +163,7 @@ export const MatchCenterPage = ({
             <>
               {!hasRosterConfigured ? (
                 <EmptyState
-                  title="Playing XI not set"
+                  title="Playing Squad not set"
                   description="Set roster before match start."
                   action={
                     <Link
@@ -200,8 +200,12 @@ export const MatchCenterPage = ({
                   isConfigInputDisabled={vm.isConfigInputDisabled}
                   oversPerInningsInput={vm.oversPerInningsInput}
                   ballsPerOverInput={vm.ballsPerOverInput}
+                  totalMatchMinutesInput={vm.totalMatchMinutesInput}
+                  splitByInningsInput={vm.splitByInningsInput}
                   setOversPerInningsInput={vm.setOversPerInningsInput}
                   setBallsPerOverInput={vm.setBallsPerOverInput}
+                  setTotalMatchMinutesInput={vm.setTotalMatchMinutesInput}
+                  setSplitByInningsInput={vm.setSplitByInningsInput}
                   configError={vm.configError}
                   submitError={vm.submitError}
                 teamAPlaying={vm.teamAPlaying}

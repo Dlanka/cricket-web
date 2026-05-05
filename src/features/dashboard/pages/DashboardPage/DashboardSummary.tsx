@@ -23,7 +23,7 @@ type Props = {
   role: string | null;
 };
 
-const stageOrder = ["R1", "QF", "SF", "FINAL"] as const;
+const stageOrder = ["R1", "QF", "SF", "THIRD_PLACE", "FINAL"] as const;
 
 const pickActiveTournament = <T extends { status: string }>(items: T[]) =>
   items.find((item) => item.status === "ACTIVE") ?? items[0] ?? null;

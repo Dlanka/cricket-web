@@ -32,6 +32,7 @@ export type TournamentOverview = {
     };
   };
   rules: {
+    includeThirdPlaceMatch?: boolean;
     points:
       | {
           win: number;
@@ -60,6 +61,7 @@ export type TournamentCreateInput = {
   ballsPerOver?: number;
   rules?: {
     qualificationCount?: number;
+    includeThirdPlaceMatch?: boolean;
     series?: {
       totalMatches?: number;
       winsToClinch?: number;
@@ -78,6 +80,7 @@ export type TournamentUpdateInput = {
   status?: TournamentStatus;
   rules?: {
     qualificationCount?: number;
+    includeThirdPlaceMatch?: boolean;
     series?: {
       totalMatches?: number;
       winsToClinch?: number;
@@ -108,6 +111,7 @@ export type TournamentDetails = TournamentSummary & {
   venues?: string[];
   rules?: {
     qualificationCount?: number;
+    includeThirdPlaceMatch?: boolean;
     series?: {
       totalMatches?: number;
       winsToClinch?: number;
@@ -197,7 +201,7 @@ export type RecomputeStandingsResponse = {
 export type GenerateKnockoutResponse = {
   created: Array<{
     id: string;
-    stage: "SF" | "FINAL";
+    stage: "SF" | "FINAL" | "THIRD_PLACE";
     teamAId: string;
     teamBId: string | null;
   }>;

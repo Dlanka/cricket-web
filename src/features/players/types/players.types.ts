@@ -20,6 +20,7 @@ export type Player = {
   battingStyle?: BattingStyle | null;
   bowlingStyle?: BowlingStyle | null;
   isWicketKeeper: boolean;
+  defaultInSquad?: boolean;
   createdAt: string;
 };
 
@@ -29,6 +30,7 @@ export type CreatePlayerRequest = {
   battingStyle?: BattingStyle;
   bowlingStyle?: BowlingStyle;
   isWicketKeeper?: boolean;
+  defaultInSquad?: boolean;
 };
 
 export type UpdatePlayerRequest = {
@@ -37,6 +39,7 @@ export type UpdatePlayerRequest = {
   battingStyle?: BattingStyle;
   bowlingStyle?: BowlingStyle;
   isWicketKeeper?: boolean;
+  defaultInSquad?: boolean;
 };
 
 export type UpdatePlayerResponse = Player;

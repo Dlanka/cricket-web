@@ -161,6 +161,14 @@ export const PlayerCreateModal = ({ teamId, isOpen, onClose }: Props) => {
           />
           Wicket keeper
         </label>
+        <label className="flex items-center gap-3 rounded-2xl border border-outline bg-surface-container px-4 py-3 text-sm text-on-surface">
+          <input
+            type="checkbox"
+            className="h-4 w-4 accent-primary-40"
+            {...register("defaultInSquad")}
+          />
+          Default squad selection
+        </label>
       </form>
     </RightSideModal>
   );

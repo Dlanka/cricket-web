@@ -62,7 +62,7 @@ export const TournamentLayout = () => {
 
   return (
     <div className="theme-tournament min-h-screen max-h-screen overflow-hidden flex flex-col bg-background">
-      <header className="sticky top-0 z-20 border-b border-outline bg-surface-container backdrop-blur">
+      <header className="app-tournament-bar sticky top-0 z-20 border-b border-outline bg-surface/95 backdrop-blur">
         <div className="mx-auto flex h-13 w-full items-center justify-between gap-4 px-4 sm:px-6">
           <div className="flex items-center ">
             <ButtonLink
@@ -109,13 +109,11 @@ export const TournamentLayout = () => {
                 label="Stats"
                 tournamentId={tournamentId}
               />
-              {tournament?.status === "COMPLETED" ? (
-                <TabLink
-                  to="/tournaments/$tournamentId/awards"
-                  label="Awards"
-                  tournamentId={tournamentId}
-                />
-              ) : null}
+              <TabLink
+                to="/tournaments/$tournamentId/awards"
+                label="Awards"
+                tournamentId={tournamentId}
+              />
             </div>
           </div>
           {statusBadgeClass ? (

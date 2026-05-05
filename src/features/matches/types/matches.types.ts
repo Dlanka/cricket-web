@@ -25,6 +25,10 @@ export type MatchDetail = {
   };
   oversPerInnings: number;
   ballsPerOver: number;
+  timeConfig?: {
+    totalMatchMinutes: number | null;
+    splitByInnings: boolean;
+  };
   status: MatchStatus;
   stage: MatchStage;
   scheduledAt?: string | null;
@@ -72,6 +76,19 @@ export type UpdateMatchConfigResponse = {
   oversPerInnings: number;
   ballsPerOver: number;
   status: MatchStatus;
+};
+
+export type UpdateMatchTimeConfigRequest = {
+  totalMatchMinutes?: number;
+  splitByInnings?: boolean;
+};
+
+export type UpdateMatchTimeConfigResponse = {
+  matchId: string;
+  timeConfig: {
+    totalMatchMinutes: number | null;
+    splitByInnings: boolean;
+  };
 };
 
 export type SetMatchTossRequest = {
@@ -132,4 +149,45 @@ export type MatchesListResponse = {
 export type GenerateFixturesResponse = {
   ok: boolean;
   data?: { count?: number };
+};
+
+export type MatchPlayerAwardRow = {
+  rank: number;
+  playerId: string | null;
+  name: string;
+  team: {
+    id: string;
+    name: string | null;
+    shortName: string | null;
+  } | null;
+  matches: number;
+  runs: number;
+  wickets: number;
+  fours: number;
+  sixes: number;
+  fifties: number;
+  hundreds: number;
+  fiveWicketHauls: number;
+  catches: number;
+  runOuts: number;
+  strikeRate: number;
+  economy: number;
+  points: number;
+};
+
+export type MatchPlayerOfMatchResponse = {
+  matchId: string;
+  winner: MatchPlayerAwardRow | null;
+  leaderboard: MatchPlayerAwardRow[];
+  scoring: {
+    run: number;
+    wicket: number;
+    four: number;
+    six: number;
+    fiftyBonus: number;
+    hundredBonus: number;
+    fiveWicketBonus: number;
+    catch: number;
+    runOut: number;
+  };
 };

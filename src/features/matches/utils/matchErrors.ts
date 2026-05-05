@@ -4,7 +4,7 @@ const codeMessageMap: Record<string, string> = {
   "match.roster_missing": "Set roster for both teams before starting the match.",
   "match.invalid_state": "This match has already started or is completed.",
   "match.batting_pair_invalid": "Striker and non-striker must be different.",
-  "match.bowler_invalid": "Select a bowler from the bowling team's playing XI.",
+  "match.bowler_invalid": "Select a bowler from the bowling team's playing squad.",
   "match.team_invalid": "Selected team is not valid for this match.",
 };
 

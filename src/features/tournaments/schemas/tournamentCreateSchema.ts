@@ -51,6 +51,7 @@ export const tournamentCreateSchema = z.object({
         : value,
     z.coerce.number().int().min(2, "Qualification count must be at least 2"),
   ).optional(),
+  includeThirdPlaceMatch: z.coerce.boolean().optional(),
   seriesTotalMatches: z.preprocess(
     (value) =>
       value === "" || value == null || (typeof value === "number" && Number.isNaN(value))
@@ -102,6 +103,17 @@ export const tournamentCreateSchema = z.object({
         message: "Wins to clinch cannot exceed total matches.",
       });
     }
+  }
+  if (
+    values.type === "LEAGUE_KNOCKOUT" &&
+    values.includeThirdPlaceMatch &&
+    values.qualificationCount !== 4
+  ) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["includeThirdPlaceMatch"],
+      message: "3rd-place playoff requires Top 4 qualification.",
+    });
   }
 });
 

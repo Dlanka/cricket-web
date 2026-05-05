@@ -1,7 +1,6 @@
 import type { ApiError } from "@/shared/types/http.types";
 
 export const MIN_ROSTER_PLAYERS = 1;
-export const MAX_ROSTER_PLAYERS = 11;
 
 export type RosterSelectionState = {
   playingIds: string[];
@@ -15,9 +14,6 @@ export const getSelectionError = (count: number) => {
   if (count < MIN_ROSTER_PLAYERS) {
     return "Select at least 1 player.";
   }
-  if (count > MAX_ROSTER_PLAYERS) {
-    return "You can select up to 11 players only.";
-  }
   return null;
 };
 
@@ -26,10 +22,6 @@ export const applyRosterToggle = (
   playerId: string,
 ): RosterSelectionState => {
   const exists = state.playingIds.includes(playerId);
-
-  if (!exists && state.playingIds.length >= MAX_ROSTER_PLAYERS) {
-    return state;
-  }
 
   const nextPlayingIds = exists
     ? state.playingIds.filter((id) => id !== playerId)
@@ -65,14 +57,13 @@ export const mapRosterErrorMessage = (error: unknown, fallback: string) => {
   const codeMessageMap: Record<string, string> = {
     "match.team_invalid": "Selected team is not valid for this match.",
     "match.roster_invalid": "Roster selection is invalid.",
-    "match.roster_size_invalid":
-      "Roster must contain between 1 and 11 players.",
+    "match.roster_size_invalid": "Roster must contain at least 1 player.",
     "match.roster_missing": "Set roster for both teams before starting the match.",
     "match.captain_invalid": "Captain must be in selected playing players.",
     "match.keeper_invalid": "Keeper must be in selected playing players.",
     "match.invalid_state": "This match cannot be updated in the current state.",
     "match.batting_pair_invalid": "Striker and non-striker must be different.",
-    "match.bowler_invalid": "Select a bowler from the bowling team's playing XI.",
+    "match.bowler_invalid": "Select a bowler from the bowling team's playing squad.",
   };
 
   return (

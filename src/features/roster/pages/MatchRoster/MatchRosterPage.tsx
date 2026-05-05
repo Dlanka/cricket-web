@@ -17,6 +17,9 @@ import { getApiErrorMessage } from "@/shared/utils/apiErrors";
 import type { ApiError } from "@/shared/types/http.types";
 import { PageHeader } from "@/shared/components/page/PageHeader";
 import { PageStateGate } from "@/shared/components/page/PageStateGate";
+import { PlayerCreateModal } from "@/features/players/components/PlayerCreateModal";
+import { useDisclosure } from "@/shared/hooks/useDisclosure";
+import { Button } from "@/components/ui/button/Button";
 
 export const MatchRosterPage = () => {
   const { tournamentId, matchId } = useParams({
@@ -33,6 +36,8 @@ export const MatchRosterPage = () => {
   const [tabStatusByTeam, setTabStatusByTeam] = useState<
     Record<string, "saved" | "unsaved" | "incomplete">
   >({});
+  const { isOpen: isAddPlayerOpen, open: openAddPlayer, close: closeAddPlayer } =
+    useDisclosure();
   const hasSearchTeamContext = Boolean(search.teamAId);
 
   const {
@@ -56,6 +61,7 @@ export const MatchRosterPage = () => {
 
   const teamAPlayers = usePlayersByTeamQuery(teamAId ?? "");
   const teamBPlayers = usePlayersByTeamQuery(teamBId ?? "");
+  const activeTeamId = activeTeamTab === "teamA" ? teamAId : (teamBId ?? teamAId);
 
   const rosterTeams = useMemo(() => {
     const entries: Record<string, RosterTeamEntry | undefined> = {};
@@ -138,7 +144,7 @@ export const MatchRosterPage = () => {
         <div className="mx-auto w-full max-w-6xl space-y-8 px-6">
           <PageHeader
             eyebrow="Match roster"
-            title="Playing XI"
+            title="Playing Squad"
             description="Pick the squad, captain, and keeper for each team."
             backButton={{
               onClick: () =>
@@ -148,6 +154,20 @@ export const MatchRosterPage = () => {
                 }),
               ariaLabel: "Back to fixtures",
             }}
+            actions={
+              canEdit && activeTeamId ? (
+                <Button
+                  type="button"
+                  appearance="soft"
+                  color="primary"
+                  size="sm"
+                  uppercase
+                  onClick={openAddPlayer}
+                >
+                  Add player
+                </Button>
+              ) : null
+            }
           />
           <div className="space-y-4">
             {teamBId ? (
@@ -234,6 +254,13 @@ export const MatchRosterPage = () => {
             ) : null}
           </div>
         </div>
+      ) : null}
+      {canEdit && activeTeamId ? (
+        <PlayerCreateModal
+          teamId={activeTeamId}
+          isOpen={isAddPlayerOpen}
+          onClose={closeAddPlayer}
+        />
       ) : null}
     </PageStateGate>
   );

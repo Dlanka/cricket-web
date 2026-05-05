@@ -21,6 +21,42 @@
   --border-subtle: rgba(255, 255, 255, 0.08);
 }
 
+:root[data-theme="light"] {
+  --bg0: #eef3fa;
+  --bg1: #ffffff;
+  --bg2: #f6f9ff;
+  --bg3: #e8eff9;
+  --bg4: #dbe6f4;
+  --bg5: #cddbee;
+
+  --text-primary: #0f1f38;
+  --text-secondary: #365172;
+  --border-subtle: rgba(15, 31, 56, 0.2);
+
+  --color-on-primary: #022a24;
+  --color-on-secondary: #07203c;
+  --color-on-success: #12361f;
+  --color-on-warning: #392707;
+  --color-on-error: #4a1015;
+
+  --color-primary-container: color-mix(in oklab, var(--cyan) 30%, white);
+  --color-on-primary-container: #007364;
+  --color-secondary-container: color-mix(in oklab, var(--blue) 26%, white);
+  --color-on-secondary-container: #2d5eae;
+  --color-success-container: color-mix(in oklab, var(--green) 24%, white);
+  --color-on-success-container: #198e4f;
+  --color-warning-container: color-mix(in oklab, var(--amber) 24%, white);
+  --color-on-warning-container: #a56600;
+  --color-error-container: color-mix(in oklab, var(--red) 24%, white);
+  --color-on-error-container: #ce3340;
+
+  --color-on-surface-muted: #4f6e99;
+  --color-on-surface-subtle: #5f7fa8;
+  --color-outline: rgba(15, 31, 56, 0.24);
+  --color-outline-variant: rgba(15, 31, 56, 0.14);
+  --color-outline-strong: rgba(15, 31, 56, 0.38);
+}
+
 @theme {
   --font-display: "Rajdhani", system-ui, sans-serif;
   --font-body: "IBM Plex Sans", system-ui, sans-serif;
@@ -199,6 +235,43 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+
+:root[data-theme="light"] *::-webkit-scrollbar-track {
+  background: color-mix(in oklab, var(--color-surface-container) 92%, white);
+  border-left: 1px solid var(--color-outline);
+}
+
+:root[data-theme="light"] *::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--color-primary) 60%, var(--color-outline)),
+    color-mix(in oklab, var(--color-primary) 42%, var(--color-surface-container-high))
+  );
+  border: 2px solid color-mix(in oklab, var(--color-surface-container) 94%, white);
+}
+
+:root[data-theme="light"] .app-chrome-bar,
+:root[data-theme="light"] .app-chrome-rail,
+:root[data-theme="light"] .app-tournament-bar {
+  background: color-mix(in oklab, var(--color-surface) 92%, white);
+  box-shadow: 0 1px 0 var(--color-outline-variant);
+}
+
+:root[data-theme="light"] .bg-secondary-soft {
+  background-color: color-mix(in oklab, var(--color-secondary) 30%, white);
+}
+
+:root[data-theme="light"] .bg-info-soft {
+  background-color: color-mix(in oklab, var(--color-secondary) 28%, white);
+}
+
+:root[data-theme="light"] .bg-warning-soft {
+  background-color: color-mix(in oklab, var(--color-warning) 28%, white);
 }
 
 body {

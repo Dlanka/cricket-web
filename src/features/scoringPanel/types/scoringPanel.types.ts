@@ -4,6 +4,8 @@ export type ScoreEventType =
   | "wicket"
   | "swap"
   | "retire"
+  | "penalty"
+  | "correctBall"
   | "undo";
 
 export type ExtraType = "wide" | "noBall" | "byes" | "legByes";
@@ -54,6 +56,39 @@ export type UndoRequest = {
   type: "undo";
 };
 
+export type PenaltyRequest = {
+  type: "penalty";
+  runs: number;
+  reason?: string;
+};
+
+export type CorrectBallReplacement =
+  | {
+      type: "run";
+      runs: RunValue;
+    }
+  | {
+      type: "extra";
+      extraType: ExtraType;
+      additionalRuns: number;
+    }
+  | {
+      type: "wicket";
+      wicketType: WicketType;
+      extraType?: WicketExtraType;
+      newBatterId?: string;
+      newBatterName?: string;
+      fielderId?: string;
+      runOutBatsman?: "striker" | "nonStriker";
+      runsWithWicket: RunValue;
+    };
+
+export type CorrectBallRequest = {
+  type: "correctBall";
+  targetSeq: number;
+  replacement: CorrectBallReplacement;
+};
+
 export type RetireRequest = {
   type: "retire";
   retiringBatter: "striker" | "nonStriker";
@@ -68,7 +103,9 @@ export type ScoreEventRequest =
   | WicketEventRequest
   | SwapRequest
   | UndoRequest
-  | RetireRequest;
+  | RetireRequest
+  | PenaltyRequest
+  | CorrectBallRequest;
 
 export type ScoreEventResponse = {
   matchId: string;
